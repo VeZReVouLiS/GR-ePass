@@ -1,0 +1,13 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Ερώτηση χρήσης / Usage question
+    url: https://github.com/VeZReVouLiS/attiki-odos-e-pass/discussions
+    about: >
+      Για ερωτήσεις «πώς κάνω το Χ» χρησιμοποιήστε τα Discussions. Τα Issues
+      είναι για προβλήματα και προτάσεις.
+  - name: Θέμα με τον λογαριασμό e-PASS / e-PASS account problem
+    url: https://www.naodos.gr/
+    about: >
+      Χρεώσεις, πομποδέκτες, πάγια εντολή και οτιδήποτε αφορά τον λογαριασμό σας
+      λύνονται από τη Νέα Αττική Οδό (210 6682222). Αυτό το repo είναι
+      ανεπίσημο και δεν έχει πρόσβαση στον λογαριασμό σας.

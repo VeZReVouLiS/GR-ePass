@@ -1,0 +1,77 @@
+name: Bug report / Αναφορά προβλήματος
+description: Κάτι δεν δουλεύει σωστά / Something is not working
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Γράψτε ελληνικά ή αγγλικά, ό,τι σας βολεύει.
+        Write in Greek or English, whichever you prefer.
+
+        **Μη επικολλήσετε κωδικούς, tokens καρτών ή πλήρες diagnostics χωρίς
+        να το ελέγξετε πρώτα.** Το diagnostics αρχείο κρύβει ονόματα, πινακίδες
+        και email, αλλά δείτε το πριν το ανεβάσετε.
+
+  - type: input
+    id: version
+    attributes:
+      label: Έκδοση integration / Integration version
+      description: HACS → Attiki Odos e-Pass, ή το `version` στο manifest.json
+      placeholder: "0.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: ha_version
+    attributes:
+      label: Έκδοση Home Assistant
+      description: Settings → About
+      placeholder: "2026.8.2"
+    validations:
+      required: true
+
+  - type: textarea
+    id: what_happened
+    attributes:
+      label: Τι συνέβη / What happened
+      description: Τι περιμένατε και τι έγινε αντ' αυτού
+    validations:
+      required: true
+
+  - type: input
+    id: toll_category
+    attributes:
+      label: Κατηγορία οχήματος / Toll category
+      description: >
+        Το attribute `toll_category` του πομποδέκτη σας. Χρήσιμο γιατί τα όρια
+        λογαριασμού διαφέρουν ανά κατηγορία.
+      placeholder: "2"
+
+  - type: textarea
+    id: entities
+    attributes:
+      label: Σχετικά entities / Relevant entities
+      description: >
+        Ποιο entity δείχνει λάθος και τι τιμή έχει. Developer Tools → States.
+      render: text
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: >
+        Settings → System → Logs, φιλτράρετε με `attiki`. Αν δεν βλέπετε τίποτα,
+        ενεργοποιήστε debug: Settings → Devices & Services → Attiki Odos e-Pass
+        → ⋮ → Enable debug logging, αναπαράγετε το πρόβλημα, μετά απενεργοποιήστε
+        για να κατεβεί το αρχείο.
+      render: text
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Έλεγχοι
+      options:
+        - label: Επιβεβαίωσα ότι το ίδιο φαίνεται σωστά στο epass.naodos.gr
+          required: false
+        - label: Αφαίρεσα προσωπικά στοιχεία από ό,τι επικόλλησα
+          required: true

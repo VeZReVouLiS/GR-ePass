@@ -1,0 +1,44 @@
+name: API change / Άλλαξε το my e-PASS
+description: Ένα sensor έγινε unavailable ή unknown μαζικά, ή το login σταμάτησε
+labels: ["api-change"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Το integration δεν χρησιμοποιεί επίσημο API — τα endpoints εντοπίστηκαν
+        από τον κώδικα του site και **μπορούν να αλλάξουν χωρίς προειδοποίηση**.
+        Αυτό το template είναι για ακριβώς αυτή την περίπτωση.
+
+        Το integration δεν χρησιμοποιεί επίσημο API, so an upstream change breaks
+        it for everyone at once. Please report it here.
+
+  - type: dropdown
+    id: symptom
+    attributes:
+      label: Σύμπτωμα / Symptom
+      options:
+        - Το login αποτυγχάνει (ζητά συνέχεια reauth)
+        - Όλα τα sensors έγιναν unavailable
+        - Κάποια sensors έγιναν unknown, τα άλλα δουλεύουν
+        - Λάθος τιμές (πχ υπόλοιπο με ανάποδο πρόσημο)
+        - Άλλο / Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: probe
+    attributes:
+      label: Έξοδος του probe
+      description: >
+        Τρέξτε `python tools/epass_probe.py TO_USERNAME --days 7` και
+        επικολλήστε το αποτέλεσμα. **Είναι redacted από default** — ονόματα,
+        πινακίδες, ΑΦΜ και email αντικαθίστανται. Δείτε το πριν το ανεβάσετε
+        και μην χρησιμοποιήσετε `--no-redact`.
+      render: json
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs με debug ενεργό
+      description: Φιλτράρετε με `attiki`. Δείχνει ποιο endpoint απάντησε λάθος.
+      render: text

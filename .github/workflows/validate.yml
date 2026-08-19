@@ -1,0 +1,35 @@
+# Οι δύο έλεγχοι που απαιτεί το HACS για να δεχτεί ένα integration στο default
+# repository list. Τρέχουν σε κάθε push και PR, και μία φορά την ημέρα με cron:
+# και οι δύο actions ελέγχουν κανόνες που αλλάζουν με τον χρόνο, οπότε ένα repo
+# που δεν πειράχτηκε μπορεί να σπάσει χωρίς commit.
+name: Validate
+
+on:
+  push:
+  pull_request:
+  schedule:
+    # 04:17 UTC -- όχι ακριβώς στην ώρα, ώστε να μη πέφτει στην αιχμή του runner.
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+
+jobs:
+  hassfest:
+    name: hassfest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      # Ελέγχει το manifest: domain, απαιτούμενα κλειδιά, σειρά, έγκυρα
+      # iot_class/integration_type, ότι τα translations ταιριάζουν με τα
+      # strings.json, και ότι δεν λείπουν εξαρτήσεις.
+      - uses: home-assistant/actions/hassfest@master
+
+  hacs:
+    name: HACS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      # Ελέγχει τη δομή που περιμένει το HACS: hacs.json, θέση του
+      # custom_components/<domain>/, README, και ότι υπάρχει έκδοση.
+      - uses: hacs/action@main
+        with:
+          category: integration

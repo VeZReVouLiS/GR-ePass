@@ -1,0 +1,169 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Στοιχεία my e-PASS",
+        "description": "Συνδεθείτε με το Όνομα Χρήστη και τον Κωδικό Πρόσβασης που χρησιμοποιείτε στο epass.naodos.gr. Προσοχή στα πεζά και κεφαλαία.",
+        "data": {
+          "username": "Όνομα χρήστη",
+          "password": "Κωδικός πρόσβασης"
+        }
+      },
+      "account": {
+        "title": "Επιλογή λογαριασμού",
+        "description": "Ο λογαριασμός σας έχει περισσότερες από μία συνδρομές e-PASS. Επιλέξτε ποια θα προστεθεί. Επαναλάβετε τη διαδικασία για τις υπόλοιπες.",
+        "data": {
+          "account_id": "Συνδρομή"
+        }
+      },
+      "transponders": {
+        "title": "Επιλογή πομποδεκτών",
+        "description": "Βρέθηκαν {count} πομποδέκτες. Κρατήστε το «Όλοι» για να παρακολουθούνται όλοι (και όσοι προστεθούν στο μέλλον), ή επιλέξτε συγκεκριμένους.",
+        "data": {
+          "transponders": "Πομποδέκτες"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Επανασύνδεση",
+        "description": "Ο κωδικός για τον χρήστη {username} δεν γίνεται πλέον δεκτός από το my e-PASS.",
+        "data": {
+          "password": "Κωδικός πρόσβασης"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Λάθος όνομα χρήστη ή κωδικός.",
+      "cannot_connect": "Δεν ήταν δυνατή η σύνδεση με το epass.naodos.gr.",
+      "unknown": "Απρόσμενο σφάλμα. Δείτε το log του Home Assistant."
+    },
+    "abort": {
+      "already_configured": "Αυτή η συνδρομή έχει ήδη προστεθεί.",
+      "no_accounts": "Δεν βρέθηκε συνδρομή e-PASS σε αυτόν τον χρήστη.",
+      "no_transponders": "Δεν βρέθηκαν πομποδέκτες σε αυτή τη συνδρομή.",
+      "invalid_auth": "Λάθος όνομα χρήστη ή κωδικός.",
+      "cannot_connect": "Δεν ήταν δυνατή η σύνδεση με το epass.naodos.gr.",
+      "reauth_successful": "Η επανασύνδεση ολοκληρώθηκε."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Ρυθμίσεις e-PASS",
+        "data": {
+          "transponders": "Πομποδέκτες",
+          "scan_interval_minutes": "Συχνότητα ανανέωσης (λεπτά)"
+        },
+        "data_description": {
+          "scan_interval_minutes": "Πόσο συχνά θα γίνεται ανάκτηση από το my e-PASS. Η πύλη δεν είναι γρήγορη — προτιμήστε 15 λεπτά ή περισσότερο."
+        }
+      }
+    }
+  },
+  "entity": {
+    "button": {
+      "prepare_topup": {
+        "name": "Προετοιμασία ανανέωσης"
+      }
+    },
+    "number": {
+      "low_balance_threshold": {
+        "name": "Όριο ειδοποίησης χαμηλού υπολοίπου"
+      },
+      "topup_amount": {
+        "name": "Ποσό ανανέωσης"
+      }
+    },
+    "select": {
+      "payment_card": {
+        "name": "Κάρτα πληρωμής"
+      }
+    },
+    "sensor": {
+      "account_status": {
+        "name": "Κατάσταση συνδρομής",
+        "state": {
+          "incomplete": "Ημιτελής",
+          "inactive": "Ανενεργή",
+          "active_partial": "Μερικώς ενεργή",
+          "active": "Ενεργή",
+          "closed": "Κλειστή"
+        }
+      },
+      "balance": {
+        "name": "Υπόλοιπο"
+      },
+      "balance_status": {
+        "name": "Κατάσταση υπολοίπου",
+        "state": {
+          "good": "Έγκυρος",
+          "low": "Χαμηλός",
+          "bad": "Άκυρος"
+        }
+      },
+      "card_expiry": {
+        "name": "Λήξη κάρτας"
+      },
+      "cost_last_30_days": {
+        "name": "Κόστος διελεύσεων τελευταίων 30 ημερών"
+      },
+      "cost_month": {
+        "name": "Κόστος διελεύσεων τρέχοντος μήνα"
+      },
+      "cost_month_attiki": {
+        "name": "Κόστος διελεύσεων μήνα (Αττική Οδός)"
+      },
+      "cost_month_other": {
+        "name": "Κόστος διελεύσεων μήνα (άλλοι αυτοκινητόδρομοι)"
+      },
+      "cost_prev_month": {
+        "name": "Κόστος διελεύσεων προηγούμενου μήνα"
+      },
+      "cost_today": {
+        "name": "Κόστος διελεύσεων σήμερα"
+      },
+      "invalid_balance_limit": {
+        "name": "Όριο άκυρου λογαριασμού"
+      },
+      "last_pass": {
+        "name": "Τελευταία διέλευση"
+      },
+      "last_payment_amount": {
+        "name": "Τελευταία πληρωμή"
+      },
+      "last_payment_date": {
+        "name": "Ημερομηνία τελευταίας πληρωμής"
+      },
+      "last_statement_date": {
+        "name": "Τελευταία εκκαθάριση"
+      },
+      "passes_last_30_days": {
+        "name": "Διελεύσεις τελευταίων 30 ημερών"
+      },
+      "passes_month": {
+        "name": "Διελεύσεις τρέχοντος μήνα"
+      },
+      "passes_prev_month": {
+        "name": "Διελεύσεις προηγούμενου μήνα"
+      },
+      "passes_today": {
+        "name": "Διελεύσεις σήμερα"
+      },
+      "payment_cards": {
+        "name": "Αποθηκευμένες κάρτες"
+      },
+      "payments_month": {
+        "name": "Πληρωμές τρέχοντος μήνα"
+      },
+      "transponder_count": {
+        "name": "Πομποδέκτες"
+      },
+      "transponder_status": {
+        "name": "Κατάσταση",
+        "state": {
+          "active": "Ενεργός",
+          "restricted": "Με περιορισμό"
+        }
+      }
+    }
+  }
+}

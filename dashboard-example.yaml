@@ -1,0 +1,132 @@
+# ΠΡΟΣΟΧΗ στα entity ids: το Home Assistant τα παράγει από το ΑΓΓΛΙΚΟ
+# όνομα του sensor (strings.json), ανεξάρτητα από τη γλώσσα του UI. Γι'
+# αυτό είναι sensor.e_pass_123456_balance και όχι ..._ypoloipo, ακόμα κι
+# όταν το friendly name εμφανίζεται ως «Υπόλοιπο».
+#
+# Παράδειγμα Lovelace view για το Attiki Odos e-PASS.
+#
+# Αντικαταστήστε το 123456 με το AccountID σας και τα ονόματα των πομποδεκτών
+# με τα δικά σας. Ο πιο γρήγορος τρόπος να βρείτε τα σωστά entity ids:
+# Developer Tools -> States -> φιλτράρετε με "e_pass".
+
+title: e-PASS
+views:
+  - title: Διόδια
+    path: epass
+    type: sections
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Λογαριασμός
+            heading_style: title
+
+          - type: glance
+            show_name: true
+            show_state: true
+            columns: 3
+            entities:
+              - entity: sensor.e_pass_123456_balance
+                name: Υπόλοιπο
+              - entity: sensor.e_pass_123456_balance_status
+                name: Κατάσταση
+              - entity: sensor.e_pass_123456_transponders
+                name: Πομποδέκτες
+
+          - type: entities
+            title: Χρήση
+            entities:
+              - entity: sensor.e_pass_123456_passes_today
+                name: Διελεύσεις σήμερα
+              - entity: sensor.e_pass_123456_cost_today
+                name: Κόστος σήμερα
+              - type: divider
+              - entity: sensor.e_pass_123456_passes_this_month
+                name: Διελεύσεις μήνα
+              - entity: sensor.e_pass_123456_cost_this_month
+                name: Κόστος μήνα
+              - entity: sensor.e_pass_123456_cost_this_month_attiki_odos
+                name: — Αττική Οδός
+              - entity: sensor.e_pass_123456_cost_this_month_other_motorways
+                name: — Άλλα δίκτυα
+              - type: divider
+              - entity: sensor.e_pass_123456_cost_previous_month
+                name: Κόστος προηγούμενου μήνα
+              - entity: sensor.e_pass_123456_last_pass
+                name: Τελευταία διέλευση
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Ιστορικό
+            heading_style: title
+
+          # Μηνιαίο κόστος από τα long-term statistics.
+          - type: statistic
+            entity: sensor.e_pass_123456_cost_today
+            stat_type: sum
+            period:
+              calendar:
+                period: month
+            name: Σύνολο διοδίων αυτόν τον μήνα
+
+          - type: statistics-graph
+            title: Ημερήσιο κόστος
+            chart_type: bar
+            period: day
+            days_to_show: 30
+            stat_types:
+              - sum
+            entities:
+              - sensor.e_pass_123456_cost_today
+
+          - type: statistics-graph
+            title: Ημερήσιες διελεύσεις
+            chart_type: bar
+            period: day
+            days_to_show: 30
+            stat_types:
+              - sum
+            entities:
+              - sensor.e_pass_123456_passes_today
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Ανά πομποδέκτη
+            heading_style: title
+
+          # Ένα card ανά πομποδέκτη — αντιγράψτε και αλλάξτε το slug.
+          - type: entities
+            title: Golf
+            entities:
+              - entity: sensor.golf_passes_today
+                name: Σήμερα
+              - entity: sensor.golf_cost_today
+                name: Κόστος σήμερα
+              - entity: sensor.golf_passes_this_month
+                name: Διελεύσεις μήνα
+              - entity: sensor.golf_cost_this_month
+                name: Κόστος μήνα
+              - entity: sensor.golf_last_pass
+                name: Τελευταία διέλευση
+              - entity: sensor.golf_status
+                name: Κατάσταση
+
+          # Markdown card που δείχνει πού έγινε η τελευταία διέλευση.
+          - type: markdown
+            title: Τελευταία διέλευση
+            content: >
+              {% set s = 'sensor.e_pass_123456_last_pass' %}
+              {% if states(s) not in ['unknown', 'unavailable'] %}
+              **{{ state_attr(s, 'plaza') or 'Σταθμός ?' }}**
+              (λωρίδα {{ state_attr(s, 'lane') or '?' }})
+              — {{ state_attr(s, 'amount') }} €
+
+              {{ as_timestamp(states(s)) | timestamp_custom('%d/%m/%Y %H:%M') }}
+              {% if state_attr(s, 'external_network') %}
+              _Διέλευση σε άλλο δίκτυο (διαλειτουργικότητα)._
+              {% endif %}
+              {% else %}
+              Καμία διέλευση καταγεγραμμένη.
+              {% endif %}

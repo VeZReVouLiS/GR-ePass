@@ -1,0 +1,169 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "my e-PASS credentials",
+        "description": "Sign in with the username and password you use on epass.naodos.gr. Remember that the username and password are case sensitive.",
+        "data": {
+          "username": "Username",
+          "password": "Password"
+        }
+      },
+      "account": {
+        "title": "Choose account",
+        "description": "Your login has more than one e-PASS account. Pick the one to add. Repeat the setup to add the others.",
+        "data": {
+          "account_id": "Account"
+        }
+      },
+      "transponders": {
+        "title": "Choose transponders",
+        "description": "{count} transponder(s) found. Keep “All” to follow every transponder on the account (including ones added later), or pick specific ones.",
+        "data": {
+          "transponders": "Transponders"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Re-authenticate",
+        "description": "The password for {username} is no longer accepted by my e-PASS.",
+        "data": {
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid username or password.",
+      "cannot_connect": "Could not reach epass.naodos.gr.",
+      "unknown": "Unexpected error. Check the Home Assistant log."
+    },
+    "abort": {
+      "already_configured": "This account is already set up.",
+      "no_accounts": "This login has no e-PASS accounts linked to it.",
+      "no_transponders": "No transponders found on this account.",
+      "invalid_auth": "Invalid username or password.",
+      "cannot_connect": "Could not reach epass.naodos.gr.",
+      "reauth_successful": "Re-authentication was successful."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "e-PASS options",
+        "data": {
+          "transponders": "Transponders",
+          "scan_interval_minutes": "Update interval (minutes)"
+        },
+        "data_description": {
+          "scan_interval_minutes": "How often to poll my e-PASS. The portal is not fast, so keep this at 15 minutes or more."
+        }
+      }
+    }
+  },
+  "entity": {
+    "button": {
+      "prepare_topup": {
+        "name": "Prepare top-up"
+      }
+    },
+    "number": {
+      "low_balance_threshold": {
+        "name": "Low balance threshold"
+      },
+      "topup_amount": {
+        "name": "Top-up amount"
+      }
+    },
+    "select": {
+      "payment_card": {
+        "name": "Payment card"
+      }
+    },
+    "sensor": {
+      "account_status": {
+        "name": "Account status",
+        "state": {
+          "incomplete": "Incomplete",
+          "inactive": "Inactive",
+          "active_partial": "Partially active",
+          "active": "Active",
+          "closed": "Closed"
+        }
+      },
+      "balance": {
+        "name": "Balance"
+      },
+      "balance_status": {
+        "name": "Balance status",
+        "state": {
+          "good": "Valid",
+          "low": "Low",
+          "bad": "Invalid"
+        }
+      },
+      "card_expiry": {
+        "name": "Card expires"
+      },
+      "cost_last_30_days": {
+        "name": "Cost last 30 days"
+      },
+      "cost_month": {
+        "name": "Cost this month"
+      },
+      "cost_month_attiki": {
+        "name": "Cost this month (Attiki Odos)"
+      },
+      "cost_month_other": {
+        "name": "Cost this month (other motorways)"
+      },
+      "cost_prev_month": {
+        "name": "Cost previous month"
+      },
+      "cost_today": {
+        "name": "Cost today"
+      },
+      "invalid_balance_limit": {
+        "name": "No-pass limit"
+      },
+      "last_pass": {
+        "name": "Last pass"
+      },
+      "last_payment_amount": {
+        "name": "Last payment"
+      },
+      "last_payment_date": {
+        "name": "Last payment date"
+      },
+      "last_statement_date": {
+        "name": "Last statement"
+      },
+      "passes_last_30_days": {
+        "name": "Passes last 30 days"
+      },
+      "passes_month": {
+        "name": "Passes this month"
+      },
+      "passes_prev_month": {
+        "name": "Passes previous month"
+      },
+      "passes_today": {
+        "name": "Passes today"
+      },
+      "payment_cards": {
+        "name": "Stored cards"
+      },
+      "payments_month": {
+        "name": "Payments this month"
+      },
+      "transponder_count": {
+        "name": "Transponders"
+      },
+      "transponder_status": {
+        "name": "Status",
+        "state": {
+          "active": "Active",
+          "restricted": "Restricted"
+        }
+      }
+    }
+  }
+}
