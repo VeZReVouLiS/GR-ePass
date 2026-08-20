@@ -163,7 +163,7 @@ long-term statistics. Το κυλιόμενο 30ήμερο κόστος **δεν
 ## Ανανέωση υπολοίπου από το Home Assistant
 
 Το Home Assistant **δεν μπορεί να χρεώσει κάρτα** και κανένα integration δεν
-μπορεί. Το backend του e-PASS μόνο **υπογράφει** μια εντολή; η χρέευση
+μπορεί. Το backend του e-PASS μόνο **υπογράφει** μια εντολή; η χρέωση
 ολοκληρώνεται με υποβολή HTML form από browser στη hosted σελίδα της Alpha
 Bank, όπου τρέχει το 3-D Secure. Δεν υπάρχει endpoint που χρεώνει αποθηκευμένη
 κάρτα server-side.
@@ -239,6 +239,9 @@ automation:
   «Αρχικής» του my e-PASS: donut υπολοίπου με τη λογική χρωμάτων του portal,
   επιλογή κάρτας με σήμα, ποσό, και κουμπί πληρωμής. Θέλει από το HACS
   `button-card`, `card-mod`, `vertical-stack-in-card`, `template-entity-row`.
+- [`dashboard-portal-card.en.yaml`](dashboard-portal-card.en.yaml) — η ίδια
+  κάρτα με αγγλικά labels. **Παράγεται** από την ελληνική με
+  `python tools/make_en_card.py` — μην την επεξεργάζεστε χειροκίνητα.
 
 ## Το API που δεν υπάρχει
 

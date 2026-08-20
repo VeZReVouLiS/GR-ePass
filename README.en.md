@@ -15,11 +15,11 @@ prepaid electronic toll subscription.
 > official product of Nea Attiki Odos.
 
 <p align="center">
-  <img src="docs/images/card.png" alt="The my e-PASS styled card" width="340">
+  <img src="docs/images/card-en.png" alt="The my e-PASS styled card" width="340">
 </p>
 
 <p align="center">
-  <em><a href="dashboard-portal-card.yaml">dashboard-portal-card.yaml</a> —
+  <em><a href="dashboard-portal-card.en.yaml">dashboard-portal-card.en.yaml</a> —
   customer number, card and last pass are sample values.</em>
 </p>
 

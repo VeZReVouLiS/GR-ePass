@@ -1,0 +1,365 @@
+# English variant of dashboard-portal-card.yaml.
+#
+# GENERATED -- do not edit by hand. Change dashboard-portal-card.yaml and run:
+#     python tools/make_en_card.py
+#
+# Κάρτα Lovelace σε στιλ «Αρχική» του my e-PASS (epass.naodos.gr).
+#
+# Απαιτεί από το HACS: button-card, card-mod, vertical-stack-in-card,
+# template-entity-row. Brand colors, από το CSS του Angular bundle:
+#   #024e7e  σκούρο μπλε (nav bar, κουμπιά)
+#   #fcbd02  κίτρινο (page header band)
+#   #0dd058 / #ffb900 / #ff253a  πράσινο / πορτοκαλί / κόκκινο (κατάσταση)
+#   #a0a0a0  γκρι (κλειστός λογαριασμός)
+#
+# Το BalanceStatus αντιστοιχεί στα επίσημα όρια του Τιμοκαταλόγου Prepaid
+# (naodos.gr, ισχύει από 01/01/2026), ανά ηλεκτρονική συσκευή e-PASS:
+#
+#   Όριο                          ΚΑΤ 1     ΚΑΤ 2,3,4   ΚΑΤ 5 & 6
+#   Ανανέωσης (πάγια εντολή)      10,00 €   20,00 €     50,00 €
+#   Ειδοποίησης Χαμηλού           6,00 €    12,00 €     40,00 €
+#   Άκυρου Λογαριασμού            1,25 €    2,55 €      10,10 €
+#
+#   status 1 (Έγκυρος) = πάνω από το Όριο Ειδοποίησης
+#   status 2 (Χαμηλός) = κάτω από το Όριο Ειδοποίησης
+#   status 3 (Άκυρος)  = κάτω από το Όριο Άκυρου -> ΔΕΝ επιτρέπονται
+#                        συνδρομητικές διελεύσεις, μόνο λωρίδα με εισπράκτορα
+#
+# Αντικαταστήστε το 123456 με το AccountID σας.
+# Developer Tools -> States -> φίλτρο "e_pass".
+#
+# ΠΡΟΣΟΧΗ: μη ξαναγράψετε το αρχείο με yaml.safe_dump — σβήνει τα σχόλια και
+# μετατρέπει τα block scalars σε escaped one-liners.
+
+type: custom:vertical-stack-in-card
+cards:
+  # ── Header ───────────────────────────────────────────────────────────────
+  # Το portal είναι light theme, οπότε μια πλατιά κίτρινη μπάντα «χτυπάει» σε
+  # σκούρο HA. Εδώ το header είναι το σκούρο μπλε του nav bar τους, με λεπτή
+  # κίτρινη γραμμή ως accent — on-brand και διαβάζεται και στα δύο themes.
+  #
+  # Το «###» πρέπει να ξεκινά τη γραμμή για να γίνει h3, γι' αυτό literal
+  # block (|-) και όχι folded (>-). Το περιεχόμενο ζει μέσα σε <ha-markdown>
+  # που έχει δικό του shadow root, οπότε το styling θέλει τη nested σύνταξη
+  # του card-mod ($) — ένα απλό «ha-card h3» δεν το φτάνει.
+  - type: markdown
+    text_only: false
+    content: |-
+      ### Subscription account
+      {{ state_attr('sensor.e_pass_123456_account_status', 'account_alias') }} ({{ state_attr('sensor.e_pass_123456_account_status', 'account_id') }}) · {{ state_attr('sensor.e_pass_123456_account_status', 'account_profile') }}
+    card_mod:
+      style:
+        ha-markdown:
+          $: |
+            h3 {
+              margin: 0 0 4px 0 !important;
+              color: #ffffff !important;
+            }
+            p {
+              margin: 0 !important;
+              color: #fcbd02 !important;
+              font-size: 13px !important;
+            }
+        .: |
+          ha-card {
+            background: #024e7e;
+            border: none;
+            box-shadow: none;
+            border-bottom: 3px solid #fcbd02;
+            border-radius: 12px 12px 0 0;
+          }
+
+  # ── Donut υπολοίπου ──────────────────────────────────────────────────────
+  # Πιστή αντιγραφή του donut της «Αρχικής». Στο portal ο κύκλος είναι
+  # ΓΕΜΑΤΟΣ και αλλάζει μόνο το χρώμα — δεν είναι progress ring:
+  #   AccountStatus === 5        -> grey-circle   (κλειστός λογαριασμός)
+  #   BalanceStatus === 1        -> green-circle
+  #   BalanceStatus === 2        -> yellow-circle
+  #   αλλιώς                     -> red-circle
+  # Το χρώμα ΔΕΝ εξαρτάται από το ποσό — το BalanceStatus το βγάζει ο server.
+  # Οι διαστάσεις 186/121px του portal κρατήθηκαν σε αναλογία (158/104).
+  - type: custom:button-card
+    entity: sensor.e_pass_123456_balance
+    name: Account balance
+    show_state: false
+    show_icon: false
+    tap_action:
+      action: more-info
+    styles:
+      grid:
+        - grid-template-areas: '"n" "ring"'
+        - grid-template-rows: min-content 1fr
+      name:
+        - font-size: 13px
+        - color: var(--secondary-text-color)
+        - padding-bottom: 14px
+      card:
+        - padding: 18px 16px 20px 16px
+        - border: none
+        - box-shadow: none
+        - background: var(--ha-card-background, var(--card-background-color))
+    custom_fields:
+      ring: >-
+        [[[
+          const bal = parseFloat(entity.state);
+          if (isNaN(bal)) {
+            return `<div style="color:var(--secondary-text-color);
+                    padding:34px 0;">No data</div>`;
+          }
+
+          // Labels και χρώματα γράφονται εδώ αντί να διαβαστούν από το
+          // μεταφρασμένο state: το frontend μεταφράζει states με τη γλώσσα
+          // του χρήστη, οπότε σε αγγλικό UI θα έδειχνε «Valid» μέσα σε
+          // ελληνική κάρτα.
+          const acc = states['sensor.e_pass_123456_account_status'];
+          const st = states['sensor.e_pass_123456_balance_status'];
+          const status = st ? st.state : null;
+
+          let col, label;
+          if (acc && acc.state === 'closed') {
+            col = '#a0a0a0'; label = 'Closed';
+          } else if (status === 'good') {
+            col = '#0dd058'; label = 'Valid';
+          } else if (status === 'low') {
+            col = '#ffb900'; label = 'Low';
+          } else {
+            col = '#ff253a'; label = 'Invalid';
+          }
+
+          // Προσθήκη πάνω από το portal: το BalanceStatus γυρίζει σε «2» στο
+          // επίσημο Όριο Ειδοποίησης (12 € για ΚΑΤ 2), που είναι σταθερό. Ο
+          // helper επιτρέπει δικό σου, αυστηρότερο όριο και βάφει κόκκινο πιο
+          // νωρίς — ίδιο σήμα με το Telegram alert.
+          const thrEnt = states['number.e_pass_123456_low_balance_threshold'];
+          const thr = thrEnt ? parseFloat(thrEnt.state) : null;
+          if (thr !== null && !isNaN(thr) && bal < thr) col = '#ff253a';
+
+          // Το portal δείχνει πίστωση ως «13,79 € Π», χρέωση ως «... Χ».
+          const amount = bal.toLocaleString('en-GB', {
+            minimumFractionDigits: 2, maximumFractionDigits: 2,
+          }) + ' €';
+
+          return `
+            <div style="display:flex;justify-content:center;">
+              <div style="width:158px;height:158px;border-radius:50%;
+                          background:${col};display:flex;
+                          align-items:center;justify-content:center;">
+                <div style="width:104px;height:104px;border-radius:50%;
+                            background:var(--ha-card-background,
+                                       var(--card-background-color));
+                            display:flex;flex-direction:column;
+                            align-items:center;justify-content:center;
+                            gap:2px;">
+                  <span style="font-size:19px;font-weight:700;
+                               color:var(--primary-text-color);
+                               white-space:nowrap;">${amount}</span>
+                  <span style="font-size:12px;color:${col};">${label}</span>
+                </div>
+              </div>
+            </div>`;
+        ]]]
+
+  # ── Επιλογή κάρτας και ποσού ─────────────────────────────────────────────
+  # Native dropdown για την κάρτα (λειτουργικό), number με min/max από το
+  # GetPaymProviderInfo του gateway.
+  - type: entities
+    card_mod:
+      style: |
+        ha-card { border: none; box-shadow: none; }
+    entities:
+      - entity: select.e_pass_123456_payment_card
+        name: Payment card
+        icon: mdi:credit-card-outline
+      - entity: number.e_pass_123456_top_up_amount
+        name: Top-up amount
+        icon: mdi:cash-plus
+
+  # Σήμα κάρτας + τελευταία ψηφία + λήξη. Τα logos κατεβαίνουν μία φορά από
+  # τα assets του portal στο /config/www/attiki_odos_epass/. Προσοχή: το
+  # brand «diners» έχει filename «dinners» στο site τους.
+  #
+  # Τα PNG έχουν διαφανές background και είναι σχεδιασμένα για λευκή σελίδα —
+  # σε σκούρο theme «χάνονται». Μπαίνουν σε λευκό chip, όπως στα checkout των
+  # τραπεζών.
+  #
+  # ΠΡΟΣΟΧΗ: το markdown card του HA κάνει sanitize το HTML και **πετάει τα
+  # inline style attributes** (κρατά μόνο src/height). Επαληθεύτηκε στο DOM.
+  # Άρα το chip γίνεται με card-mod μέσα στο shadow root του <ha-markdown>,
+  # όχι με style="" στο template.
+  - type: markdown
+    card_mod:
+      style:
+        ha-markdown:
+          # Το !important χρειάζεται: χωρίς αυτό περνά μόνο το padding και το
+          # background/border-radius τα υπερισχύει το stylesheet του HA.
+          $: |
+            img {
+              background: #ffffff !important;
+              padding: 3px 7px !important;
+              border-radius: 4px !important;
+              box-sizing: content-box !important;
+              vertical-align: middle !important;
+            }
+        .: |
+          ha-card { border: none; box-shadow: none; }
+          ha-card .card-content { padding-top: 0 !important; }
+    content: >-
+      {% set b = state_attr('select.e_pass_123456_payment_card', 'brand') %}{%
+      set f = {'diners': 'dinners'}.get(b, b) %}{% set four =
+      state_attr('select.e_pass_123456_payment_card', 'last_four') %}{% set exp
+      = state_attr('select.e_pass_123456_payment_card', 'expiry') %}{% if b and
+      b != 'other' %}<img src="/local/attiki_odos_epass/cc-logo-{{ f }}.png"
+      height="20"> {% endif %}{% if four %}•••• {{ four }}{% endif %}{% if exp %}
+      · expires {{ as_timestamp(exp) | timestamp_custom('%m/%Y') }}{% endif %}{% if
+      not b %}No stored card{% endif %}
+
+  # Η πρώτη χρέωση δεν μπορεί να γίνει από το HA: το SaveStoredCard σώζει
+  # μόνο alias — το token το δημιουργεί η τράπεζα κατά την πληρωμή.
+  - type: conditional
+    conditions:
+      - condition: numeric_state
+        entity: sensor.e_pass_123456_stored_cards
+        below: 1
+    card:
+      type: markdown
+      card_mod:
+        style: |
+          ha-card { border: none; box-shadow: none; }
+      content: >-
+        ⚠️ **No stored card.**
+
+
+        The first charge has to happen on the my e-PASS site, with "save card"
+        ticked. For security the card token is minted by the bank during a real
+        payment, so a card cannot be added from Home Assistant.
+
+  # ── Κουμπί «Pay», όπως στο portal ────────────────────────────────────
+  # Ανοίγει τη σελίδα Ηλεκτρονικής Payς. Η χρέωση ολοκληρώνεται εκεί, στη
+  # hosted σελίδα της Alpha Bank — το HA δεν μπορεί να τη κάνει μόνο του.
+  #
+  # button-card αντί του stock button card: το stock κάνει το εικονίδιο
+  # τεράστιο και τη κάρτα ψηλή, εδώ θέλουμε λεπτή μπάρα σαν του portal.
+  - type: custom:button-card
+    name: Pay
+    # Χωρίς εικονίδιο, όπως το κουμπί «Pay» του portal. Το layout
+    # icon_name του button-card άφηνε ένα άδειο icon slot στα αριστερά.
+    show_icon: false
+    show_state: false
+    tap_action:
+      action: url
+      url_path: https://epass.naodos.gr/PaymentA
+    styles:
+      card:
+        - background: '#024e7e'
+        - border: none
+        - box-shadow: none
+        # Full-width μπάρα, flush μέσα στο stack. Οριζόντιο margin ΔΕΝ
+        # δουλεύει εδώ: το width του ha-card μένει 100%, οπότε το margin-left
+        # το σπρώχνει δεξιά (16px εκτός κέντρου) — και ένα calc(100% - 32px)
+        # καταρρέει την κάρτα, γιατί το containing block δεν είναι το stack.
+        - border-radius: '0'
+        - height: 46px
+      name:
+        - color: '#ffffff'
+        - font-size: 15px
+        - font-weight: '500'
+
+  # ── Στοιχεία λογαριασμού ─────────────────────────────────────────────────
+  - type: entities
+    card_mod:
+      style: |
+        ha-card { border: none; box-shadow: none; }
+    entities:
+      - type: custom:template-entity-row
+        name: Subscription plan
+        icon: mdi:card-account-details-outline
+        state: >-
+          {{ state_attr('sensor.e_pass_123456_account_status',
+                        'account_profile') or '—' }}
+
+      # Το state αυτού του sensor είναι enum (active/closed/...) και το
+      # μεταφράζει το frontend με τη γλώσσα του χρήστη — σε αγγλικό UI έδειχνε
+      # «Active». Εδώ label και εικονίδιο (πράσινο ✓ ή κόκκινο !, όπως η
+      # σελίδα Πομποδεκτών του portal) βγαίνουν από template, άρα είναι ίδια σε
+      # κάθε γλώσσα.
+      - type: custom:template-entity-row
+        entity: sensor.e_pass_123456_account_status
+        name: Account status
+        icon: >-
+          {{ 'mdi:check-circle' if is_state('sensor.e_pass_123456_account_status', 'active')
+             else 'mdi:alert-circle' }}
+        color: >-
+          {{ 'var(--label-badge-green)' if is_state('sensor.e_pass_123456_account_status', 'active')
+             else 'var(--label-badge-red)' }}
+        state: >-
+          {% set labels = {
+               'active': 'Active',
+               'active_partial': 'Partially active',
+               'inactive': 'Inactive',
+               'incomplete': 'Incomplete',
+               'closed': 'Closed' } %}
+          {{ labels.get(states('sensor.e_pass_123456_account_status'),
+                        states('sensor.e_pass_123456_account_status')) }}
+
+      - type: divider
+      - entity: sensor.e_pass_123456_last_payment
+        name: Last payment
+
+      # Και η μορφή ημερομηνίας ακολουθεί τη γλώσσα του χρήστη («August 19,
+      # 2026 at 13:01» σε αγγλικό UI), γι' αυτό μορφοποιείται ρητά.
+      - type: custom:template-entity-row
+        entity: sensor.e_pass_123456_last_payment_date
+        name: Payment date
+        icon: mdi:calendar-check
+        state: >-
+          {% set d = states('sensor.e_pass_123456_last_payment_date') %}
+          {{ as_timestamp(d) | timestamp_custom('%d/%m/%Y %H:%M')
+             if d not in ['unknown', 'unavailable', 'none'] else '—' }}
+
+      - type: divider
+      - entity: sensor.e_pass_123456_transponders
+        name: e-PASS transponders
+      # Το input_number σε box mode δεν δείχνει το icon του helper, οπότε
+      # μπαίνει ρητά εδώ.
+      - entity: number.e_pass_123456_low_balance_threshold
+        name: Warning threshold
+        icon: mdi:bell-alert-outline
+      - entity: sensor.e_pass_123456_no_pass_limit
+        name: No-pass limit
+        icon: mdi:boom-gate-alert-outline
+
+  # ── Χρήση ────────────────────────────────────────────────────────────────
+  - type: entities
+    title: Activity
+    card_mod:
+      style: |
+        ha-card { border: none; box-shadow: none; }
+    entities:
+      - entity: sensor.e_pass_123456_passes_this_month
+        name: Passes this month
+      - entity: sensor.e_pass_123456_cost_this_month
+        name: Toll cost this month
+      - entity: sensor.e_pass_123456_cost_this_month_attiki_odos
+        name: — Attiki Odos
+      - entity: sensor.e_pass_123456_cost_this_month_other_motorways
+        name: — Other networks
+      - entity: sensor.e_pass_123456_payments_this_month
+        name: Payments this month
+
+  # ── Last pass, με τα attributes του sensor ──────────────────────
+  - type: markdown
+    card_mod:
+      style: |
+        ha-card { border: none; box-shadow: none; border-radius: 0 0 12px 12px; }
+    content: >-
+      {% set s = 'sensor.e_pass_123456_last_pass' %} **Last pass**
+
+      {% if states(s) not in ['unknown', 'unavailable', 'none'] %} {{
+      state_attr(s, 'plaza') or 'Plaza ?' }} · lane {{ state_attr(s, 'lane')
+      or '?' }} · {{ state_attr(s, 'amount') }} €
+
+      {{ as_timestamp(states(s)) | timestamp_custom('%d/%m/%Y %H:%M') }} {% if
+      state_attr(s, 'external_network') %}
+
+      _Pass on another network, via interoperability._ {% endif %} {% else %}
+      No pass recorded yet. {% endif %}
