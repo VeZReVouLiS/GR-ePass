@@ -1,6 +1,6 @@
 # GR e-PASS για Home Assistant
 
-**Ελληνικά** · [English](README.en.md)
+**Ελληνικά** · [English](https://github.com/VeZReVouLiS/GR-ePass/blob/main/README.en.md)
 
 Custom integration που φέρνει τα δεδομένα των **προπληρωμένων λογαριασμών
 διοδίων** στο Home Assistant. Υποστηρίζονται η **Νέα Αττική Οδός**
@@ -16,7 +16,7 @@ Custom integration που φέρνει τα δεδομένα των **προπλ
 > παραχώρησης.
 
 <p align="center">
-  <img src="docs/images/panel.png" alt="Η σελίδα e-PASS στο μενού του Home Assistant" width="800">
+  <img src="https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/panel.png" alt="Η σελίδα e-PASS στο μενού του Home Assistant" width="800">
 </p>
 
 <p align="center">
@@ -72,9 +72,9 @@ Custom integration που φέρνει τα δεδομένα των **προπλ
 ### Προσθήκη
 
 <p align="center">
-  <img src="docs/images/onboarding.png" alt="Το βήμα προσθήκης με επιλογή παρόχου" width="380">
+  <img src="https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/onboarding.png" alt="Το βήμα προσθήκης με επιλογή παρόχου" width="380">
   &nbsp;
-  <img src="docs/images/onboarding-operators.png" alt="Η λίστα παρόχων" width="380">
+  <img src="https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/onboarding-operators.png" alt="Η λίστα παρόχων" width="380">
 </p>
 
 Διαλέγεις πάροχο και βάζεις τα στοιχεία που χρησιμοποιείς στο **δικό του** portal
@@ -220,7 +220,7 @@ edit σε άλλη χρέωση. Το χειρότερο που κάνει μι�
 `SaveStoredCard` σώζει μόνο ένα alias — το token το δημιουργεί η τράπεζα κατά
 την πραγματική πληρωμή, οπότε κάρτα δεν προστίθεται από εδώ.
 
-Λεπτομέρειες πρωτοκόλλου: [`docs/PAYMENT_API.md`](docs/PAYMENT_API.md).
+Λεπτομέρειες πρωτοκόλλου: [`docs/PAYMENT_API.md`](https://github.com/VeZReVouLiS/GR-ePass/blob/main/docs/PAYMENT_API.md).
 
 ### Πάγια εντολή
 
@@ -293,12 +293,12 @@ data:
 μόνη της και δείχνει τα ίδια, σε δύο κολόνες και στη γλώσσα σας. Είναι εδώ για
 όποιον θέλει τα δεδομένα μέσα στο **δικό του** dashboard.
 
-- [`dashboard-example.yaml`](dashboard-example.yaml) — απλό view με core cards.
-- [`dashboard-portal-card.yaml`](dashboard-portal-card.yaml) — κάρτα μιας κολόνας
+- [`dashboard-example.yaml`](https://github.com/VeZReVouLiS/GR-ePass/blob/main/dashboard-example.yaml) — απλό view με core cards.
+- [`dashboard-portal-card.yaml`](https://github.com/VeZReVouLiS/GR-ePass/blob/main/dashboard-portal-card.yaml) — κάρτα μιας κολόνας
   σε στιλ της «Αρχικής» του portal. Προηγήθηκε της σελίδας και δεν ακολουθεί τα
   χρώματα του παρόχου. Θέλει από το HACS `button-card`, `card-mod`,
   `vertical-stack-in-card`, `template-entity-row`, και η αγγλική
-  [`dashboard-portal-card.en.yaml`](dashboard-portal-card.en.yaml) **παράγεται**
+  [`dashboard-portal-card.en.yaml`](https://github.com/VeZReVouLiS/GR-ePass/blob/main/dashboard-portal-card.en.yaml) **παράγεται**
   με `python tools/make_en_card.py` — μην την επεξεργάζεστε χειροκίνητα.
 
 ## Το API που δεν υπάρχει
@@ -379,4 +379,4 @@ python tools/epass_probe.py TO_USERNAME_MOY --days 14
 
 ## Άδεια
 
-[MIT](LICENSE).
+[MIT](https://github.com/VeZReVouLiS/GR-ePass/blob/main/LICENSE).

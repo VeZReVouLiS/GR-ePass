@@ -1,6 +1,6 @@
 # GR e-PASS for Home Assistant
 
-[Ελληνικά](README.md) · **English**
+[Ελληνικά](https://github.com/VeZReVouLiS/GR-ePass/blob/main/README.md) · **English**
 
 Custom integration that brings **prepaid Greek toll accounts** into Home
 Assistant. It supports **Nea Attiki Odos**
@@ -18,7 +18,7 @@ prepaid electronic toll subscription used on them.
 > official product of any of the concession companies.
 
 <p align="center">
-  <img src="docs/images/panel-en.png" alt="The e-PASS page in the Home Assistant sidebar" width="800">
+  <img src="https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/panel-en.png" alt="The e-PASS page in the Home Assistant sidebar" width="800">
 </p>
 
 <p align="center">
@@ -74,9 +74,9 @@ Copy `custom_components/gr_epass` into your Home Assistant
 ### Adding it
 
 <p align="center">
-  <img src="docs/images/onboarding.png" alt="The add step, with the operator picker" width="380">
+  <img src="https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/onboarding.png" alt="The add step, with the operator picker" width="380">
   &nbsp;
-  <img src="docs/images/onboarding-operators.png" alt="The operator list" width="380">
+  <img src="https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/onboarding-operators.png" alt="The operator list" width="380">
 </p>
 
 Pick the operator, then sign in with the credentials you use on **its** portal —
@@ -220,7 +220,7 @@ up the owner's own toll balance.
 `SaveStoredCard` only stores an alias; the token is minted by the bank during a
 real payment, so a card cannot be added from here.
 
-Protocol details: [`docs/PAYMENT_API.md`](docs/PAYMENT_API.md).
+Protocol details: [`docs/PAYMENT_API.md`](https://github.com/VeZReVouLiS/GR-ePass/blob/main/docs/PAYMENT_API.md).
 
 ### Standing order
 
@@ -291,13 +291,13 @@ You need none of these: the [e-PASS page](#the-e-pass-page) appears on its own
 and shows the same things, in two columns and in your language. They are here for
 anyone who wants the data on **their own** dashboard.
 
-- [`dashboard-example.yaml`](dashboard-example.yaml) — a plain view using core
+- [`dashboard-example.yaml`](https://github.com/VeZReVouLiS/GR-ePass/blob/main/dashboard-example.yaml) — a plain view using core
   cards only.
-- [`dashboard-portal-card.yaml`](dashboard-portal-card.yaml) — a single-column
+- [`dashboard-portal-card.yaml`](https://github.com/VeZReVouLiS/GR-ePass/blob/main/dashboard-portal-card.yaml) — a single-column
   card styled after the portal's home page. It predates the page and does not
   follow the operator's colours. Needs `button-card`, `card-mod`,
   `vertical-stack-in-card` and `template-entity-row` from HACS, and the English
-  [`dashboard-portal-card.en.yaml`](dashboard-portal-card.en.yaml) is
+  [`dashboard-portal-card.en.yaml`](https://github.com/VeZReVouLiS/GR-ePass/blob/main/dashboard-portal-card.en.yaml) is
   **generated** by `python tools/make_en_card.py`, so do not edit it by hand.
 
 ## The API that does not exist
@@ -374,4 +374,4 @@ will not share it.
 
 ## License
 
-[MIT](LICENSE).
+[MIT](https://github.com/VeZReVouLiS/GR-ePass/blob/main/LICENSE).
