@@ -10,12 +10,12 @@ adding it. It brings balance,
 passes, cost and statistics — account-wide and per transponder — plus a
 low-balance warning and one-tap top-up.
 
-Attiki Odos is a tolled motorway around Athens, Greece. e-PASS is its
-prepaid electronic toll subscription.
+Attiki Odos and Egnatia Odos are tolled Greek motorways. e-PASS is the
+prepaid electronic toll subscription used on them.
 
 > **There is no public API.** Every endpoint was derived from the site's own
 > Angular bundle. They work today but may change without notice. This is not an
-> official product of Nea Attiki Odos.
+> official product of any of the concession companies.
 
 <p align="center">
   <img src="docs/images/panel-en.png" alt="The e-PASS page in the Home Assistant sidebar" width="800">
@@ -111,7 +111,7 @@ re-authenticate automatically.
 | `sensor.*_last_pass` | Timestamp of the last pass, with plaza, lane and amount as attributes |
 | `sensor.*_passes_today` / `sensor.*_cost_today` | Passes and cost today |
 | `sensor.*_passes_this_month` / `sensor.*_cost_this_month` | Since the 1st of the month |
-| `sensor.*_cost_this_month_attiki_odos` | Attiki Odos passes only |
+| `sensor.*_cost_this_month_attiki_odos` | Passes on the operator's own network only |
 | `sensor.*_cost_this_month_other_motorways` | Other networks, via interoperability |
 | `sensor.*_passes_last_30_days` / `sensor.*_cost_last_30_days` | Rolling 30-day window |
 | `sensor.*_passes_previous_month` / `sensor.*_cost_previous_month` | Full previous month |
@@ -287,20 +287,18 @@ band; asked too early, the answer is `found: false`.
 
 ## Dashboard examples
 
+You need none of these: the [e-PASS page](#the-e-pass-page) appears on its own
+and shows the same things, in two columns and in your language. They are here for
+anyone who wants the data on **their own** dashboard.
+
 - [`dashboard-example.yaml`](dashboard-example.yaml) — a plain view using core
   cards only.
-- [`dashboard-portal-card.yaml`](dashboard-portal-card.yaml) — a card styled
-  after the my e-PASS home page: balance donut using the portal's own colour
-  logic, card picker with the brand mark, amount, and a payment button. Needs
-  `button-card`, `card-mod`, `vertical-stack-in-card` and
-  `template-entity-row` from HACS.
-- [`dashboard-portal-card.en.yaml`](dashboard-portal-card.en.yaml) — the same
-  card with English labels. It is **generated** from the Greek one by
-  `python tools/make_en_card.py`, so do not edit it by hand.
-
-<p align="center">
-  <img src="docs/images/card-en.png" alt="The my e-PASS styled card" width="340">
-</p>
+- [`dashboard-portal-card.yaml`](dashboard-portal-card.yaml) — a single-column
+  card styled after the portal's home page. It predates the page and does not
+  follow the operator's colours. Needs `button-card`, `card-mod`,
+  `vertical-stack-in-card` and `template-entity-row` from HACS, and the English
+  [`dashboard-portal-card.en.yaml`](dashboard-portal-card.en.yaml) is
+  **generated** by `python tools/make_en_card.py`, so do not edit it by hand.
 
 ## The API that does not exist
 

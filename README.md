@@ -12,7 +12,8 @@ Custom integration που φέρνει τα δεδομένα των **προπλ
 
 > **Δεν υπάρχει επίσημο API.** Όλα τα endpoints εντοπίστηκαν από το δημόσιο
 > Angular bundle του site. Δουλεύουν σήμερα, αλλά μπορούν να αλλάξουν χωρίς
-> προειδοποίηση. Δεν είναι επίσημο προϊόν της Νέας Αττικής Οδού.
+> προειδοποίηση. Δεν είναι επίσημο προϊόν καμίας από τις εταιρείες
+> παραχώρησης.
 
 <p align="center">
   <img src="docs/images/panel.png" alt="Η σελίδα e-PASS στο μενού του Home Assistant" width="800">
@@ -108,7 +109,7 @@ Settings → Devices & Services → GR e-PASS → **Configure**:
 | `sensor.*_last_pass` | Timestamp τελευταίας διέλευσης, με attributes σταθμού, λωρίδας, ποσού |
 | `sensor.*_passes_today` / `sensor.*_cost_today` | Διελεύσεις και κόστος σήμερα |
 | `sensor.*_passes_this_month` / `sensor.*_cost_this_month` | Από την 1η του μήνα |
-| `sensor.*_cost_this_month_attiki_odos` | Μόνο διελεύσεις Αττικής Οδού |
+| `sensor.*_cost_this_month_attiki_odos` | Μόνο διελεύσεις στο δίκτυο του παρόχου |
 | `sensor.*_cost_this_month_other_motorways` | Άλλα δίκτυα μέσω διαλειτουργικότητας |
 | `sensor.*_passes_last_30_days` / `sensor.*_cost_last_30_days` | Κυλιόμενο παράθυρο 30 ημερών |
 | `sensor.*_passes_previous_month` / `sensor.*_cost_previous_month` | Πλήρης προηγούμενος μήνας |
@@ -288,18 +289,17 @@ data:
 
 ## Παραδείγματα dashboard
 
-- [`dashboard-example.yaml`](dashboard-example.yaml) — απλό view με core cards.
-- [`dashboard-portal-card.yaml`](dashboard-portal-card.yaml) — κάρτα σε στιλ της
-  «Αρχικής» του my e-PASS: donut υπολοίπου με τη λογική χρωμάτων του portal,
-  επιλογή κάρτας με σήμα, ποσό, και κουμπί πληρωμής. Θέλει από το HACS
-  `button-card`, `card-mod`, `vertical-stack-in-card`, `template-entity-row`.
-- [`dashboard-portal-card.en.yaml`](dashboard-portal-card.en.yaml) — η ίδια
-  κάρτα με αγγλικά labels. **Παράγεται** από την ελληνική με
-  `python tools/make_en_card.py` — μην την επεξεργάζεστε χειροκίνητα.
+Δεν χρειάζεστε κάτι από αυτά: η [σελίδα «e-PASS»](#η-σελίδα-e-pass) εμφανίζεται
+μόνη της και δείχνει τα ίδια, σε δύο κολόνες και στη γλώσσα σας. Είναι εδώ για
+όποιον θέλει τα δεδομένα μέσα στο **δικό του** dashboard.
 
-<p align="center">
-  <img src="docs/images/card.png" alt="Η κάρτα σε στιλ my e-PASS" width="340">
-</p>
+- [`dashboard-example.yaml`](dashboard-example.yaml) — απλό view με core cards.
+- [`dashboard-portal-card.yaml`](dashboard-portal-card.yaml) — κάρτα μιας κολόνας
+  σε στιλ της «Αρχικής» του portal. Προηγήθηκε της σελίδας και δεν ακολουθεί τα
+  χρώματα του παρόχου. Θέλει από το HACS `button-card`, `card-mod`,
+  `vertical-stack-in-card`, `template-entity-row`, και η αγγλική
+  [`dashboard-portal-card.en.yaml`](dashboard-portal-card.en.yaml) **παράγεται**
+  με `python tools/make_en_card.py` — μην την επεξεργάζεστε χειροκίνητα.
 
 ## Το API που δεν υπάρχει
 
