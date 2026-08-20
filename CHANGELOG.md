@@ -21,6 +21,28 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.2.1] — 2026-08-20
+
+### 🇬🇷 Ελληνικά
+
+**Διορθώθηκαν**
+
+- Στη σελίδα e-PASS, το κουμπί «Προετοιμασία πληρωμής» γκρίζαρε και δεν φαινόταν
+  τίποτα. Ο σύνδεσμος **δημιουργούνταν** κανονικά, αλλά η σελίδα δεν τον
+  εμφάνιζε: το πλαίσιο του συνδέσμου έχανε την κλάση με την οποία το έβρισκε ο
+  κώδικας, στο πρώτο σχεδίασμα όσο δεν υπήρχε ακόμη σύνδεσμος. Πλέον το πλαίσιο
+  εντοπίζεται με data attribute, που δεν μπορεί να σβηστεί από τα στιλ.
+
+### 🇬🇧 English
+
+**Fixed**
+
+- On the e-PASS page, "Prepare payment" greyed out and nothing appeared. The
+  link **was** being created, but the page never displayed it: the link box lost
+  the class the code used to find it, during the first paint while no link
+  existed yet. The box is now located by a data attribute, which styling cannot
+  erase.
+
 ## [0.2.0] — 2026-08-20
 
 ### 🇬🇷 Ελληνικά
@@ -161,6 +183,7 @@ All notable changes are documented here, following
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/releases/tag/v0.1.0

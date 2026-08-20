@@ -359,7 +359,7 @@ class AttikiOdosEpassPanel extends HTMLElement {
       </div>
       <button class="prep">${t.prepare}</button>
       <div class="note">${t.prepareHint}</div>
-      <div class="linkBox"></div>
+      <div data-linkbox></div>
       <button class="secondary portal">${t.openPortal}</button>`;
 
     host.querySelector(".portal").addEventListener("click", () => {
@@ -578,7 +578,7 @@ class AttikiOdosEpassPanel extends HTMLElement {
       }
     }
 
-    const box = host.querySelector(".linkBox");
+    const box = host.querySelector("[data-linkbox]");
     if (!box) return;
     const button = this._state(ent.prepare_topup);
     const link = button?.attributes?.link;
