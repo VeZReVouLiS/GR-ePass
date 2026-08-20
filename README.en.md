@@ -14,6 +14,15 @@ prepaid electronic toll subscription.
 > Angular bundle. They work today but may change without notice. This is not an
 > official product of Nea Attiki Odos.
 
+<p align="center">
+  <img src="docs/images/card.png" alt="The my e-PASS styled card" width="340">
+</p>
+
+<p align="center">
+  <em><a href="dashboard-portal-card.yaml">dashboard-portal-card.yaml</a> —
+  customer number, card and last pass are sample values.</em>
+</p>
+
 ---
 
 ## What it does

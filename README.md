@@ -11,6 +11,15 @@ Custom integration που φέρνει τα δεδομένα του **my e-PASS*
 > Angular bundle του site. Δουλεύουν σήμερα, αλλά μπορούν να αλλάξουν χωρίς
 > προειδοποίηση. Δεν είναι επίσημο προϊόν της Νέας Αττικής Οδού.
 
+<p align="center">
+  <img src="docs/images/card.png" alt="Η κάρτα σε στιλ my e-PASS" width="340">
+</p>
+
+<p align="center">
+  <em><a href="dashboard-portal-card.yaml">dashboard-portal-card.yaml</a> —
+  κωδικός πελάτη, κάρτα και τελευταία διέλευση είναι δείγματα.</em>
+</p>
+
 ---
 
 ## Τι κάνει
