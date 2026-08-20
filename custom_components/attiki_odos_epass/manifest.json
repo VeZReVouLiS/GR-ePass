@@ -6,12 +6,13 @@
   ],
   "config_flow": true,
   "dependencies": [
-    "http"
+    "http",
+    "panel_custom"
   ],
   "documentation": "https://github.com/VeZReVouLiS/attiki-odos-e-pass",
   "integration_type": "service",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/VeZReVouLiS/attiki-odos-e-pass/issues",
   "requirements": [],
-  "version": "0.1.0"
+  "version": "0.2.0"
 }

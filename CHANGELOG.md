@@ -21,6 +21,64 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-08-20
+
+### 🇬🇷 Ελληνικά
+
+**Προστέθηκαν**
+
+- Δική του σελίδα στο μενού του Home Assistant («e-PASS»). Εμφανίζεται μόλις
+  προστεθεί το integration, χωρίς να φτιάξεις dashboard ή να γράψεις YAML, και
+  ακολουθεί τη γλώσσα του χρήστη (ελληνικά ή αγγλικά).
+- Στη σελίδα: υπόλοιπο με χρωματιστό δείκτη, στοιχεία συνδρομής, κινήσεις μήνα,
+  τελευταία διέλευση, ανανέωση υπολοίπου και ξεχωριστή ενότητα ανά πομποδέκτη με
+  κατηγορία οχήματος, διελεύσεις ημέρας/μήνα και τελευταία διέλευση.
+- Δύο κολόνες σε οθόνη υπολογιστή, μία σε κινητό.
+
+**Άλλαξαν**
+
+- Το κουμπί ανανέωσης λέει πλέον «Προετοιμασία πληρωμής» και από κάτω εξηγεί ότι
+  δεν χρεώνει: φτιάχνει σύνδεσμο μιας χρήσης που λήγει σε 10 λεπτά.
+- Τα ποσά στα δύο πεδία αριθμού εμφανίζονται ως νόμισμα («12,00 €») αντί για
+  «12.0 EUR».
+
+**Διορθώθηκαν**
+
+- Οι γραμμές ανά πομποδέκτη ήταν κενές. Η σελίδα εντόπιζε τα entities κόβοντας το
+  entity_id, που δεν δουλεύει για τους πομποδέκτες επειδή το δικό τους id
+  προέρχεται από την ονομασία τους. Πλέον χρησιμοποιεί το `translation_key`, που
+  δεν αλλάζει ούτε αν μετονομάσεις entity.
+- Ένας proxy με cache μπροστά από το Home Assistant (π.χ. Cloudflare, nginx)
+  συνέχιζε να σερβίρει την προηγούμενη έκδοση της σελίδας μετά από αναβάθμιση.
+
+### 🇬🇧 English
+
+**Added**
+
+- A dedicated page in the Home Assistant sidebar ("e-PASS"). It appears as soon
+  as the integration is added — no dashboard to build, no YAML to write — and
+  follows the user's language (Greek or English).
+- The page shows the balance with a colour indicator, subscription details,
+  this month's activity, the last pass, top-up controls, and a section per
+  transponder with its vehicle category, passes today and this month, and its
+  own last pass.
+- Two columns on a desktop window, one on a phone.
+
+**Changed**
+
+- The top-up button now reads "Prepare payment" and states underneath that it
+  charges nothing: it creates a single-use link that expires in 10 minutes.
+- Both number fields render as currency ("12,00 €") instead of "12.0 EUR".
+
+**Fixed**
+
+- The per-transponder rows were empty. The page located entities by slicing the
+  entity id apart, which never matched the transponder entities because theirs
+  are slugged from the transponder alias. It now uses `translation_key`, which
+  survives an entity rename.
+- A caching proxy in front of Home Assistant (Cloudflare, nginx) kept serving
+  the previous version of the page after an upgrade.
+
 ## [0.1.0] — 2026-08-20
 
 Πρώτη δημόσια έκδοση.
@@ -103,5 +161,6 @@ All notable changes are documented here, following
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/releases/tag/v0.1.0

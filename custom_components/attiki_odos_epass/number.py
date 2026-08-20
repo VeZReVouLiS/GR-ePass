@@ -7,7 +7,11 @@ for a small car or a truck without the user looking anything up.
 
 from __future__ import annotations
 
-from homeassistant.components.number import NumberEntity, NumberMode
+from homeassistant.components.number import (
+    NumberDeviceClass,
+    NumberEntity,
+    NumberMode,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
@@ -50,6 +54,9 @@ class _EpassNumber(CoordinatorEntity[EpassCoordinator], NumberEntity, RestoreEnt
 
     _attr_has_entity_name = True
     _attr_native_unit_of_measurement = "EUR"
+    # Without the device class the frontend prints a bare "12.0 EUR"; with it the
+    # value is formatted as currency, matching the monetary sensors beside it.
+    _attr_device_class = NumberDeviceClass.MONETARY
     _attr_mode = NumberMode.BOX
 
     def __init__(

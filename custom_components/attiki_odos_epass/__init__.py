@@ -12,6 +12,7 @@ from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from .api import EpassClient
 from .const import DOMAIN
 from .coordinator import EpassCoordinator
+from .panel import async_register_panel, async_unregister_panel
 from .payment import EpassPaymentManager, EpassPaymentView
 
 _LOGGER = logging.getLogger(__name__)
@@ -48,6 +49,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: EpassConfigEntry) -> boo
         hass.http.register_view(EpassPaymentView(store["payment"]))
     coordinator.payment = store["payment"]
 
+    await async_register_panel(hass)
+
     entry.runtime_data = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))
@@ -56,7 +59,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: EpassConfigEntry) -> boo
 
 async def async_unload_entry(hass: HomeAssistant, entry: EpassConfigEntry) -> bool:
     """Unload a config entry."""
-    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    unloaded = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    # The panel is instance-wide, so it only goes when the last entry does.
+    if unloaded and len(hass.config_entries.async_entries(DOMAIN)) <= 1:
+        async_unregister_panel(hass)
+    return unloaded
 
 
 async def async_reload_entry(hass: HomeAssistant, entry: EpassConfigEntry) -> None:
