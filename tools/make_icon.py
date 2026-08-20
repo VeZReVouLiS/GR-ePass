@@ -115,9 +115,11 @@ def build() -> Image.Image:
     # --- ground -------------------------------------------------------------
     d.rounded_rectangle([48, ground_y, 976, ground_y + 40], radius=20, fill=GREY)
 
-    # brands wants the artwork trimmed, then squared with only a little air.
+    # brands asks for the artwork trimmed to "the minimum amount of empty space"
+    # while the icon must still be 1:1, so square it with no air at all: the
+    # longest side touches the edge and only the shorter axis gets centred.
     img = img.crop(img.getbbox())
-    side = int(max(img.size) * 1.05)
+    side = max(img.size)
     square = Image.new("RGBA", (side, side), (0, 0, 0, 0))
     square.paste(img, ((side - img.width) // 2, (side - img.height) // 2), img)
     return square
@@ -127,7 +129,10 @@ def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     icon = build()
     for size, name in ((512, "icon@2x.png"), (256, "icon.png")):
-        icon.resize((size, size), Image.LANCZOS).save(OUT_DIR / name)
+        # optimize + max compression: brands requires web-optimised PNGs.
+        icon.resize((size, size), Image.LANCZOS).save(
+            OUT_DIR / name, optimize=True, compress_level=9
+        )
         print(f"wrote {OUT_DIR / name} ({size}x{size})")
 
 
