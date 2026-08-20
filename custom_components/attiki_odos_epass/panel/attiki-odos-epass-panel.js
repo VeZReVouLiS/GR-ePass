@@ -128,9 +128,13 @@ const STYLE = `
   .head { display: flex; align-items: center; gap: 12px; }
   .head .headText { flex: 1; min-width: 0; }
   .head h2 { margin: 0; font-size: 18px; font-weight: 600; }
-  .head .refresh { flex: none; background: none; border: none; padding: 6px;
-                   margin: 0; color: #fff; cursor: pointer; border-radius: 50%;
-                   display: flex; opacity: .85; }
+  /* The shared button rule sets width:100% and a top margin for the full-width
+     action buttons, both of which have to be undone here or this one eats the
+     header and pushes the title into a single-word column. */
+  .head .refresh { flex: none; width: 36px; height: 36px; padding: 6px;
+                   margin: 0; background: none; border: none; color: #fff;
+                   cursor: pointer; border-radius: 50%; display: flex;
+                   align-items: center; justify-content: center; opacity: .85; }
   .head .refresh:hover { opacity: 1; background: rgba(255,255,255,.14); }
   /* Spins while the request is in flight, so a slow poll still looks alive. */
   .head .refresh[disabled] { cursor: default; animation: spin 1s linear infinite; }
