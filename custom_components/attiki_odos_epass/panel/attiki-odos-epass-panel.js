@@ -32,6 +32,16 @@ const STATUS_COLOUR = {
   bad: BRAND.red,
 };
 
+// PaymentCardType as the operator reports it on a receipt.
+const CARD_NAMES = {
+  0: "\u2014",
+  1: "Visa",
+  2: "Mastercard",
+  3: "Maestro",
+  4: "American Express",
+  5: "Diners",
+};
+
 const LABELS = {
   el: {
     balance: "Υπόλοιπο",
@@ -57,6 +67,23 @@ const LABELS = {
     prepare: "Προετοιμασία πληρωμής",
     prepareHint: "Δεν χρεώνει. Φτιάχνει σύνδεσμο μιας χρήσης, που λήγει σε 10 λεπτά, ο οποίος δείχνει ποσό και κάρτα πριν σε στείλει στην τράπεζα.",
     openPortal: "Άνοιγμα my e-PASS",
+    receiptOpen: "Προβολή απόδειξης",
+    receiptBlocked: "Το πρόγραμμα περιήγησης μπώναρε το νέο παράθυρο. Επέτρεψε τα αναδυόμενα παράθυρα για αυτή τη σελίδα και ξαναδοκίμασε.",
+    receiptWait: "Γίνεται λήψη…",
+    receiptNone: "Η απόδειξη δεν είναι διαθέσιμη ακόμη. Η τράπεζα την επιβεβαιώνει λίγο μετά την πληρωμή — δοκίμασε ξανά σε λίγο.",
+    receiptTitle: "Απόδειξη πληρωμής",
+    receiptAmount: "Ποσό",
+    receiptDate: "Ημερομηνία",
+    receiptCard: "Κάρτα",
+    receiptApproval: "Κωδικός έγκρισης",
+    receiptTxn: "Κωδικός συναλλαγής",
+    receiptOrder: "Κωδικός παραγγελίας",
+    receiptStatus: "Κατάσταση",
+    receiptApproved: "Εγκρίθηκε",
+    receiptDeclined: "Δεν εγκρίθηκε",
+    receiptPrint: "Εκτύπωση / Αποθήκευση PDF",
+    receiptBack: "Επιστροφή στο Home Assistant",
+    receiptNote: "Εκδόθηκε από το Home Assistant με στοιχεία του παρόχου. Δεν αντικαθιστά φορολογικό παραστατικό.",
     refresh: "Ανανέωση στοιχείων",
     linkReady: "Έτοιμο. Άνοιξε τον σύνδεσμο για να ολοκληρώσεις.",
     linkOpen: "Ολοκλήρωση πληρωμής",
@@ -94,6 +121,23 @@ const LABELS = {
     prepare: "Prepare payment",
     prepareHint: "Does not charge anything. It creates a single-use link, valid for 10 minutes, that shows the amount and card before handing you to the bank.",
     openPortal: "Open my e-PASS",
+    receiptOpen: "View receipt",
+    receiptBlocked: "The browser blocked the new window. Allow popups for this page and try again.",
+    receiptWait: "Fetching…",
+    receiptNone: "The receipt is not available yet. The bank confirms it shortly after payment - try again in a moment.",
+    receiptTitle: "Payment receipt",
+    receiptAmount: "Amount",
+    receiptDate: "Date",
+    receiptCard: "Card",
+    receiptApproval: "Approval code",
+    receiptTxn: "Transaction id",
+    receiptOrder: "Order id",
+    receiptStatus: "Status",
+    receiptApproved: "Approved",
+    receiptDeclined: "Not approved",
+    receiptPrint: "Print / Save as PDF",
+    receiptBack: "Back to Home Assistant",
+    receiptNote: "Produced by Home Assistant from the operator's data. It is not a tax document.",
     refresh: "Refresh data",
     linkReady: "Ready. Open the link to finish.",
     linkOpen: "Complete payment",
@@ -393,7 +437,36 @@ class AttikiOdosEpassPanel extends HTMLElement {
       <button class="prep">${t.prepare}</button>
       <div class="note">${t.prepareHint}</div>
       <div data-linkbox></div>
+      <button class="secondary receipt" hidden>${t.receiptOpen}</button>
       <button class="secondary portal">${t.openPortal}</button>`;
+
+    host.querySelector(".receipt").addEventListener("click", async (event) => {
+      const button = event.currentTarget;
+      const label = button.textContent;
+      button.disabled = true;
+      button.textContent = t.receiptWait;
+      try {
+        // wait:true lets the integration retry while the bank confirms, which it
+        // does a moment after the payer finishes rather than immediately.
+        const result = await this._hass.callService(
+          "attiki_odos_epass",
+          "get_receipt",
+          { wait: true },
+          undefined,
+          false,
+          true
+        );
+        const payload = result && result.response;
+        if (payload && payload.found && payload.receipt) {
+          this._openReceipt(payload.receipt);
+        } else {
+          alert(t.receiptNone);
+        }
+      } finally {
+        button.disabled = false;
+        button.textContent = label;
+      }
+    });
 
     host.querySelector(".portal").addEventListener("click", () => {
       window.open("https://epass.naodos.gr/PaymentA", "_blank", "noopener");
@@ -578,6 +651,95 @@ class AttikiOdosEpassPanel extends HTMLElement {
     }
   }
 
+  /** Build the receipt markup. Split out so its values can be checked. */
+  _receiptHtml(receipt) {
+    const t = this._t;
+    const locale = this._hass && this._hass.language === "el" ? "el-GR" : "en-GB";
+
+    // A top-up is a credit in the operator's ledger, so the amount is negative.
+    const total = Number(receipt.ChargeTotal);
+    const amount = Number.isFinite(total)
+      ? Math.abs(total).toLocaleString(locale, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }) + " \u20ac"
+      : "\u2014";
+
+    const stamp = receipt.LDateTime ? new Date(receipt.LDateTime) : null;
+    const when = stamp && !isNaN(stamp) ? stamp.toLocaleString(locale) : "\u2014";
+    const approved = receipt.BankAuthorizationStatusDB === "A";
+
+    const rows = [
+      [t.receiptAmount, amount],
+      [t.receiptDate, when],
+      [t.receiptCard, CARD_NAMES[receipt.PaymentCardType] || "\u2014"],
+      [t.receiptStatus, approved ? t.receiptApproved : t.receiptDeclined],
+      [t.receiptApproval, receipt.BankApprovalCode || "\u2014"],
+      [t.receiptTxn, receipt.BankTransactionId || "\u2014"],
+      [t.receiptOrder, receipt.ResponseOrderID || "\u2014"],
+    ];
+
+    const esc = (value) =>
+      String(value).replace(/[&<>"]/g, (ch) =>
+        ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch])
+      );
+
+    const html =
+      '<!doctype html><html><head><meta charset="utf-8">' +
+      "<title>" + esc(t.receiptTitle) + "</title><style>" +
+      'body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;' +
+      "background:#f4f4f4;color:#14140f}" +
+      ".wrap{max-width:420px;margin:0 auto;padding:24px 18px}" +
+      ".card{background:#fff;border-radius:12px;overflow:hidden;" +
+      "box-shadow:0 1px 4px rgba(0,0,0,.15)}" +
+      ".head{background:" + BRAND.navy + ";color:#fff;padding:14px 18px;" +
+      "border-bottom:3px solid " + BRAND.yellow + ";font-weight:600}" +
+      ".body{padding:18px}.big{font-size:32px;font-weight:700;margin:2px 0 16px}" +
+      "table{width:100%;border-collapse:collapse;font-size:14px}" +
+      "th,td{text-align:left;padding:7px 0;vertical-align:top;" +
+      "border-bottom:1px solid #eee}" +
+      "th{color:#666;font-weight:400;width:45%}" +
+      "td{text-align:right;word-break:break-all}" +
+      ".note{font-size:12px;color:#666;margin-top:14px;line-height:1.45}" +
+      ".actions{display:flex;gap:10px;margin-top:18px}" +
+      "button{flex:1;padding:12px;border:none;border-radius:8px;background:" +
+      BRAND.navy + ";color:#fff;font-size:14px;font-weight:600;cursor:pointer;" +
+      "font-family:inherit}" +
+      "button.secondary{background:#fff;color:" + BRAND.navy +
+      ";border:1px solid #ccc}" +
+      "@media print{.actions{display:none}body{background:#fff}" +
+      ".card{box-shadow:none}}" +
+      "</style></head><body><div class=\"wrap\"><div class=\"card\">" +
+      '<div class="head">' + esc(t.receiptTitle) + "</div>" +
+      '<div class="body"><div class="big">' + esc(amount) + "</div><table>" +
+      rows
+        .map((pair) => "<tr><th>" + esc(pair[0]) + "</th><td>" + esc(pair[1]) + "</td></tr>")
+        .join("") +
+      '</table><div class="note">' + esc(t.receiptNote) + "</div>" +
+      '<div class="actions">' +
+      '<button onclick="window.print()">' + esc(t.receiptPrint) + "</button>" +
+      '<button class="secondary" onclick="window.close()">' +
+      esc(t.receiptBack) + "</button>" +
+      "</div></div></div></div></body></html>";
+
+    return html;
+  }
+
+  /** Show the receipt in a window of its own, so it prints without the app. */
+  _openReceipt(receipt) {
+    const html = this._receiptHtml(receipt);
+    const win = window.open("", "_blank", "width=520,height=780");
+    if (!win) {
+      // A blocked popup is not a missing receipt, and saying so would send the
+      // reader looking in the wrong place.
+      alert(this._t.receiptBlocked);
+      return false;
+    }
+    win.document.write(html);
+    win.document.close();
+    return true;
+  }
+
   _paintTopUp(host, ent) {
     const t = this._t;
     const select = host.querySelector(".cardSel");
@@ -609,6 +771,12 @@ class AttikiOdosEpassPanel extends HTMLElement {
         input.min = stateObj.attributes?.min ?? 0;
         input.max = stateObj.attributes?.max ?? 5000;
       }
+    }
+
+    const receiptButton = host.querySelector(".receipt");
+    if (receiptButton) {
+      const state = this._state(ent.prepare_topup);
+      receiptButton.hidden = !(state && state.attributes.last_order_id);
     }
 
     const box = host.querySelector("[data-linkbox]");

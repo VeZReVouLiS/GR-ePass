@@ -135,9 +135,6 @@ class EpassPaymentManager:
         """Order id of the most recent handoff, if any."""
         return self._last_handoff
 
-    def note_handoff(self, order: PreparedOrder) -> None:
-        self._last_handoff = order.fields.get("orderid") or None
-
     def watch(self, nonce: str, on_closed: Callable[[], None]) -> None:
         """Ask to be told when this order is consumed or purged."""
         self._watchers[nonce] = on_closed
@@ -243,6 +240,11 @@ class EpassPaymentManager:
         self._purge()
         order = self._orders.pop(nonce, None)
         if order is not None:
+            # Taking the order *is* the handoff: the caller immediately returns
+            # the page that submits it to the bank. Recorded before the watchers
+            # run, because one of them writes entity state and would otherwise
+            # publish the previous order id.
+            self._last_handoff = order.fields.get("orderid") or None
             self._close(nonce)
         return order
 
@@ -289,7 +291,6 @@ class EpassPaymentView(HomeAssistantView):
             return web.Response(
                 text=_page_expired(), content_type="text/html", status=404
             )
-        self._manager.note_handoff(order)
         _LOGGER.info(
             "Handed order %s to the bank; its receipt can be fetched with the "
             "get_receipt service",

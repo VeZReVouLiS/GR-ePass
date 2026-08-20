@@ -21,6 +21,41 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.4.0] — 2026-08-20
+
+### 🇬🇷 Ελληνικά
+
+**Προστέθηκαν**
+
+- Κουμπί **Προβολή απόδειξης** στη σελίδα e-PASS, που εμφανίζεται αφού σταλεί μια
+  πληρωμή στην τράπεζα. Ανοίγει την απόδειξη σε δικό της παράθυρο, με κουμπιά
+  εκτύπωσης/αποθήκευσης ως PDF και επιστροφής — χωρίς να χρειάζεται σύνδεση στο
+  portal.
+- Το `button.*_prepare_top_up` δημοσιεύει πλέον `last_order_id`, την εντολή που
+  στάλθηκε τελευταία στην τράπεζα.
+
+**Σημείωση για το ποσό**
+
+Ο πάροχος καταχωρεί την ανανέωση ως πίστωση, οπότε το `ChargeTotal` έρχεται
+αρνητικό (`-1` για ανανέωση 1 €). Η απόδειξη το εμφανίζει ως θετικό ποσό, όπως
+γίνεται ήδη με το υπόλοιπο.
+
+### 🇬🇧 English
+
+**Added**
+
+- A **View receipt** button on the e-PASS page, shown once a payment has been
+  handed to the bank. It opens the receipt in a window of its own with print /
+  save-as-PDF and back buttons — no portal login needed.
+- `button.*_prepare_top_up` now publishes `last_order_id`, the order most
+  recently handed to the bank.
+
+**A note on the amount**
+
+The operator books a top-up as a credit, so `ChargeTotal` arrives negative
+(`-1` for a 1 EUR top-up). The receipt shows it as a positive amount, the same
+way the balance already does.
+
 ## [0.3.0] — 2026-08-20
 
 ### 🇬🇷 Ελληνικά
@@ -262,7 +297,8 @@ integration already holds, so Home Assistant can fetch it itself.
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.2.0...v0.2.1

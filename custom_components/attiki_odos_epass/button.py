@@ -67,7 +67,16 @@ class EpassPrepareTopUp(CoordinatorEntity[EpassCoordinator], ButtonEntity):
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
-        return {"link": self._link, "link_expires": self._link_expires}
+        manager = self.coordinator.payment
+        return {
+            "link": self._link,
+            "link_expires": self._link_expires,
+            # Exposed so the page can offer the receipt for the payment that was
+            # just made. The bank sends the payer to the operator's own receipt
+            # page, which needs a portal login, so this is the only handle we
+            # have on it.
+            "last_order_id": manager.last_handoff if manager is not None else None,
+        }
 
     async def async_press(self) -> None:
         """Sign an order. No money moves here."""

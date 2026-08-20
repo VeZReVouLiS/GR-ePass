@@ -256,7 +256,9 @@ along with the rest of the order and cannot be changed by the integration. That
 page needs a portal login, so it usually shows a sign-in form instead.
 
 The same receipt is available over the API, with the token the integration
-already holds:
+already holds. The e-PASS page shows a **View receipt** button once a payment has
+been handed to the bank, which opens it in a window of its own with print / PDF
+and back buttons. It is also a service, for automations:
 
 ```yaml
 action: attiki_odos_epass.get_receipt
