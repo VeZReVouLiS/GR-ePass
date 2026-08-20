@@ -16,7 +16,7 @@ body:
     id: version
     attributes:
       label: Έκδοση integration / Integration version
-      description: HACS → Attiki Odos e-Pass, ή το `version` στο manifest.json
+      description: HACS → GR e-PASS, ή το `version` στο manifest.json
       placeholder: "0.1.0"
     validations:
       required: true
@@ -61,7 +61,7 @@ body:
       label: Logs
       description: >
         Settings → System → Logs, φιλτράρετε με `attiki`. Αν δεν βλέπετε τίποτα,
-        ενεργοποιήστε debug: Settings → Devices & Services → Attiki Odos e-Pass
+        ενεργοποιήστε debug: Settings → Devices & Services → GR e-PASS
         → ⋮ → Enable debug logging, αναπαράγετε το πρόβλημα, μετά απενεργοποιήστε
         για να κατεβεί το αρχείο.
       render: text

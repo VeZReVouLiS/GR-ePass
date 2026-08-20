@@ -170,7 +170,7 @@ cards:
         icon: mdi:cash-plus
 
   # Σήμα κάρτας + τελευταία ψηφία + λήξη. Τα logos κατεβαίνουν μία φορά από
-  # τα assets του portal στο /config/www/attiki_odos_epass/. Προσοχή: το
+  # τα assets του portal στο /config/www/gr_epass/. Προσοχή: το
   # brand «diners» έχει filename «dinners» στο site τους.
   #
   # Τα PNG έχουν διαφανές background και είναι σχεδιασμένα για λευκή σελίδα —
@@ -203,7 +203,7 @@ cards:
       set f = {'diners': 'dinners'}.get(b, b) %}{% set four =
       state_attr('select.e_pass_123456_payment_card', 'last_four') %}{% set exp
       = state_attr('select.e_pass_123456_payment_card', 'expiry') %}{% if b and
-      b != 'other' %}<img src="/local/attiki_odos_epass/cc-logo-{{ f }}.png"
+      b != 'other' %}<img src="/local/gr_epass/cc-logo-{{ f }}.png"
       height="20"> {% endif %}{% if four %}•••• {{ four }}{% endif %}{% if exp %}
       · λήξη {{ as_timestamp(exp) | timestamp_custom('%m/%Y') }}{% endif %}{% if
       not b %}Καμία αποθηκευμένη κάρτα{% endif %}

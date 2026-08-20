@@ -1,4 +1,4 @@
-"""Generate the brand icon for the Attiki Odos e-Pass integration.
+"""Generate the brand icon for the GR e-PASS integration.
 
 A toll booth with a raised barrier, written straight into the integration.
 Since Home Assistant 2026.3 a custom integration serves its own brand images
@@ -39,7 +39,7 @@ PIVOT = (556, 566)
 OUT_DIR = (
     pathlib.Path(__file__).resolve().parent.parent
     / "custom_components"
-    / "attiki_odos_epass"
+    / "gr_epass"
     / "brand"
 )
 

@@ -21,6 +21,84 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-08-20
+
+### ⚠️ Breaking
+
+Το integration μετονομάστηκε από `attiki_odos_epass` σε **`gr_epass`**, γιατί δεν
+αφορά πλέον έναν πάροχο. Το Home Assistant δεν μεταφέρει ρυθμίσεις μεταξύ
+domain, οπότε:
+
+1. Ρυθμίσεις → Συσκευές & Υπηρεσίες → αφαίρεσε το παλιό «Attiki Odos e-Pass».
+2. Πρόσθεσε το **GR e-PASS** και διάλεξε πάροχο.
+
+Τα entity ids παράγονται από το όνομα της συσκευής, όχι από το domain, οπότε
+συνήθως επανέρχονται ίδια (`sensor.e_pass_<κωδικός>_balance`) και οι αυτοματισμοί
+συνεχίζουν. Άλλαξαν όμως: η υπηρεσία σε `gr_epass.get_receipt`, τα events σε
+`gr_epass_*`, και η διεύθυνση της σελίδας σε `/gr_epass`.
+
+The integration was renamed from `attiki_odos_epass` to **`gr_epass`** — it is no
+longer about one operator. Home Assistant does not migrate configuration between
+domains, so remove the old entry and add **GR e-PASS**, picking your operator.
+Entity ids come from the device name rather than the domain, so they usually come
+back identical and automations keep working. The service is now
+`gr_epass.get_receipt`, events are `gr_epass_*`, and the page lives at
+`/gr_epass`.
+
+### 🇬🇷 Ελληνικά
+
+**Προστέθηκαν**
+
+- Υποστήριξη **πολλών παρόχων**. Κατά την προσθήκη διαλέγεις πάροχο· τα
+  διαπιστευτήρια αφορούν το portal του καθενός.
+- **Νέα Εγνατία Οδός** (EgnatiaPass, `myegnatiapass.gr`) δίπλα στη **Νέα Αττική
+  Οδό**. Οι δύο εγκαταστάσεις συγκρίθηκαν πεδίο προς πεδίο: ίδιος client, ίδια
+  δεκατρία API controllers, ίδια endpoints, και `clientConfig.json` που διαφέρουν
+  μόνο στο branding.
+- Κάθε κάρτα στη σελίδα παίρνει τα χρώματα του παρόχου της, ώστε δύο συνδρομές
+  από διαφορετικούς παρόχους να ξεχωρίζουν με μια ματιά. Το κουμπί «Άνοιγμα my
+  e-PASS» πηγαίνει στο σωστό portal.
+
+**Άλλαξαν**
+
+- Τα δημοσιευμένα όρια ανά κατηγορία οχήματος δεν είναι πλέον σταθερά του
+  κώδικα· ανήκουν στον πάροχο.
+
+**Γνωστός περιορισμός**
+
+Τα όρια της **Εγνατίας δεν έχουν καταχωρηθεί**. Δεν δημοσιεύονται σε προσβάσιμη
+σελίδα και δεν έρχονται από το API — είναι δεδομένα τιμοκαταλόγου. Αντί να
+μπουν εικασίες, ο πάροχος δηλώνει «χωρίς όρια»: το «Όριο άκυρου λογαριασμού»
+μένει κενό και το προεπιλεγμένο όριο ειδοποίησης είναι ένα ουδέτερο ποσό που
+ορίζεις εσύ. Τα όρια της Αττικής Οδού παραμένουν από τον τιμοκατάλογό της.
+
+### 🇬🇧 English
+
+**Added**
+
+- **Multi-operator** support. You pick the operator when adding the integration;
+  credentials belong to that operator's portal.
+- **Nea Egnatia Odos** (EgnatiaPass, `myegnatiapass.gr`) alongside **Nea Attiki
+  Odos**. The two deployments were compared field by field: the same client, the
+  same thirteen API controllers, the same endpoints, and `clientConfig.json`
+  files differing only in branding.
+- Each card on the page takes its operator's colours, so two subscriptions from
+  different operators are tellable apart at a glance, and the portal button goes
+  to the right one.
+
+**Changed**
+
+- The published per-category limits are no longer module constants; they belong
+  to the operator.
+
+**Known limitation**
+
+**Egnatia's limits are not recorded.** They are not published on a reachable page
+and do not come from the API — they are price-list data. Rather than guess, the
+operator declares no limits: the invalid-account limit stays empty and the
+default warning threshold is a neutral figure you set yourself. Attiki Odos keeps
+the limits from its own price list.
+
 ## [0.4.0] — 2026-08-20
 
 ### 🇬🇷 Ελληνικά

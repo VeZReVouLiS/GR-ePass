@@ -3,8 +3,9 @@
     "step": {
       "user": {
         "title": "my e-PASS credentials",
-        "description": "Sign in with the username and password you use on epass.naodos.gr. Remember that the username and password are case sensitive.",
+        "description": "Pick your toll operator, then sign in with the username and password you use on its portal. Remember that both are case sensitive.",
         "data": {
+          "operator": "Toll operator",
           "username": "Username",
           "password": "Password"
         }
@@ -173,7 +174,7 @@
       "fields": {
         "order_id": {
           "name": "Order ID",
-          "description": "The order id of the payment, as reported by the attiki_odos_epass_payment_ready event."
+          "description": "The order id of the payment, as reported by the gr_epass_payment_ready event."
         },
         "wait": {
           "name": "Wait for it",

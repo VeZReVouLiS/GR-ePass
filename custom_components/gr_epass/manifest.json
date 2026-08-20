@@ -1,0 +1,18 @@
+{
+  "domain": "gr_epass",
+  "name": "GR e-PASS",
+  "codeowners": [
+    "@VeZReVouLiS"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "http",
+    "panel_custom"
+  ],
+  "documentation": "https://github.com/VeZReVouLiS/GR-ePass",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/VeZReVouLiS/GR-ePass/issues",
+  "requirements": [],
+  "version": "0.5.0"
+}

@@ -10,7 +10,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
 from .api import EpassClient
-from .const import DOMAIN
+from .const import CONF_OPERATOR, DOMAIN
+from .operators import get_operator
 from .coordinator import EpassCoordinator
 from .panel import async_register_panel, async_unregister_panel
 from .payment import EpassPaymentManager, EpassPaymentView
@@ -33,10 +34,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: EpassConfigEntry) -> boo
     # A dedicated session with a cookie jar, because the backend sits behind a
     # load balancer that pins sessions with cookies.
     session = async_create_clientsession(hass)
+    operator = get_operator(entry.data.get(CONF_OPERATOR))
     client = EpassClient(
         session,
         entry.data[CONF_USERNAME],
         entry.data[CONF_PASSWORD],
+        operator.base_url,
     )
     coordinator = EpassCoordinator(hass, entry, client)
     await coordinator.async_config_entry_first_refresh()

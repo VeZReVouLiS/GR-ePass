@@ -4,16 +4,16 @@ from __future__ import annotations
 
 from datetime import timedelta
 
-DOMAIN = "attiki_odos_epass"
+DOMAIN = "gr_epass"
 
 # --- Reverse engineered from the my e-PASS Angular SPA -----------------------
 # The SPA loads assets/clientConfig.json, which has no "serverUrl" key, so the
 # Angular proxy base URL resolves to "" and every call is same-origin.
-BASE_URL = "https://epass.naodos.gr"
 TOKEN_PATH = "/oauth2/token"
 CLIENT_ID = "100"  # clientConfig.json -> ClientId
 CLIENT_SECRET = "secret"  # hardcoded in the SPA bundle
 
+CONF_OPERATOR = "operator"
 CONF_ACCOUNT_ID = "account_id"
 CONF_TRANSPONDERS = "transponders"
 CONF_SCAN_INTERVAL_MINUTES = "scan_interval_minutes"
@@ -116,20 +116,6 @@ CARD_STATE_EXPIRED = "expired"
 #
 # These are only used to suggest a sensible default threshold. They are a
 # published price list and can change, so nothing depends on them at runtime.
-_LIMITS_CAT_1 = {"recharge": 10.00, "low_balance": 6.00, "invalid": 1.25}
-_LIMITS_CAT_2_4 = {"recharge": 20.00, "low_balance": 12.00, "invalid": 2.55}
-_LIMITS_CAT_5_6 = {"recharge": 50.00, "low_balance": 40.00, "invalid": 10.10}
-
-TOLL_LIMITS: dict[int, dict[str, float]] = {
-    1: _LIMITS_CAT_1,
-    2: _LIMITS_CAT_2_4,
-    3: _LIMITS_CAT_2_4,
-    4: _LIMITS_CAT_2_4,
-    5: _LIMITS_CAT_5_6,
-    6: _LIMITS_CAT_5_6,
-}
-LIMITS_SOURCE = "Τιμοκατάλογος Prepaid e-PASS, naodos.gr, 01/01/2026"
-
 # --- Events ------------------------------------------------------------------
 # Fired on the HA event bus so users can automate without the integration
 # having to guess which notification channel they want.

@@ -1,4 +1,4 @@
-"""Sidebar panel registration for Attiki Odos e-Pass.
+"""Sidebar panel registration for GR e-PASS.
 
 Home Assistant lets an integration serve its own frontend module and register it
 as a panel, so the user gets a working screen straight after install without
@@ -23,8 +23,8 @@ from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-PANEL_FILE = "attiki-odos-epass-panel.js"
-PANEL_COMPONENT = "attiki-odos-epass-panel"
+PANEL_FILE = "gr-epass-panel.js"
+PANEL_COMPONENT = "gr-epass-panel"
 PANEL_URL = f"/{DOMAIN}-panel/{PANEL_FILE}"
 PANEL_TITLE = "e-PASS"
 PANEL_ICON = "mdi:boom-gate-arrow-up"

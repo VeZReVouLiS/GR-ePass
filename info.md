@@ -1,4 +1,4 @@
-# Attiki Odos e-Pass
+# GR e-PASS
 
 Φέρνει τον συνδρομητικό λογαριασμό **my e-PASS** στο Home Assistant: υπόλοιπο,
 διελεύσεις, κόστος και στατιστικά — συνολικά και ανά πομποδέκτη.
@@ -39,4 +39,4 @@ cost and statistics — account-wide and per transponder.
 > Odos.
 
 Μετά την εγκατάσταση: **Settings → Devices & Services → Add Integration →
-Attiki Odos e-Pass**, και βάλτε τα στοιχεία του my e-PASS.
+GR e-PASS**, και βάλτε τα στοιχεία του my e-PASS.

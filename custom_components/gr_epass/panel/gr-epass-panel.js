@@ -1,5 +1,5 @@
 /*
- * Sidebar panel for the Attiki Odos e-Pass integration.
+ * Sidebar panel for the GR e-PASS integration.
  *
  * Served by the integration itself, so there is no build step and no HACS
  * frontend plugin to install separately: plain custom element, no framework.
@@ -40,6 +40,13 @@ const CARD_NAMES = {
   3: "Maestro",
   4: "American Express",
   5: "Diners",
+};
+
+// Top-up page per operator. The page only ever opens one of these, so they are
+// listed rather than derived from an attribute that a browser would then follow.
+const PORTALS = {
+  attiki: "https://epass.naodos.gr/PaymentA",
+  egnatia: "https://myegnatiapass.gr/PaymentA",
 };
 
 const LABELS = {
@@ -231,7 +238,7 @@ const STYLE = `
              color: var(--primary-text-color); }
 `;
 
-class AttikiOdosEpassPanel extends HTMLElement {
+class GrEpassPanel extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -266,7 +273,7 @@ class AttikiOdosEpassPanel extends HTMLElement {
 
     const byDevice = new Map();
     for (const entry of Object.values(hass.entities)) {
-      if (entry.platform !== "attiki_odos_epass" || !entry.device_id) continue;
+      if (entry.platform !== "gr_epass" || !entry.device_id) continue;
       if (!byDevice.has(entry.device_id)) byDevice.set(entry.device_id, []);
       byDevice.get(entry.device_id).push(entry);
     }
@@ -449,7 +456,7 @@ class AttikiOdosEpassPanel extends HTMLElement {
         // wait:true lets the integration retry while the bank confirms, which it
         // does a moment after the payer finishes rather than immediately.
         const result = await this._hass.callService(
-          "attiki_odos_epass",
+          "gr_epass",
           "get_receipt",
           { wait: true },
           undefined,
@@ -469,7 +476,10 @@ class AttikiOdosEpassPanel extends HTMLElement {
     });
 
     host.querySelector(".portal").addEventListener("click", () => {
-      window.open("https://epass.naodos.gr/PaymentA", "_blank", "noopener");
+      // Whichever operator this subscription belongs to, not a fixed one.
+      const status = this._state(account.entities.account_status);
+      const url = PORTALS[status?.attributes?.operator] || PORTALS.attiki;
+      window.open(url, "_blank", "noopener");
     });
 
     if (payment_card) {
@@ -509,6 +519,19 @@ class AttikiOdosEpassPanel extends HTMLElement {
     for (const { account, section } of this._refs) {
       const ent = account.entities;
       section.querySelector(".head h2").textContent = account.name;
+
+      // The card should look like the portal behind it, so a subscription from
+      // another operator is recognisable at a glance.
+      const brand = this._state(ent.account_status)?.attributes;
+      const head = section.querySelector(".head");
+      const navy = brand?.brand_navy || BRAND.navy;
+      const accent = brand?.brand_accent || BRAND.yellow;
+      if (head.dataset.brand !== navy + accent) {
+        head.dataset.brand = navy + accent;
+        head.style.background = navy;
+        head.style.borderBottomColor = accent;
+        section.querySelector(".head .sub").style.color = accent;
+      }
 
       const statusObj = this._state(ent.account_status);
       const alias = statusObj?.attributes?.account_alias;
@@ -805,6 +828,6 @@ class AttikiOdosEpassPanel extends HTMLElement {
 // url carries a cache-busting token that changes on upgrade, so the browser
 // treats the new url as a separate module and runs it again. An unguarded
 // define() throws there and takes the rest of the module with it.
-if (!customElements.get("attiki-odos-epass-panel")) {
-  customElements.define("attiki-odos-epass-panel", AttikiOdosEpassPanel);
+if (!customElements.get("gr-epass-panel")) {
+  customElements.define("gr-epass-panel", GrEpassPanel);
 }

@@ -1,4 +1,4 @@
-"""Top-up flow for Attiki Odos e-Pass.
+"""Top-up flow for GR e-PASS.
 
 Home Assistant cannot charge a card. The e-PASS backend only *signs* an order
 (``PrepAlphaPayment`` returns a ``Digest``); the money moves when those fields
@@ -332,7 +332,7 @@ def _page_expired() -> str:
         "<!doctype html><meta charset='utf-8'>"
         "<meta name='viewport' content='width=device-width,initial-scale=1'>"
         f"<style>{_STYLE}</style><div class='wrap'><div class='card'>"
-        "<div class='head'>Αττική Οδός e-Pass</div><div class='body'>"
+        "<div class='head'>e-PASS</div><div class='body'>"
         "<p>Ο σύνδεσμος δεν ισχύει πλέον.</p>"
         "<p class='muted'>Κάθε σύνδεσμος πληρωμής χρησιμοποιείται μία φορά και "
         "λήγει μετά από 10 λεπτά. Ξεκίνα νέα ανανέωση από το Home Assistant."

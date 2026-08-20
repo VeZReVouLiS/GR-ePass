@@ -1,4 +1,4 @@
-"""Prepare a top-up for Attiki Odos e-Pass.
+"""Prepare a top-up for GR e-PASS.
 
 Pressing this does not charge anything. It asks the e-PASS backend to sign an
 order for the selected card and amount, then publishes a one-shot confirmation
@@ -53,7 +53,7 @@ class EpassPrepareTopUp(CoordinatorEntity[EpassCoordinator], ButtonEntity):
         super().__init__(coordinator)
         self._account_id = account_id
         self._attr_unique_id = f"{account_id}_prepare_topup"
-        self._attr_device_info = account_device_info(account_id)
+        self._attr_device_info = account_device_info(account_id, coordinator.operator)
         self._link: str | None = None
         self._link_expires: str | None = None
         self._nonce: str | None = None
@@ -186,7 +186,7 @@ class EpassPrepareTopUp(CoordinatorEntity[EpassCoordinator], ButtonEntity):
         if not cards:
             raise HomeAssistantError(
                 "Δεν υπάρχει αποθηκευμένη κάρτα. Η πρώτη χρέωση πρέπει να "
-                "γίνει στο epass.naodos.gr με «αποθήκευση κάρτας»."
+                "γίνει στο portal του παρόχου με «αποθήκευση κάρτας»."
             )
         picker = self.coordinator.card_select
         card = picker.selected_card if picker is not None else None

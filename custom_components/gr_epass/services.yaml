@@ -13,4 +13,4 @@ get_receipt:
       required: false
       selector:
         config_entry:
-          integration: attiki_odos_epass
+          integration: gr_epass

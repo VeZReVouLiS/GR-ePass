@@ -31,6 +31,7 @@ from .api import EpassAuthError, EpassClient, EpassConnectionError, EpassError
 from .const import (
     ALL_TRANSPONDERS,
     CONF_ACCOUNT_ID,
+    CONF_OPERATOR,
     CONF_SCAN_INTERVAL_MINUTES,
     CONF_TRANSPONDERS,
     DOMAIN,
@@ -38,11 +39,21 @@ from .const import (
     MIN_SCAN_INTERVAL_MINUTES,
 )
 from .coordinator import transponder_key, transponder_label
+from .operators import DEFAULT_OPERATOR, OPERATORS, get_operator
 
 _LOGGER = logging.getLogger(__name__)
 
 STEP_USER_SCHEMA = vol.Schema(
     {
+        vol.Required(CONF_OPERATOR, default=DEFAULT_OPERATOR): SelectSelector(
+            SelectSelectorConfig(
+                options=[
+                    SelectOptionDict(value=key, label=operator.name)
+                    for key, operator in OPERATORS.items()
+                ],
+                mode=SelectSelectorMode.DROPDOWN,
+            )
+        ),
         vol.Required(CONF_USERNAME): TextSelector(
             TextSelectorConfig(type=TextSelectorType.TEXT, autocomplete="username")
         ),
@@ -122,6 +133,7 @@ class EpassConfigFlow(ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
     def __init__(self) -> None:
+        self._operator: str = DEFAULT_OPERATOR
         self._username: str = ""
         self._password: str = ""
         self._accounts: list[dict[str, Any]] = []
@@ -135,6 +147,7 @@ class EpassConfigFlow(ConfigFlow, domain=DOMAIN):
     ) -> ConfigFlowResult:
         errors: dict[str, str] = {}
         if user_input is not None:
+            self._operator = user_input[CONF_OPERATOR]
             self._username = user_input[CONF_USERNAME].strip()
             self._password = user_input[CONF_PASSWORD]
             client = self._client()
@@ -210,8 +223,9 @@ class EpassConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             selection = user_input.get(CONF_TRANSPONDERS) or [ALL_TRANSPONDERS]
             return self.async_create_entry(
-                title=f"e-PASS {account_label(self._account)}",
+                title=f"{get_operator(self._operator).name} {account_label(self._account)}",
                 data={
+                    CONF_OPERATOR: self._operator,
                     CONF_USERNAME: self._username,
                     CONF_PASSWORD: self._password,
                     CONF_ACCOUNT_ID: account_id,
@@ -271,6 +285,7 @@ class EpassConfigFlow(ConfigFlow, domain=DOMAIN):
                 async_create_clientsession(self.hass),
                 entry.data[CONF_USERNAME],
                 user_input[CONF_PASSWORD],
+                get_operator(entry.data.get(CONF_OPERATOR)).base_url,
             )
             try:
                 await client.async_login()
@@ -300,7 +315,10 @@ class EpassConfigFlow(ConfigFlow, domain=DOMAIN):
 
     def _client(self) -> EpassClient:
         return EpassClient(
-            async_create_clientsession(self.hass), self._username, self._password
+            async_create_clientsession(self.hass),
+            self._username,
+            self._password,
+            get_operator(self._operator).base_url,
         )
 
     @staticmethod
@@ -334,6 +352,7 @@ class EpassOptionsFlow(OptionsFlow):
             async_create_clientsession(self.hass),
             entry.data[CONF_USERNAME],
             entry.data[CONF_PASSWORD],
+            get_operator(entry.data.get(CONF_OPERATOR)).base_url,
         )
         try:
             await client.async_login()

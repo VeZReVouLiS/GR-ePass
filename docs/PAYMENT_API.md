@@ -1,7 +1,7 @@
 # Ανανέωση υπολοίπου — πώς δουλεύει στην πραγματικότητα
 
 Τεκμηρίωση του reverse-engineered flow πληρωμής του my e-PASS, για όποιον
-διαβάσει το `custom_components/attiki_odos_epass/payment.py` και θέλει να
+διαβάσει το `custom_components/gr_epass/payment.py` και θέλει να
 καταλάβει *γιατί* είναι έτσι γραμμένο.
 
 > Τίποτα από αυτά δεν είναι επίσημο API. Εξήχθη από το δημόσιο Angular bundle
@@ -133,8 +133,8 @@ strings.
 select  Κάρτα πληρωμής     ->  ποια αποθηκευμένη κάρτα
 number  Ποσό ανανέωσης     ->  όρια από GetPaymProviderInfo (0.01 - 5000)
 button  Προετοιμασία        ->  PrepAlphaPayment, δημοσιεύει one-shot link
-        ↓ event attiki_odos_epass_payment_ready {amount, card, order_id, link}
-GET  /api/attiki_odos_epass/pay/{nonce}   σελίδα επιβεβαίωσης, ΔΕΝ υποβάλλει
+        ↓ event gr_epass_payment_ready {amount, card, order_id, link}
+GET  /api/gr_epass/pay/{nonce}   σελίδα επιβεβαίωσης, ΔΕΝ υποβάλλει
 POST (το κλικ)                            καταναλώνει το order, υποβάλλει στην τράπεζα
 ```
 

@@ -1,9 +1,12 @@
-# Attiki Odos e-Pass for Home Assistant
+# GR e-PASS for Home Assistant
 
 [Ελληνικά](README.md) · **English**
 
-Custom integration that brings **my e-PASS**
-([epass.naodos.gr](https://epass.naodos.gr/)) into Home Assistant: balance,
+Custom integration that brings **prepaid Greek toll accounts** into Home
+Assistant. It supports **Nea Attiki Odos**
+([epass.naodos.gr](https://epass.naodos.gr/)) and **Nea Egnatia Odos**
+([myegnatiapass.gr](https://myegnatiapass.gr/)) — you pick the operator when
+adding it. It brings balance,
 passes, cost and statistics — account-wide and per transponder — plus a
 low-balance warning and one-tap top-up.
 
@@ -61,16 +64,16 @@ bank's own page. Details under
 1. HACS → Integrations → ⋮ → **Custom repositories**
 2. Paste the repository URL, category **Integration**
 3. Install, then **restart** Home Assistant
-4. Settings → Devices & Services → **Add Integration** → `Attiki Odos e-Pass`
+4. Settings → Devices & Services → **Add Integration** → `GR e-PASS`
 
 ### Manually
 
-Copy `custom_components/attiki_odos_epass` into your Home Assistant
+Copy `custom_components/gr_epass` into your Home Assistant
 `config/custom_components/` and restart.
 
 ## Options
 
-Settings → Devices & Services → Attiki Odos e-Pass → **Configure**:
+Settings → Devices & Services → GR e-PASS → **Configure**:
 
 - **Transponders** — change the selection
 - **Update interval** — 10 to 1440 minutes (default 30)
@@ -172,9 +175,9 @@ instead of us guessing your notification channel.
 
 | Event | Data |
 | --- | --- |
-| `attiki_odos_epass_pass` | `account_id`, `timestamp`, `amount`, `plaza`, `lane`, `transponder_id`, `toll_category`, `external_network` |
-| `attiki_odos_epass_balance_changed` | `account_id`, `balance`, `previous_balance`, `delta`, `direction` |
-| `attiki_odos_epass_payment_ready` | `account_id`, `amount`, `card`, `order_id`, `link`, `expires` |
+| `gr_epass_pass` | `account_id`, `timestamp`, `amount`, `plaza`, `lane`, `transponder_id`, `toll_category`, `external_network` |
+| `gr_epass_balance_changed` | `account_id`, `balance`, `previous_balance`, `delta`, `direction` |
+| `gr_epass_payment_ready` | `account_id`, `amount`, `card`, `order_id`, `link`, `expires` |
 
 Passes are recorded silently on the first refresh, and anything older than six
 hours is ignored, so a restart cannot replay history.
@@ -191,7 +194,7 @@ What does work:
 1. Pick a card (`select`) and an amount (`number`).
 2. Press `button.*_prepare_top_up`. An order is signed — **no charge**.
 3. A **single-use** link is published, valid for 10 minutes, in the button's
-   `link` attribute and in the `attiki_odos_epass_payment_ready` event.
+   `link` attribute and in the `gr_epass_payment_ready` event.
 4. Opening it shows the amount and card. One click hands off to the bank and
    completes the charge.
 
@@ -261,7 +264,7 @@ been handed to the bank, which opens it in a window of its own with print / PDF
 and back buttons. It is also a service, for automations:
 
 ```yaml
-action: attiki_odos_epass.get_receipt
+action: gr_epass.get_receipt
 data:
   wait: true
 ```

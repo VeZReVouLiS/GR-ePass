@@ -1,4 +1,4 @@
-"""Adjustable numbers for Attiki Odos e-Pass.
+"""Adjustable numbers for GR e-PASS.
 
 Two controls, both defaulting to figures the operator publishes for the vehicle
 category of the monitored transponders, so a fresh install is already sensible
@@ -18,7 +18,6 @@ from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from . import EpassConfigEntry
-from .const import LIMITS_SOURCE
 from .coordinator import EpassCoordinator
 from .entity import account_device_info
 
@@ -65,7 +64,7 @@ class _EpassNumber(CoordinatorEntity[EpassCoordinator], NumberEntity, RestoreEnt
         super().__init__(coordinator)
         self._attr_unique_id = f"{account_id}_{key}"
         self._attr_translation_key = key
-        self._attr_device_info = account_device_info(account_id)
+        self._attr_device_info = account_device_info(account_id, coordinator.operator)
         self._value: float | None = None
 
     async def async_added_to_hass(self) -> None:
@@ -162,5 +161,5 @@ class EpassLowBalanceThreshold(_EpassNumber):
             "toll_categories": self.coordinator.toll_categories,
             "official_low_balance_limit": limits.get("low_balance"),
             "official_invalid_limit": limits.get("invalid"),
-            "limits_source": LIMITS_SOURCE,
+            "limits_source": self.coordinator.operator.limits_source,
         }

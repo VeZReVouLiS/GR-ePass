@@ -1,4 +1,4 @@
-"""Stored-card picker for Attiki Odos e-Pass.
+"""Stored-card picker for GR e-PASS.
 
 A top-up reuses a card that the bank has already tokenised. There is no way to
 add a card from here: SaveStoredCard only stores an alias, and the token itself
@@ -71,7 +71,7 @@ class EpassCardSelect(
     def __init__(self, coordinator: EpassCoordinator, account_id: str) -> None:
         super().__init__(coordinator)
         self._attr_unique_id = f"{account_id}_payment_card"
-        self._attr_device_info = account_device_info(account_id)
+        self._attr_device_info = account_device_info(account_id, coordinator.operator)
         self._selected: str | None = None
 
     async def async_added_to_hass(self) -> None:

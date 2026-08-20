@@ -21,12 +21,11 @@ from homeassistant.helpers.typing import StateType
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from . import EpassConfigEntry
-from .entity import BRAND, account_device_info
+from .entity import account_device_info
 from .const import (
     ACCOUNT_STATUS,
     BALANCE_STATUS,
     DOMAIN,
-    LIMITS_SOURCE,
     TRANSPONDER_RESTRICTION_OK,
     TRANSPONDER_STATES,
 )
@@ -146,7 +145,7 @@ def _limit_attrs(data: EpassData, _key: str) -> dict[str, Any]:
         "toll_categories": data.toll_categories,
         "recharge_limit": data.limits.get("recharge"),
         "low_balance_limit": data.limits.get("low_balance"),
-        "limits_source": LIMITS_SOURCE,
+        "limits_source": data.limits_source,
     }
 
 
@@ -341,6 +340,10 @@ ACCOUNT_SENSORS: tuple[EpassSensorDescription, ...] = (
             "account_profile": data.account.get("AccountProfile"),
             "account_type": data.account.get("AccountType"),
             "e_invoice_status": data.account.get("EInvoiceStatus"),
+            "operator": data.operator_key,
+            "operator_name": data.operator_name,
+            "brand_navy": data.brand_navy,
+            "brand_accent": data.brand_accent,
         },
     ),
     EpassSensorDescription(
@@ -479,7 +482,9 @@ class EpassSensor(CoordinatorEntity[EpassCoordinator], SensorEntity):
 
         if data_key == ACCOUNT_KEY:
             self._attr_unique_id = f"{account_id}_{description.key}"
-            self._attr_device_info = account_device_info(account_id)
+            self._attr_device_info = account_device_info(
+                account_id, coordinator.operator
+            )
         else:
             record = _record(coordinator.data, data_key)
             self._attr_unique_id = f"{account_id}_{data_key}_{description.key}"
@@ -487,7 +492,7 @@ class EpassSensor(CoordinatorEntity[EpassCoordinator], SensorEntity):
                 identifiers={(DOMAIN, f"transponder_{account_id}_{data_key}")},
                 via_device=(DOMAIN, f"account_{account_id}"),
                 name=transponder_label(record) if record else data_key,
-                manufacturer=BRAND,
+                manufacturer=coordinator.operator.name,
                 model="e-PASS transponder",
                 serial_number=str(record.get("TransponderText") or data_key),
             )

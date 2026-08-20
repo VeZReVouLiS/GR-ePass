@@ -1,9 +1,12 @@
-# Attiki Odos e-Pass για Home Assistant
+# GR e-PASS για Home Assistant
 
 **Ελληνικά** · [English](README.en.md)
 
-Custom integration που φέρνει τα δεδομένα του **my e-PASS**
-([epass.naodos.gr](https://epass.naodos.gr/)) στο Home Assistant: υπόλοιπο,
+Custom integration που φέρνει τα δεδομένα των **προπληρωμένων λογαριασμών
+διοδίων** στο Home Assistant. Υποστηρίζονται η **Νέα Αττική Οδός**
+([epass.naodos.gr](https://epass.naodos.gr/)) και η **Νέα Εγνατία Οδός**
+([myegnatiapass.gr](https://myegnatiapass.gr/)) — διαλέγεις πάροχο κατά την
+προσθήκη. Φέρνει υπόλοιπο,
 διελεύσεις, κόστος και στατιστικά — συνολικά και ανά πομποδέκτη — μαζί με
 ειδοποίηση χαμηλού υπολοίπου και ανανέωση με ένα tap.
 
@@ -58,16 +61,16 @@ Custom integration που φέρνει τα δεδομένα του **my e-PASS*
 1. HACS → Integrations → ⋮ → **Custom repositories**
 2. URL του repo, κατηγορία **Integration**
 3. Εγκατάσταση, μετά **restart** του Home Assistant
-4. Settings → Devices & Services → **Add Integration** → `Attiki Odos e-Pass`
+4. Settings → Devices & Services → **Add Integration** → `GR e-PASS`
 
 ### Χειροκίνητα
 
-Αντιγράψτε τον φάκελο `custom_components/attiki_odos_epass` μέσα στο
+Αντιγράψτε τον φάκελο `custom_components/gr_epass` μέσα στο
 `config/custom_components/` και κάντε restart.
 
 ## Ρυθμίσεις μετά την εγκατάσταση
 
-Settings → Devices & Services → Attiki Odos e-Pass → **Configure**:
+Settings → Devices & Services → GR e-PASS → **Configure**:
 
 - **Πομποδέκτες** — αλλαγή επιλογής (προσθήκη/αφαίρεση)
 - **Συχνότητα ανανέωσης** — 10 έως 1440 λεπτά (default 30)
@@ -169,9 +172,9 @@ long-term statistics. Το κυλιόμενο 30ήμερο κόστος **δεν
 
 | Event | Δεδομένα |
 | --- | --- |
-| `attiki_odos_epass_pass` | `account_id`, `timestamp`, `amount`, `plaza`, `lane`, `transponder_id`, `toll_category`, `external_network` |
-| `attiki_odos_epass_balance_changed` | `account_id`, `balance`, `previous_balance`, `delta`, `direction` |
-| `attiki_odos_epass_payment_ready` | `account_id`, `amount`, `card`, `order_id`, `link`, `expires` |
+| `gr_epass_pass` | `account_id`, `timestamp`, `amount`, `plaza`, `lane`, `transponder_id`, `toll_category`, `external_network` |
+| `gr_epass_balance_changed` | `account_id`, `balance`, `previous_balance`, `delta`, `direction` |
+| `gr_epass_payment_ready` | `account_id`, `amount`, `card`, `order_id`, `link`, `expires` |
 
 Οι διελεύσεις καταγράφονται σιωπηλά στην πρώτη ανανέωση και αγνοούνται όσες
 είναι παλιότερες των 6 ωρών, ώστε ένα restart να μη ξαναστείλει ιστορικό.
@@ -190,7 +193,7 @@ Bank, όπου τρέχει το 3-D Secure. Δεν υπάρχει endpoint πο
 2. Πατάτε `button.*_prepare_top_up`. Ζητείται υπογεγραμμένη εντολή — **καμία
    χρέωση**.
 3. Δημοσιεύεται σύνδεσμος **μιας χρήσης** που λήγει σε 10 λεπτά, στο attribute
-   `link` του button και στο event `attiki_odos_epass_payment_ready`.
+   `link` του button και στο event `gr_epass_payment_ready`.
 4. Ανοίγοντάς τον βλέπετε ποσό και κάρτα. Με ένα κλικ μεταφέρεστε στην τράπεζα
    και ολοκληρώνεται η χρέωση.
 
@@ -261,7 +264,7 @@ integration. Στη σελίδα e-PASS εμφανίζεται κουμπί **Π
 εκτύπωση/PDF και επιστροφή. Και ως υπηρεσία, για αυτοματισμούς:
 
 ```yaml
-action: attiki_odos_epass.get_receipt
+action: gr_epass.get_receipt
 data:
   wait: true
 ```

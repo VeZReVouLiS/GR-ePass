@@ -1,7 +1,7 @@
 blank_issues_enabled: true
 contact_links:
   - name: Ερώτηση χρήσης / Usage question
-    url: https://github.com/VeZReVouLiS/attiki-odos-e-pass/discussions
+    url: https://github.com/VeZReVouLiS/GR-ePass/discussions
     about: >
       Για ερωτήσεις «πώς κάνω το Χ» χρησιμοποιήστε τα Discussions. Τα Issues
       είναι για προβλήματα και προτάσεις.

@@ -14,6 +14,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from homeassistant.util import dt as dt_util
 
 from .api import EpassAuthError, EpassClient, EpassConnectionError, EpassError
+from .operators import Operator, get_operator
 from .const import (
     ALL_TRANSPONDERS,
     CARD_STATE_ACTIVE,
@@ -21,6 +22,7 @@ from .const import (
     CARD_STATE_INACTIVE,
     CARD_TYPES,
     CONF_ACCOUNT_ID,
+    CONF_OPERATOR,
     CONF_SCAN_INTERVAL_MINUTES,
     CONF_TRANSPONDERS,
     DEFAULT_SCAN_INTERVAL,
@@ -28,7 +30,6 @@ from .const import (
     EVENT_BALANCE_CHANGED,
     EVENT_PASS,
     EVENT_PASS_MAX_AGE,
-    TOLL_LIMITS,
     TXN_PAYMENT,
     TXN_TOLL_CHARGE,
 )
@@ -123,6 +124,15 @@ class EpassData:
     # Published account limits for the monitored vehicle categories.
     limits: dict[str, float] = field(default_factory=dict)
     toll_categories: list[int] = field(default_factory=list)
+    # Where the published limits come from, or None when this operator's
+    # price list has not been read.
+    limits_source: str | None = None
+    # Who this subscription belongs to, so the page can name and colour it
+    # per operator instead of assuming one.
+    operator_key: str = ""
+    operator_name: str = ""
+    brand_navy: str = ""
+    brand_accent: str = ""
 
     @property
     def payable_cards(self) -> list[dict[str, Any]]:
@@ -146,6 +156,7 @@ class EpassCoordinator(DataUpdateCoordinator[EpassData]):
         entry: ConfigEntry,
         client: EpassClient,
     ) -> None:
+        self.operator: Operator = get_operator(entry.data.get(CONF_OPERATOR))
         minutes = entry.options.get(CONF_SCAN_INTERVAL_MINUTES)
         interval = timedelta(minutes=minutes) if minutes else DEFAULT_SCAN_INTERVAL
         super().__init__(
@@ -192,9 +203,15 @@ class EpassCoordinator(DataUpdateCoordinator[EpassData]):
                 continue
         return sorted(categories)
 
-    @staticmethod
-    def _limits_for(categories: list[int]) -> dict[str, float]:
-        known = [TOLL_LIMITS[c] for c in categories if c in TOLL_LIMITS]
+    def _limits_for(self, categories: list[int]) -> dict[str, float]:
+        # An operator whose published price list has not been read reports no
+        # limits, rather than quietly borrowing another operator's numbers for a
+        # decision about when to top up.
+        known = [
+            limits
+            for limits in (self.operator.limits_for(c) for c in categories)
+            if limits
+        ]
         if not known:
             return {}
         return {
@@ -261,6 +278,11 @@ class EpassCoordinator(DataUpdateCoordinator[EpassData]):
         )
         data.toll_categories = self._categories_of(transponders)
         data.limits = self._limits_for(data.toll_categories)
+        data.limits_source = self.operator.limits_source if data.limits else None
+        data.operator_key = self.operator.key
+        data.operator_name = self.operator.name
+        data.brand_navy = self.operator.navy
+        data.brand_accent = self.operator.accent
         passes = self._build_stats(data, txns, today)
         self._fire_pass_events(passes)
         self._fire_balance_event(data)

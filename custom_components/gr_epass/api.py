@@ -28,7 +28,6 @@ import aiohttp
 from aiohttp import ClientError, ClientResponseError
 
 from .const import (
-    BASE_URL,
     CLIENT_ID,
     CLIENT_SECRET,
     MAX_RANGE_DAYS,
@@ -127,8 +126,12 @@ class EpassClient:
         session: aiohttp.ClientSession,
         username: str,
         password: str,
+        base_url: str,
     ) -> None:
         self._session = session
+        # Every operator runs the same platform on its own origin, so the base
+        # url is the only thing that differs between them.
+        self._base_url = base_url.rstrip("/")
         self._username = username
         self._password = password
         self._access_token: str | None = None
@@ -180,7 +183,7 @@ class EpassClient:
         }
         try:
             async with self._session.post(
-                f"{BASE_URL}{TOKEN_PATH}",
+                f"{self._base_url}{TOKEN_PATH}",
                 data=urlencode(payload),
                 headers=headers,
                 timeout=REQUEST_TIMEOUT,
@@ -192,7 +195,7 @@ class EpassClient:
                     raise EpassError(f"Token endpoint returned HTTP {resp.status}")
                 data = json.loads(body)
         except (ClientError, asyncio.TimeoutError) as err:
-            raise EpassConnectionError(f"Cannot reach {BASE_URL}: {err}") from err
+            raise EpassConnectionError(f"Cannot reach {self._base_url}: {err}") from err
         except json.JSONDecodeError as err:
             raise EpassError("Token endpoint returned malformed JSON") from err
 
@@ -261,7 +264,7 @@ class EpassClient:
         try:
             async with self._session.request(
                 method,
-                f"{BASE_URL}{path}",
+                f"{self._base_url}{path}",
                 json=json_body,
                 params=params,
                 headers=headers,
