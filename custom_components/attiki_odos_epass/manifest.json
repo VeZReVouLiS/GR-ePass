@@ -5,10 +5,13 @@
     "@VeZReVouLiS"
   ],
   "config_flow": true,
+  "dependencies": [
+    "http"
+  ],
   "documentation": "https://github.com/VeZReVouLiS/attiki-odos-e-pass",
   "integration_type": "service",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/VeZReVouLiS/attiki-odos-e-pass/issues",
   "requirements": [],
-  "version": "0.1.0"
+  "version": "0.1.1"
 }
