@@ -14,6 +14,7 @@ from .const import DOMAIN
 from .coordinator import EpassCoordinator
 from .panel import async_register_panel, async_unregister_panel
 from .payment import EpassPaymentManager, EpassPaymentView
+from .services import async_register_services, async_unregister_services
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -50,6 +51,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: EpassConfigEntry) -> boo
     coordinator.payment = store["payment"]
 
     await async_register_panel(hass)
+    async_register_services(hass)
 
     entry.runtime_data = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
@@ -63,6 +65,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: EpassConfigEntry) -> bo
     # The panel is instance-wide, so it only goes when the last entry does.
     if unloaded and len(hass.config_entries.async_entries(DOMAIN)) <= 1:
         async_unregister_panel(hass)
+        async_unregister_services(hass)
     return unloaded
 
 

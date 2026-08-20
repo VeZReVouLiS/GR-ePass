@@ -125,6 +125,18 @@ class EpassPaymentManager:
         self._orders: dict[str, PreparedOrder] = {}
         # nonce -> callback, fired once when that order stops being usable.
         self._watchers: dict[str, Callable[[], None]] = {}
+        # The last order actually handed to the bank. The receipt is keyed by
+        # order id and there is nowhere else to read it from afterwards: the
+        # bank returns the payer to the operator's own page, not to us.
+        self._last_handoff: str | None = None
+
+    @property
+    def last_handoff(self) -> str | None:
+        """Order id of the most recent handoff, if any."""
+        return self._last_handoff
+
+    def note_handoff(self, order: PreparedOrder) -> None:
+        self._last_handoff = order.fields.get("orderid") or None
 
     def watch(self, nonce: str, on_closed: Callable[[], None]) -> None:
         """Ask to be told when this order is consumed or purged."""
@@ -277,6 +289,12 @@ class EpassPaymentView(HomeAssistantView):
             return web.Response(
                 text=_page_expired(), content_type="text/html", status=404
             )
+        self._manager.note_handoff(order)
+        _LOGGER.info(
+            "Handed order %s to the bank; its receipt can be fetched with the "
+            "get_receipt service",
+            order.fields.get("orderid"),
+        )
         return web.Response(text=_page_handoff(order), content_type="text/html")
 
 

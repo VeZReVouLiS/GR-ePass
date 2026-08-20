@@ -33,6 +33,7 @@ from .const import (
     CLIENT_SECRET,
     MAX_RANGE_DAYS,
     PAYMENT_PREPARE_PATH,
+    TXN_RECEIPT_PATH,
     PAYMENT_PROVIDER_PATH,
     STORED_CARDS_PATH,
     TOKEN_PATH,
@@ -364,6 +365,23 @@ class EpassClient:
         """
         data = await self._async_request(
             "POST", PAYMENT_PREPARE_PATH, json_body=payload
+        )
+        return data or {}
+
+
+    async def async_get_txn_receipt(self, order_id: str) -> dict[str, Any]:
+        """Fetch the receipt for one payment order.
+
+        The body is a bare JSON string, not an object: the portal calls this as
+        ``JSON.stringify(orderId)``.
+
+        The bank confirms the transaction to the operator out of band, so the
+        receipt is not there the moment the payer finishes. Until it lands the
+        response carries ``Message`` = ``API_WARN_TRANSACTION_NOT_FOUND``; the
+        portal's own page retries once a second for half a minute.
+        """
+        data = await self._async_request(
+            "POST", TXN_RECEIPT_PATH, json_body=order_id
         )
         return data or {}
 

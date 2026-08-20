@@ -165,5 +165,39 @@
         }
       }
     }
+  },
+  "services": {
+    "get_receipt": {
+      "name": "Get receipt",
+      "description": "Fetches the operator's receipt for one top-up order.",
+      "fields": {
+        "order_id": {
+          "name": "Order ID",
+          "description": "The order id of the payment, as reported by the attiki_odos_epass_payment_ready event."
+        },
+        "wait": {
+          "name": "Wait for it",
+          "description": "Keep retrying for up to thirty seconds. The bank confirms the payment out of band, so a receipt asked for immediately after paying is not there yet."
+        },
+        "entry_id": {
+          "name": "Subscription",
+          "description": "Which subscription to ask. Only needed with more than one set up."
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "no_loaded_entry": {
+      "message": "No e-PASS subscription is set up."
+    },
+    "unknown_entry": {
+      "message": "No e-PASS subscription with id {entry_id}."
+    },
+    "entry_id_required": {
+      "message": "Several subscriptions are set up, so entry_id is required."
+    },
+    "no_order_id": {
+      "message": "No order id given and no payment has been handed to the bank yet."
+    }
   }
 }

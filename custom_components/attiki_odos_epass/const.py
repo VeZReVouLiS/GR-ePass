@@ -78,6 +78,7 @@ TRANSPONDER_STATES = ["active", "restricted"]
 STORED_CARDS_PATH = "/api/alphaPaym/GetStoredCards"
 PAYMENT_PROVIDER_PATH = "/api/alphaPaym/GetPaymProviderInfo"
 PAYMENT_PREPARE_PATH = "/api/alphaPaym/PrepAlphaPayment"
+TXN_RECEIPT_PATH = "/api/alphaPaym/GetTxnReceipt"
 
 # databaseMapService.eOCardTypeMap
 CARD_TYPES = {

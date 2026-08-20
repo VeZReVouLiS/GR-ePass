@@ -21,6 +21,47 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-08-20
+
+### 🇬🇷 Ελληνικά
+
+**Προστέθηκαν**
+
+- Υπηρεσία `attiki_odos_epass.get_receipt`, που φέρνει την απόδειξη του παρόχου
+  για μία εντολή ανανέωσης. Χωρίς όρισμα χρησιμοποιεί την τελευταία εντολή που
+  στάλθηκε στην τράπεζα. Με `wait: true` επαναλαμβάνει έως τριάντα δευτερόλεπτα,
+  γιατί η τράπεζα επιβεβαιώνει την πληρωμή ξεχωριστά και η απόδειξη δεν υπάρχει
+  την στιγμή που ολοκληρώνεται η πληρωμή.
+
+**Γιατί υπάρχει**
+
+Μετά την πληρωμή η τράπεζα επιστρέφει στη **δική της** σελίδα απόδειξης του
+portal, όχι στο Home Assistant. Το URL επιστροφής το υπογράφει το portal και
+καλύπτεται από το `Digest`, οπότε δεν μπορεί να αλλάξει από εδώ. Η σελίδα εκείνη
+θέλει σύνδεση στο portal, που ο browser του Home Assistant δεν έχει — γι' αυτό
+εμφανίζεται φόρμα εισόδου. Η ίδια απόδειξη όμως είναι διαθέσιμη μέσω API με το
+token που κρατά ήδη το integration, οπότε το Home Assistant μπορεί να τη φέρει
+μόνο του.
+
+### 🇬🇧 English
+
+**Added**
+
+- An `attiki_odos_epass.get_receipt` service that fetches the operator's receipt
+  for a top-up order. With no argument it uses the last order handed to the
+  bank. With `wait: true` it retries for up to thirty seconds, because the bank
+  confirms the payment out of band and the receipt is not there the moment the
+  payer finishes.
+
+**Why it exists**
+
+After payment the bank returns the payer to the portal's **own** receipt page,
+not to Home Assistant. That return url is signed by the portal and covered by
+the `Digest`, so it cannot be changed from here. The page needs a portal login
+which the Home Assistant browser does not have, which is why a sign-in form
+appears. The same receipt is available over the API with the token the
+integration already holds, so Home Assistant can fetch it itself.
+
 ## [0.2.2] — 2026-08-20
 
 ### 🇬🇷 Ελληνικά
@@ -221,7 +262,8 @@ All notable changes are documented here, following
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.2.2...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.1.0...v0.2.0

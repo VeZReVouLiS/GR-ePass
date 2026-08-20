@@ -248,6 +248,26 @@ automation:
             Top up: https://epass.naodos.gr/PaymentA
 ```
 
+## Payment receipt
+
+After payment the bank does **not** return to Home Assistant. It sends the payer
+to the my e-PASS receipt page, because the return url is signed by the portal
+along with the rest of the order and cannot be changed by the integration. That
+page needs a portal login, so it usually shows a sign-in form instead.
+
+The same receipt is available over the API, with the token the integration
+already holds:
+
+```yaml
+action: attiki_odos_epass.get_receipt
+data:
+  wait: true
+```
+
+With no `order_id` it uses the last order handed to the bank. `wait: true`
+retries for up to thirty seconds, because the bank confirms the payment out of
+band; asked too early, the answer is `found: false`.
+
 ## Dashboard examples
 
 - [`dashboard-example.yaml`](dashboard-example.yaml) — a plain view using core
