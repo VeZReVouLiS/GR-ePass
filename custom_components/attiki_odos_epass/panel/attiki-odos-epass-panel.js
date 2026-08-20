@@ -57,6 +57,7 @@ const LABELS = {
     prepare: "Προετοιμασία πληρωμής",
     prepareHint: "Δεν χρεώνει. Φτιάχνει σύνδεσμο μιας χρήσης, που λήγει σε 10 λεπτά, ο οποίος δείχνει ποσό και κάρτα πριν σε στείλει στην τράπεζα.",
     openPortal: "Άνοιγμα my e-PASS",
+    refresh: "Ανανέωση στοιχείων",
     linkReady: "Έτοιμο. Άνοιξε τον σύνδεσμο για να ολοκληρώσεις.",
     linkOpen: "Ολοκλήρωση πληρωμής",
     noCard: "Δεν υπάρχει αποθηκευμένη κάρτα. Η πρώτη χρέωση γίνεται στο my e-PASS, με «αποθήκευση κάρτας».",
@@ -93,6 +94,7 @@ const LABELS = {
     prepare: "Prepare payment",
     prepareHint: "Does not charge anything. It creates a single-use link, valid for 10 minutes, that shows the amount and card before handing you to the bank.",
     openPortal: "Open my e-PASS",
+    refresh: "Refresh data",
     linkReady: "Ready. Open the link to finish.",
     linkOpen: "Complete payment",
     noCard: "No stored card. The first charge happens on my e-PASS, with \"save card\" ticked.",
@@ -123,7 +125,16 @@ const STYLE = `
           overflow: hidden; margin-bottom: 16px; }
   .head { background: ${BRAND.navy}; color: #fff; padding: 14px 18px;
           border-bottom: 3px solid ${BRAND.yellow}; }
+  .head { display: flex; align-items: center; gap: 12px; }
+  .head .headText { flex: 1; min-width: 0; }
   .head h2 { margin: 0; font-size: 18px; font-weight: 600; }
+  .head .refresh { flex: none; background: none; border: none; padding: 6px;
+                   margin: 0; color: #fff; cursor: pointer; border-radius: 50%;
+                   display: flex; opacity: .85; }
+  .head .refresh:hover { opacity: 1; background: rgba(255,255,255,.14); }
+  /* Spins while the request is in flight, so a slow poll still looks alive. */
+  .head .refresh[disabled] { cursor: default; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
   .head .sub { color: ${BRAND.yellow}; font-size: 13px; margin-top: 2px; }
   .body { padding: 18px; }
   .donutWrap { display: flex; justify-content: center; padding: 6px 0 14px; }
@@ -289,8 +300,13 @@ class AttikiOdosEpassPanel extends HTMLElement {
       section.className = "card";
       section.innerHTML = `
         <div class="head">
-          <h2></h2>
-          <div class="sub"></div>
+          <div class="headText">
+            <h2></h2>
+            <div class="sub"></div>
+          </div>
+          <button class="refresh" title="${t.refresh}" aria-label="${t.refresh}">
+            <ha-icon icon="mdi:refresh"></ha-icon>
+          </button>
         </div>
         <div class="body">
           <div class="col">
@@ -333,6 +349,19 @@ class AttikiOdosEpassPanel extends HTMLElement {
           <div class="vehicles"></div>
           </div>
         </div>`;
+      section.querySelector(".refresh").addEventListener("click", async (event) => {
+        const button = event.currentTarget;
+        button.disabled = true;
+        try {
+          // Updating one entity of the integration is enough: they all share a
+          // coordinator, so this refetches the whole subscription.
+          await this._hass.callService("homeassistant", "update_entity", {
+            entity_id: account.entities.balance,
+          });
+        } finally {
+          button.disabled = false;
+        }
+      });
       wrap.appendChild(section);
       this._refs.push({ account, section });
       this._buildTopUp(account, section.querySelector(".topUp"));
@@ -599,4 +628,11 @@ class AttikiOdosEpassPanel extends HTMLElement {
   }
 }
 
-customElements.define("attiki-odos-epass-panel", AttikiOdosEpassPanel);
+// Guarded because this module is loaded more than once in a session: it backs
+// both the sidebar panel and the integration's own config panel, and the module
+// url carries a cache-busting token that changes on upgrade, so the browser
+// treats the new url as a separate module and runs it again. An unguarded
+// define() throws there and takes the rest of the module with it.
+if (!customElements.get("attiki-odos-epass-panel")) {
+  customElements.define("attiki-odos-epass-panel", AttikiOdosEpassPanel);
+}

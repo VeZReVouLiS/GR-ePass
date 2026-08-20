@@ -20,6 +20,7 @@ from __future__ import annotations
 import logging
 import re
 import secrets
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from html import escape
@@ -122,6 +123,20 @@ class EpassPaymentManager:
     def __init__(self, hass: HomeAssistant) -> None:
         self._hass = hass
         self._orders: dict[str, PreparedOrder] = {}
+        # nonce -> callback, fired once when that order stops being usable.
+        self._watchers: dict[str, Callable[[], None]] = {}
+
+    def watch(self, nonce: str, on_closed: Callable[[], None]) -> None:
+        """Ask to be told when this order is consumed or purged."""
+        self._watchers[nonce] = on_closed
+
+    def unwatch(self, nonce: str) -> None:
+        self._watchers.pop(nonce, None)
+
+    def _close(self, nonce: str) -> None:
+        watcher = self._watchers.pop(nonce, None)
+        if watcher is not None:
+            watcher()
 
     async def async_prepare(
         self,
@@ -214,7 +229,10 @@ class EpassPaymentManager:
     def take(self, nonce: str) -> PreparedOrder | None:
         """Fetch and consume an order. One use only."""
         self._purge()
-        return self._orders.pop(nonce, None)
+        order = self._orders.pop(nonce, None)
+        if order is not None:
+            self._close(nonce)
+        return order
 
     def peek(self, nonce: str) -> PreparedOrder | None:
         self._purge()
@@ -223,6 +241,7 @@ class EpassPaymentManager:
     def _purge(self) -> None:
         for nonce in [n for n, o in self._orders.items() if o.expired]:
             del self._orders[nonce]
+            self._close(nonce)
 
 
 class EpassPaymentView(HomeAssistantView):

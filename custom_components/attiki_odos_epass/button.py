@@ -9,12 +9,14 @@ button on it, which hands the order to the bank's hosted page.
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from typing import Any
 
 from homeassistant.components.button import ButtonEntity
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.network import NoURLAvailableError, get_url
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt as dt_util
@@ -54,6 +56,8 @@ class EpassPrepareTopUp(CoordinatorEntity[EpassCoordinator], ButtonEntity):
         self._attr_device_info = account_device_info(account_id)
         self._link: str | None = None
         self._link_expires: str | None = None
+        self._nonce: str | None = None
+        self._unsub_expiry: Callable[[], None] | None = None
 
     @property
     def available(self) -> bool:
@@ -93,8 +97,20 @@ class EpassPrepareTopUp(CoordinatorEntity[EpassCoordinator], ButtonEntity):
                 "External URL στις ρυθμίσεις δικτύου"
             ) from err
 
+        # A previous order is replaced, so stop listening for the old one.
+        self._release()
+        self._nonce = order.nonce
         self._link = f"{base}{PAY_URL}/{order.nonce}"
         self._link_expires = dt_util.as_local(order.created + ORDER_TTL).isoformat()
+        # The link has to disappear once it cannot be used again, or the page
+        # keeps offering a press that can only fail. Two things end an order:
+        # someone uses it, which the manager reports, and the clock running out,
+        # which nothing reports because a purge only happens if some other call
+        # passes through the manager -- hence the timer as well.
+        manager.watch(order.nonce, self._drop_link)
+        self._unsub_expiry = async_call_later(
+            self.hass, ORDER_TTL.total_seconds(), self._on_expired
+        )
         self.async_write_ha_state()
 
         self.hass.bus.async_fire(
@@ -109,6 +125,31 @@ class EpassPrepareTopUp(CoordinatorEntity[EpassCoordinator], ButtonEntity):
             },
         )
         _LOGGER.debug("Top-up link published for %.2f EUR", amount)
+
+    def _release(self) -> None:
+        """Stop watching the current order without touching the shown link."""
+        if self._unsub_expiry is not None:
+            self._unsub_expiry()
+            self._unsub_expiry = None
+        manager = self.coordinator.payment
+        if manager is not None and self._nonce is not None:
+            manager.unwatch(self._nonce)
+
+    def _drop_link(self) -> None:
+        """Forget the link. Called when the order is used or purged."""
+        self._release()
+        self._nonce = None
+        self._link = None
+        self._link_expires = None
+        self.async_write_ha_state()
+
+    def _on_expired(self, _now) -> None:
+        self._unsub_expiry = None
+        self._drop_link()
+
+    async def async_will_remove_from_hass(self) -> None:
+        self._release()
+        await super().async_will_remove_from_hass()
 
     def _check_gateway_bounds(self, amount: float) -> None:
         limits = self.coordinator.data.payment_limits

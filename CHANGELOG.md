@@ -21,6 +21,44 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.2.2] — 2026-08-20
+
+### 🇬🇷 Ελληνικά
+
+**Προστέθηκαν**
+
+- Κουμπί ανανέωσης στην κεφαλίδα της σελίδας. Το integration ρωτά κάθε 30 λεπτά,
+  οπότε μετά από μια ανανέωση υπολοίπου το ποσό στην οθόνη είναι παλιό μέχρι το
+  επόμενο ερώτημα· το κουμπί ζητά τα στοιχεία αμέσως και γυρίζει όσο περιμένει.
+
+**Διορθώθηκαν**
+
+- Ο σύνδεσμος πληρωμής παρέμενε στη σελίδα αφού χρησιμοποιηθεί, ακόμη και μετά
+  από ανανέωση της σελίδας, προσκαλώντας ένα δεύτερο πάτημα που μόνο να
+  αποτύχει μπορούσε. Πλέον φεύγει μόλις η εντολή καταναλωθεί, και επίσης όταν
+  λήξει το δεκάλεπτο.
+- Η σελίδα δήλωνε το custom element χωρίς έλεγχο, οπότε στη δεύτερη φόρτωση του
+  module έσκαγε με «name has already been used with this registry». Συνέβαινε
+  κανονικά, επειδή η ίδια σελίδα χρησιμεύει και ως σελίδα ρυθμίσεων του
+  integration.
+
+### 🇬🇧 English
+
+**Added**
+
+- A refresh control in the page header. The integration polls every 30 minutes,
+  so after a top-up the amount on screen is stale until the next poll; the
+  control fetches immediately and spins while it waits.
+
+**Fixed**
+
+- The payment link stayed on the page after it had been used, and survived a
+  reload, inviting a second press that could only fail. It now goes as soon as
+  the order is consumed, and also when the ten minutes run out.
+- The page defined its custom element unguarded, so loading the module a second
+  time threw "name has already been used with this registry". That happened in
+  normal use, because the same page also backs the integration's config panel.
+
 ## [0.2.1] — 2026-08-20
 
 ### 🇬🇷 Ελληνικά
@@ -183,7 +221,8 @@ All notable changes are documented here, following
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/releases/tag/v0.1.0
