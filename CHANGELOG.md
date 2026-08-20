@@ -21,26 +21,7 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
-## [0.1.1] — 2026-08-20
-
-### 🇬🇷 Ελληνικά
-
-**Διορθώθηκε**
-
-- Το `manifest.json` δεν δήλωνε την εξάρτηση από το `http`, που χρησιμοποιείται
-  για τη σελίδα επιβεβαίωσης της ανανέωσης. Δεν επηρέαζε τη λειτουργία — το
-  `http` φορτώνεται πάντα από το Home Assistant — αλλά απέτυπτε τον έλεγχο
-  hassfest, που είναι προϋπόθεση για το HACS.
-
-### 🇬🇧 English
-
-**Fixed**
-
-- `manifest.json` did not declare its dependency on `http`, used for the top-up
-  confirmation page. Harmless at runtime, since `http` is always loaded, but it
-  failed the hassfest check that HACS requires.
-
-## [0.1.0] — 2026-08-19
+## [0.1.0] — 2026-08-20
 
 Πρώτη δημόσια έκδοση.
 
@@ -122,6 +103,5 @@ All notable changes are documented here, following
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.1.1...HEAD
-[0.1.1]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/releases/tag/v0.1.1
+[Unreleased]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/releases/tag/v0.1.0
