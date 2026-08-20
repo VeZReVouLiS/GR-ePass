@@ -1,8 +1,17 @@
 # Εικονίδιο integration
 
-Το Home Assistant **δεν** διαβάζει εικονίδια από τον φάκελο του custom
-integration. Τα κατεβάζει από το CDN `brands.home-assistant.io`, οπότε όσο ο
-domain δεν υπάρχει εκεί, το UI δείχνει «icon not available».
+Δύο διαφορετικά πράγματα διαβάζουν το εικονίδιο, και θέλουν **και τα δύο**:
+
+| Ποιος | Από πού | Τι χρειάζεται |
+| --- | --- | --- |
+| **HACS** | `custom_components/<domain>/brand/icon.png` | αντίγραφο μέσα στο repo |
+| **UI του Home Assistant** | CDN `brands.home-assistant.io` | PR στο brands repo |
+
+Γι' αυτό τα ίδια PNG υπάρχουν σε δύο θέσεις. Το αντίγραφο στο
+`custom_components/attiki_odos_epass/brand/` ικανοποιεί τον έλεγχο του HACS
+(«does not provide brand assets»), αλλά το Home Assistant **δεν** διαβάζει
+εικονίδια από τον φάκελο του integration — όσο ο domain δεν υπάρχει στο CDN, η
+σελίδα του integration δείχνει «icon not available».
 
 Τα αρχεία εδώ είναι έτοιμα για PR στο
 [home-assistant/brands](https://github.com/home-assistant/brands):
