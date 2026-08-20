@@ -15,12 +15,12 @@ prepaid electronic toll subscription.
 > official product of Nea Attiki Odos.
 
 <p align="center">
-  <img src="docs/images/card-en.png" alt="The my e-PASS styled card" width="340">
+  <img src="docs/images/panel-en.png" alt="The e-PASS page in the Home Assistant sidebar" width="800">
 </p>
 
 <p align="center">
-  <em><a href="dashboard-portal-card.en.yaml">dashboard-portal-card.en.yaml</a> —
-  customer number, card and last pass are sample values.</em>
+  <em>The "e-PASS" page, which appears in the sidebar on its own after install.
+  Customer number, card and last pass are sample values.</em>
 </p>
 
 ---
@@ -37,6 +37,22 @@ During setup:
 
 After that, every 30 minutes (configurable 10–1440) the integration fetches the
 subscription details and recent activity, and computes the statistics locally.
+
+## The "e-PASS" page
+
+As soon as the integration is added, an **e-PASS** page appears in the sidebar.
+There is no dashboard to build and no YAML to write, and it follows the Home
+Assistant language — Greek or English.
+
+It shows the balance in the portal's own colours, the subscription details, this
+month's activity, the last pass, the top-up controls, and a section per
+transponder with its vehicle category and its own passes. On a desktop window it
+splits into two columns; on a phone it stacks into one.
+
+The **Prepare payment** button charges nothing: it creates a single-use link,
+valid for 10 minutes, that shows the amount and card before handing you to the
+bank's own page. Details under
+[Topping up](#topping-up-from-home-assistant).
 
 ## Installation
 
@@ -241,6 +257,13 @@ automation:
   logic, card picker with the brand mark, amount, and a payment button. Needs
   `button-card`, `card-mod`, `vertical-stack-in-card` and
   `template-entity-row` from HACS.
+- [`dashboard-portal-card.en.yaml`](dashboard-portal-card.en.yaml) — the same
+  card with English labels. It is **generated** from the Greek one by
+  `python tools/make_en_card.py`, so do not edit it by hand.
+
+<p align="center">
+  <img src="docs/images/card-en.png" alt="The my e-PASS styled card" width="340">
+</p>
 
 ## The API that does not exist
 
