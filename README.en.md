@@ -71,6 +71,18 @@ bank's own page. Details under
 Copy `custom_components/gr_epass` into your Home Assistant
 `config/custom_components/` and restart.
 
+### Adding it
+
+<p align="center">
+  <img src="docs/images/onboarding.png" alt="The add step, with the operator picker" width="380">
+  &nbsp;
+  <img src="docs/images/onboarding-operators.png" alt="The operator list" width="380">
+</p>
+
+Pick the operator, then sign in with the credentials you use on **its** portal —
+the same username exists independently on each one. If the account has several
+subscriptions a picker follows, and then the transponder selection.
+
 ## Options
 
 Settings → Devices & Services → GR e-PASS → **Configure**:

@@ -68,6 +68,18 @@ Custom integration που φέρνει τα δεδομένα των **προπλ
 Αντιγράψτε τον φάκελο `custom_components/gr_epass` μέσα στο
 `config/custom_components/` και κάντε restart.
 
+### Προσθήκη
+
+<p align="center">
+  <img src="docs/images/onboarding.png" alt="Το βήμα προσθήκης με επιλογή παρόχου" width="380">
+  &nbsp;
+  <img src="docs/images/onboarding-operators.png" alt="Η λίστα παρόχων" width="380">
+</p>
+
+Διαλέγεις πάροχο και βάζεις τα στοιχεία που χρησιμοποιείς στο **δικό του** portal
+— ο ίδιος χρήστης υπάρχει ανεξάρτητα σε κάθε πάροχο. Αν ο λογαριασμός έχει πολλές
+συνδρομές ακολουθεί βήμα επιλογής, και μετά διαλέγεις πομποδέκτες.
+
 ## Ρυθμίσεις μετά την εγκατάσταση
 
 Settings → Devices & Services → GR e-PASS → **Configure**:
