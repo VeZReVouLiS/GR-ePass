@@ -1,9 +1,14 @@
 """Generate the brand icon for the Attiki Odos e-Pass integration.
 
-A toll booth with a raised barrier. Output goes to
-brands/custom_integrations/attiki_odos_epass/ ready for a PR to
-home-assistant/brands -- see brands/README.md for why it lives there and why the
-artwork is not the operator's logo.
+A toll booth with a raised barrier, written straight into the integration.
+Since Home Assistant 2026.3 a custom integration serves its own brand images
+from custom_components/<domain>/brand/, and those take priority over the brands
+CDN -- no manifest key and no PR to home-assistant/brands, which in fact stopped
+accepting icons for custom integrations altogether.
+
+The artwork is deliberately not the operator's logo: that is a registered mark
+and this integration is unofficial. Colours are taken from the portal's CSS,
+which is not itself trademark use.
 
 Everything is drawn at 1024x1024 and downscaled with LANCZOS: PIL does not
 anti-alias shape edges, so drawing large and shrinking is what produces clean
@@ -33,9 +38,9 @@ PIVOT = (556, 566)
 
 OUT_DIR = (
     pathlib.Path(__file__).resolve().parent.parent
-    / "brands"
-    / "custom_integrations"
+    / "custom_components"
     / "attiki_odos_epass"
+    / "brand"
 )
 
 
@@ -115,9 +120,8 @@ def build() -> Image.Image:
     # --- ground -------------------------------------------------------------
     d.rounded_rectangle([48, ground_y, 976, ground_y + 40], radius=20, fill=GREY)
 
-    # brands asks for the artwork trimmed to "the minimum amount of empty space"
-    # while the icon must still be 1:1, so square it with no air at all: the
-    # longest side touches the edge and only the shorter axis gets centred.
+    # Square with no air at all: the longest side touches the edge and only the
+    # shorter axis gets centred, so the subject is as large as a 1:1 icon allows.
     img = img.crop(img.getbbox())
     side = max(img.size)
     square = Image.new("RGBA", (side, side), (0, 0, 0, 0))
@@ -129,7 +133,8 @@ def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     icon = build()
     for size, name in ((512, "icon@2x.png"), (256, "icon.png")):
-        # optimize + max compression: brands requires web-optimised PNGs.
+        # optimize + max compression: these ship inside the integration, so
+        # every kilobyte is downloaded by every user.
         icon.resize((size, size), Image.LANCZOS).save(
             OUT_DIR / name, optimize=True, compress_level=9
         )
