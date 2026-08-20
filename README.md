@@ -15,14 +15,9 @@ Custom integration που φέρνει τα δεδομένα των **προπλ
 > προειδοποίηση. Δεν είναι επίσημο προϊόν καμίας από τις εταιρείες
 > παραχώρησης.
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/panel.png" alt="Η σελίδα e-PASS στο μενού του Home Assistant" width="800">
-</p>
+![Η σελίδα e-PASS στο μενού του Home Assistant](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/panel.png)
 
-<p align="center">
-  <em>Η σελίδα «e-PASS» που εμφανίζεται μόνη της στο μενού μετά την εγκατάσταση.
-  Κωδικός πελάτη, κάρτα και τελευταία διέλευση είναι δείγματα.</em>
-</p>
+*Η σελίδα «e-PASS» που εμφανίζεται μόνη της στο μενού μετά την εγκατάσταση. Κωδικός πελάτη, κάρτα και τελευταία διέλευση είναι δείγματα.*
 
 ---
 
@@ -71,11 +66,8 @@ Custom integration που φέρνει τα δεδομένα των **προπλ
 
 ### Προσθήκη
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/onboarding.png" alt="Το βήμα προσθήκης με επιλογή παρόχου" width="380">
-  &nbsp;
-  <img src="https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/onboarding-operators.png" alt="Η λίστα παρόχων" width="380">
-</p>
+![Το βήμα προσθήκης με επιλογή παρόχου](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/onboarding.png)
+![Η λίστα παρόχων](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/onboarding-operators.png)
 
 Διαλέγεις πάροχο και βάζεις τα στοιχεία που χρησιμοποιείς στο **δικό του** portal
 — ο ίδιος χρήστης υπάρχει ανεξάρτητα σε κάθε πάροχο. Αν ο λογαριασμός έχει πολλές

@@ -17,14 +17,9 @@ prepaid electronic toll subscription used on them.
 > Angular bundle. They work today but may change without notice. This is not an
 > official product of any of the concession companies.
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/panel-en.png" alt="The e-PASS page in the Home Assistant sidebar" width="800">
-</p>
+![The e-PASS page in the Home Assistant sidebar](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/panel-en.png)
 
-<p align="center">
-  <em>The "e-PASS" page, which appears in the sidebar on its own after install.
-  Customer number, card and last pass are sample values.</em>
-</p>
+*The "e-PASS" page, which appears in the sidebar on its own after install. Customer number, card and last pass are sample values.*
 
 ---
 
@@ -73,11 +68,8 @@ Copy `custom_components/gr_epass` into your Home Assistant
 
 ### Adding it
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/onboarding.png" alt="The add step, with the operator picker" width="380">
-  &nbsp;
-  <img src="https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/onboarding-operators.png" alt="The operator list" width="380">
-</p>
+![The add step, with the operator picker](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/onboarding.png)
+![The operator list](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/onboarding-operators.png)
 
 Pick the operator, then sign in with the credentials you use on **its** portal —
 the same username exists independently on each one. If the account has several
