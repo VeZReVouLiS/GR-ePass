@@ -21,6 +21,44 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.5.1] — 2026-08-21
+
+Έκδοση μόνο τεκμηρίωσης. Ο κώδικας είναι πανομοιότυπος με το 0.5.0.
+Documentation only. The code is identical to 0.5.0.
+
+### 🇬🇷 Ελληνικά
+
+**Διορθώθηκαν**
+
+- Στο HACS δεν εμφανιζόταν καμία εικόνα και οι οδηγίες έμεναν παλιές όσο κι αν
+  πατούσες «Update information». Αιτία: το HACS διαβάζει το README από το
+  **release**, όχι από το `main`, και όλες οι διορθώσεις των εικόνων είχαν γίνει
+  μετά το tag του 0.5.0. Το README εκείνου του release έδειχνε ακόμη
+  `<img src="docs/images/…">` — σχετική διαδρομή μέσα σε HTML, που ο
+  `ha-markdown` αφαιρεί και που λύνεται πάνω στον host του Home Assistant αντί
+  στο GitHub — και ανέφερε μια εικόνα που είχε αποσυρθεί.
+- Τα βήματα της εγκατάστασης ήταν κάτω από τη χειροκίνητη εγκατάσταση και
+  ξεκινούσαν από το όνομα χρήστη, χωρίς να αναφέρουν καθόλου ότι πρώτα διαλέγεις
+  πάροχο. Ανέβηκαν στην αρχή, με τη σωστή σειρά και με τις εικόνες μαζί.
+- Οι σύνδεσμοι σύγκρισης εκδόσεων στο τέλος αυτού του αρχείου έδειχναν στο παλιό
+  όνομα του repository, οπότε ήταν όλοι νεκροί.
+
+### 🇬🇧 English
+
+**Fixed**
+
+- No image showed in HACS and the instructions stayed stale no matter how often
+  you pressed "Update information". HACS reads the README from the **release**,
+  not from `main`, and every image fix had landed after the 0.5.0 tag. That
+  release's README still used `<img src="docs/images/…">` — a relative path
+  inside HTML, which `ha-markdown` strips and which resolves against the Home
+  Assistant host rather than GitHub — and referenced a screenshot since retired.
+- The setup steps sat below the manual-install section and opened with the
+  username, never mentioning that an operator is picked first. They now lead the
+  page, in the right order, with the screenshots alongside.
+- The version-comparison links at the foot of this file pointed at the
+  repository's old name, so every one of them was dead.
+
 ## [0.5.0] — 2026-08-20
 
 ### ⚠️ Breaking
@@ -375,10 +413,12 @@ integration already holds, so Home Assistant can fetch it itself.
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.4.0...HEAD
-[0.4.0]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.3.0...v0.4.0
-[0.3.0]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.2.2...v0.3.0
-[0.2.2]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.2.1...v0.2.2
-[0.2.1]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.2.0...v0.2.1
-[0.2.0]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/VeZReVouLiS/attiki-odos-e-pass/releases/tag/v0.1.0
+[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.0...v0.5.1
+[0.5.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.4.0...v0.5.0
+[0.4.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.2.2...v0.3.0
+[0.2.2]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.2.1...v0.2.2
+[0.2.1]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/VeZReVouLiS/GR-ePass/releases/tag/v0.1.0
