@@ -21,6 +21,58 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.6.1] — 2026-08-21
+
+### 🇬🇷 Ελληνικά
+
+**Διορθώθηκαν**
+
+- **Η ακύρωση από τη σελίδα πληρωμής δεν ακύρωνε τίποτα.** Η φόρμα είχε σχετικό
+  `action='cancel'`, που κατά τους κανόνες των σχετικών URL **αντικαθιστά το
+  τελευταίο κομμάτι** της διαδρομής: αντί για `…/pay/<nonce>/cancel` έστελνε σε
+  `…/pay/cancel`, δηλαδή στο κανονικό view με nonce «cancel». Αποτέλεσμα: έβγαινε
+  «Ο σύνδεσμος δεν ισχύει πλέον» ενώ **η εντολή έμενε ζωντανή** και ο σύνδεσμος
+  δούλευε κανονικά. Πλέον η φόρμα δείχνει σε απόλυτη διαδρομή.
+
+**Άλλαξαν**
+
+- Η σελίδα επιβεβαίωσης μεγάλωσε: 560px αντί 420, βασική γραμματοσειρά 17px, και
+  όλα τα μεγέθη μέσα της υπολογίζονται από αυτήν αντί να είναι σταθερά.
+- Στη σελίδα GR e-Pass ο σύνδεσμος και η ακύρωση έγιναν **κουμπιά πλήρους
+  πλάτους**, στοιχισμένα με τα υπόλοιπα της κάρτας, με την αντίστροφη μέτρηση
+  κεντραρισμένη από κάτω. Πριν ήταν δύο links στη σειρά, με το ένα υπογραμμισμένο.
+- Οι σελίδες «ακυρώθηκε» και «δεν ισχύει πλέον» **κλείνουν μόνες τους σε 15
+  δευτερόλεπτα** και έχουν κουμπί «Κλείσιμο». Αν το πρόγραμμα περιήγησης αρνηθεί
+  να κλείσει την καρτέλα — συνηθισμένο όταν δεν την άνοιξε script — το λέει,
+  αντί να σε στείλει σε φόρμα εισόδου: ένας σύνδεσμος που άνοιξε από Telegram σε
+  κινητό δεν έχει session στο Home Assistant.
+- Σε οθόνες από 1500px και πάνω η κάρτα φτάνει τα 1480px.
+
+### 🇬🇧 English
+
+**Fixed**
+
+- **Cancelling from the payment page cancelled nothing.** The form used a
+  relative `action='cancel'`, and relative urls **replace the last path
+  segment**: it posted to `…/pay/cancel` instead of `…/pay/<nonce>/cancel`,
+  landing on the normal view with "cancel" as the nonce. You were told the link
+  had expired while **the order stayed live** and the link still worked. The form
+  now posts to an absolute path.
+
+**Changed**
+
+- The confirmation page got bigger: 560px instead of 420, a 17px base font, and
+  every size inside it derived from that rather than fixed.
+- On the GR e-Pass page the link and the cancel are now **full-width buttons**,
+  aligned with the rest of the card, with the countdown centred underneath.
+  Before they sat side by side as links, one of them underlined.
+- The "cancelled" and "no longer valid" pages **close themselves after 15
+  seconds** and carry a Close button. If the browser refuses to close the tab —
+  usual when a script did not open it — they say so rather than redirecting: a
+  link opened from Telegram on a phone has no Home Assistant session and would
+  land on a login form.
+- From 1500px of window the card reaches 1480px.
+
 ## [0.6.0] — 2026-08-21
 
 ### 🇬🇷 Ελληνικά
@@ -543,7 +595,8 @@ integration already holds, so Home Assistant can fetch it itself.
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.1...HEAD
+[0.6.1]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.3...v0.6.0
 [0.5.3]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.2...v0.5.3
 [0.5.2]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.1...v0.5.2

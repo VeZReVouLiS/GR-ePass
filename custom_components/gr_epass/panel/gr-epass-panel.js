@@ -183,14 +183,22 @@ const STYLE = `
             align-items: start; }
     .col > h3:first-child { margin-top: 0; }
   }
-  .linkRow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-             margin-top: 8px; }
-  .linkRow a { font-weight: 600; }
-  .linkRow .cancelLink { background: none; border: none; padding: 0; margin: 0;
-                         width: auto; font: inherit; color: var(--error-color, #c22);
-                         cursor: pointer; text-decoration: underline; }
+  /* A desktop monitor has room to spare, so go further there. This does push
+     each column past the ~600px where a label and its value start to feel far
+     apart; three columns would be the better answer, but that means splitting
+     the sections differently and is a change worth making on its own. */
+  @media (min-width: 1500px) {
+    .wrap { max-width: min(94vw, 1480px); }
+  }
+  .linkHead { text-align: center; }
+  /* An anchor rather than a button, so the confirmation page still opens in its
+     own tab, but wearing the same clothes as every other action in the card. */
+  .btnLink { display: block; box-sizing: border-box; text-align: center;
+             text-decoration: none; font: inherit; font-weight: 600;
+             border-radius: 8px; padding: 11px 16px; margin-top: 12px;
+             background: ${BRAND.navy}; color: #fff; }
   .countdown { font-size: 12px; color: var(--secondary-text-color);
-               margin-top: 6px; }
+               margin-top: 10px; text-align: center; }
   .countdown b { color: var(--primary-text-color);
                  font-variant-numeric: tabular-nums; }
   .countdown.low b { color: var(--error-color, #c22); }
@@ -845,11 +853,9 @@ class GrEpassPanel extends HTMLElement {
       if (box.dataset.link !== link) {
         box.dataset.link = link;
         box.innerHTML =
-          `<div>${t.linkReady}</div>` +
-          `<div class="linkRow">` +
-          `<a class="finish" href="${link}" target="_blank" rel="noopener">${t.linkOpen}</a>` +
-          `<button class="cancelLink" type="button">${t.linkCancel}</button>` +
-          `</div>` +
+          `<div class="linkHead">${t.linkReady}</div>` +
+          `<a class="btnLink" href="${link}" target="_blank" rel="noopener">${t.linkOpen}</a>` +
+          `<button class="secondary cancelLink" type="button">${t.linkCancel}</button>` +
           `<div class="countdown" data-expires="${button.attributes.link_expires || ""}"></div>`;
         box.querySelector(".cancelLink").addEventListener("click", (event) => {
           this._cancelLink(event.currentTarget, link);

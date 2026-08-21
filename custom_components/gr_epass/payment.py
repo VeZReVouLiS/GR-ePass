@@ -352,27 +352,64 @@ class EpassPaymentCancelView(HomeAssistantView):
 
 _STYLE = """
   body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
-         background:#f4f4f4; color:#14140f; }
-  .wrap { max-width:420px; margin:0 auto; padding:24px 18px; }
-  .card { background:#fff; border-radius:12px; overflow:hidden;
+         background:#f4f4f4; color:#14140f; font-size:17px; }
+  /* Sized for a window a browser opens for one decision: wide enough that the
+     amount and the two buttons are not cramped, capped so the line of note text
+     underneath stays readable. Everything below scales from the body size. */
+  .wrap { max-width:560px; margin:0 auto; padding:32px 20px; }
+  .card { background:#fff; border-radius:14px; overflow:hidden;
           box-shadow:0 1px 4px rgba(0,0,0,.15); }
-  .head { background:#024e7e; color:#fff; padding:14px 18px;
-          border-bottom:3px solid #fcbd02; font-weight:600; }
-  .body { padding:18px; }
-  .amount { font-size:32px; font-weight:700; margin:6px 0 2px; }
-  .muted { color:#666; font-size:14px; }
-  button { width:100%; margin-top:20px; padding:14px; border:none;
-           border-radius:8px; background:#024e7e; color:#fff; font-size:16px;
+  .head { background:#024e7e; color:#fff; padding:18px 22px;
+          border-bottom:3px solid #fcbd02; font-weight:600; font-size:1.15em; }
+  .body { padding:24px 22px; }
+  .amount { font-size:2.6em; font-weight:700; margin:8px 0 4px;
+            line-height:1.1; }
+  .muted { color:#666; font-size:.92em; }
+  button { width:100%; margin-top:22px; padding:16px; border:none;
+           border-radius:10px; background:#024e7e; color:#fff; font-size:1.06em;
            font-weight:600; cursor:pointer; }
   button.cancel { background:transparent; color:#024e7e;
-                  border:1px solid rgba(2,78,126,.35); margin-top:10px; }
+                  border:1px solid rgba(2,78,126,.35); margin-top:12px; }
   button:disabled { opacity:.45; cursor:default; }
-  .note { font-size:12px; color:#666; margin-top:14px; line-height:1.45; }
-  .timer { margin-top:14px; font-size:13px; color:#666; text-align:center; }
+  .note { font-size:.8em; color:#666; margin-top:18px; line-height:1.5; }
+  .timer { margin-top:18px; font-size:.88em; color:#666; text-align:center; }
   .timer b { color:#14140f; font-variant-numeric:tabular-nums; }
   .timer.low b { color:#c22; }
-  a.back { display:block; margin-top:18px; text-align:center; color:#024e7e; }
+  a.back { display:block; margin-top:20px; text-align:center; color:#024e7e; }
 """
+
+# Tries to close the tab once the payer has nothing left to do here, and says so
+# while it waits. A tab a browser did not open by script usually refuses to
+# close, so the message has to survive that: no redirect either, because a link
+# opened from Telegram on a phone has no Home Assistant session and would land
+# on a login form.
+_AUTOCLOSE_JS = """
+(function () {
+  var left = %(seconds)d;
+  var note = document.getElementById('cl');
+  var btn = document.getElementById('clb');
+  function bye() {
+    window.close();
+    note.textContent = 'Μπορείς να κλείσεις αυτή την καρτέλα.';
+  }
+  if (btn) btn.addEventListener('click', bye);
+  function tick() {
+    if (left <= 0) { bye(); return; }
+    note.textContent = 'Κλείνει αυτόματα σε ' + left + '…';
+    left -= 1;
+    setTimeout(tick, 1000);
+  }
+  tick();
+})();
+"""
+
+
+def _closing_block(seconds: int = 15) -> str:
+    return (
+        "<button id='clb' class='cancel' type='button'>Κλείσιμο</button>"
+        f"<div class='timer' id='cl'></div>"
+        f"<script>{_AUTOCLOSE_JS % {'seconds': seconds}}</script>"
+    )
 
 
 def _money(amount: float) -> str:
@@ -394,7 +431,9 @@ def _page_expired() -> str:
         "<p>Ο σύνδεσμος δεν ισχύει πλέον.</p>"
         "<p class='muted'>Κάθε σύνδεσμος πληρωμής χρησιμοποιείται μία φορά και "
         "λήγει μετά από 10 λεπτά. Ξεκίνα νέα ανανέωση από το Home Assistant."
-        "</p></div></div></div>"
+        "</p>"
+        f"{_closing_block()}"
+        "</div></div></div>"
     )
 
 
@@ -440,7 +479,12 @@ def _page_confirm(order: PreparedOrder) -> str:
         f"<div class='muted'>{escape(order.card_label)}</div>"
         "<form method='post'>"
         "<button id='go' type='submit'>Συνέχεια στην τράπεζα</button></form>"
-        "<form method='post' action='cancel'>"
+        # Absolute path on purpose. A relative "cancel" resolves against the
+        # current url by replacing its last segment, so it would post to
+        # <pay>/cancel with the nonce dropped -- the order stayed alive and the
+        # payer was told the link had expired.
+        f"<form method='post' action='{PAY_URL}/{escape(order.nonce, quote=True)}"
+        "/cancel'>"
         "<button id='stop' class='cancel' type='submit'>Ακύρωση συναλλαγής"
         "</button></form>"
         "<div class='timer' id='t'>Ο σύνδεσμος λήγει σε <b id='tn'>--:--</b>"
@@ -465,6 +509,7 @@ def _page_cancelled() -> str:
         "<p class='muted'>Ο σύνδεσμος δεν ισχύει πλέον. Αν θέλεις να "
         "συνεχίσεις, ξεκίνα νέα ανανέωση από το Home Assistant.</p>"
         f"<a class='back' href='/{DOMAIN}'>Επιστροφή στο Home Assistant</a>"
+        f"{_closing_block()}"
         "</div></div></div>"
     )
 
