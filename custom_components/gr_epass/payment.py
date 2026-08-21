@@ -409,8 +409,9 @@ _STYLE = """
 # cannot ask the frontend which language the reader wants. Two sources stand in:
 # the browser's Accept-Language on the request that fetches the page, and failing
 # that the language Home Assistant was running in when the order was signed. The
-# header is the better guess -- the link is regularly opened on a phone that is
-# not the machine that prepared it.
+# header is the better guess: this view is unauthenticated precisely so the link
+# can be opened away from Home Assistant, and the reader's browser is the only
+# thing that knows what the reader reads.
 TEXT = {
     "el": {
         "confirm_title": "Επιβεβαίωση ανανέωσης",
