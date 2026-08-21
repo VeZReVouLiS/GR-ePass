@@ -1,6 +1,6 @@
 {
   "domain": "gr_epass",
-  "name": "GR e-PASS",
+  "name": "GR e-Pass",
   "codeowners": [
     "@VeZReVouLiS"
   ],
@@ -14,5 +14,5 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/VeZReVouLiS/GR-ePass/issues",
   "requirements": [],
-  "version": "0.5.1"
+  "version": "0.5.2"
 }

@@ -1,4 +1,4 @@
-# GR e-PASS για Home Assistant
+# GR e-Pass για Home Assistant
 
 **Ελληνικά** · [English](https://github.com/VeZReVouLiS/GR-ePass/blob/main/README.en.md)
 
@@ -15,9 +15,9 @@ Custom integration που φέρνει τα δεδομένα των **προπλ
 > προειδοποίηση. Δεν είναι επίσημο προϊόν καμίας από τις εταιρείες
 > παραχώρησης.
 
-![Η σελίδα e-PASS στο μενού του Home Assistant](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/panel.png)
+![Η σελίδα GR e-Pass στο μενού του Home Assistant](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/panel.png)
 
-*Η σελίδα «e-PASS» που εμφανίζεται μόνη της στο μενού μετά την εγκατάσταση. Κωδικός πελάτη, κάρτα και τελευταία διέλευση είναι δείγματα.*
+*Η σελίδα «GR e-Pass» που εμφανίζεται μόνη της στο μενού μετά την εγκατάσταση. Κωδικός πελάτη, κάρτα και τελευταία διέλευση είναι δείγματα.*
 
 ---
 
@@ -45,9 +45,9 @@ Custom integration που φέρνει τα δεδομένα των **προπλ
 κάθε καταχώρηση είναι ανεξάρτητη, με δικά της entities και δική της κάρτα στη
 σελίδα.
 
-## Η σελίδα «e-PASS»
+## Η σελίδα «GR e-Pass»
 
-Μόλις προστεθεί το integration, εμφανίζεται μια σελίδα **e-PASS** στο μενού.
+Μόλις προστεθεί το integration, εμφανίζεται μια σελίδα **GR e-Pass** στο μενού.
 Δεν χρειάζεται να φτιάξετε dashboard ούτε να γράψετε YAML, και ακολουθεί τη
 γλώσσα του Home Assistant — ελληνικά ή αγγλικά.
 
@@ -68,7 +68,7 @@ Custom integration που φέρνει τα δεδομένα των **προπλ
 1. HACS → Integrations → ⋮ → **Custom repositories**
 2. URL του repo, κατηγορία **Integration**
 3. Εγκατάσταση, μετά **restart** του Home Assistant
-4. Settings → Devices & Services → **Add Integration** → `GR e-PASS`
+4. Settings → Devices & Services → **Add Integration** → `GR e-Pass`
 
 ### Χειροκίνητα
 
@@ -79,7 +79,7 @@ Custom integration που φέρνει τα δεδομένα των **προπλ
 
 ## Ρυθμίσεις μετά την εγκατάσταση
 
-Settings → Devices & Services → GR e-PASS → **Configure**:
+Settings → Devices & Services → GR e-Pass → **Configure**:
 
 - **Πομποδέκτες** — αλλαγή επιλογής (προσθήκη/αφαίρεση)
 - **Συχνότητα ανανέωσης** — 10 έως 1440 λεπτά (default 30)
@@ -285,7 +285,7 @@ data:
 
 ## Παραδείγματα dashboard
 
-Δεν χρειάζεστε κάτι από αυτά: η [σελίδα «e-PASS»](#η-σελίδα-e-pass) εμφανίζεται
+Δεν χρειάζεστε κάτι από αυτά: η [σελίδα «GR e-Pass»](#η-σελίδα-gr-e-pass) εμφανίζεται
 μόνη της και δείχνει τα ίδια, σε δύο κολόνες και στη γλώσσα σας. Είναι εδώ για
 όποιον θέλει τα δεδομένα μέσα στο **δικό του** dashboard.
 

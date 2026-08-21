@@ -1,4 +1,4 @@
-# GR e-PASS for Home Assistant
+# GR e-Pass for Home Assistant
 
 [Ελληνικά](https://github.com/VeZReVouLiS/GR-ePass/blob/main/README.md) · **English**
 
@@ -17,9 +17,9 @@ prepaid electronic toll subscription used on them.
 > Angular bundle. They work today but may change without notice. This is not an
 > official product of any of the concession companies.
 
-![The e-PASS page in the Home Assistant sidebar](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/panel-en.png)
+![The GR e-Pass page in the Home Assistant sidebar](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/panel-en.png)
 
-*The "e-PASS" page, which appears in the sidebar on its own after install. Customer number, card and last pass are sample values.*
+*The "GR e-Pass" page, which appears in the sidebar on its own after install. Customer number, card and last pass are sample values.*
 
 ---
 
@@ -46,9 +46,9 @@ subscription details and recent activity, and computes the statistics locally.
 Want a second operator, or a second subscription? Add the integration again —
 each entry is independent, with its own entities and its own card on the page.
 
-## The "e-PASS" page
+## The "GR e-Pass" page
 
-As soon as the integration is added, an **e-PASS** page appears in the sidebar.
+As soon as the integration is added, the **GR e-Pass** page appears in the sidebar.
 There is no dashboard to build and no YAML to write, and it follows the Home
 Assistant language — Greek or English.
 
@@ -69,7 +69,7 @@ bank's own page. Details under
 1. HACS → Integrations → ⋮ → **Custom repositories**
 2. Paste the repository URL, category **Integration**
 3. Install, then **restart** Home Assistant
-4. Settings → Devices & Services → **Add Integration** → `GR e-PASS`
+4. Settings → Devices & Services → **Add Integration** → `GR e-Pass`
 
 ### Manually
 
@@ -80,7 +80,7 @@ The steps you go through when adding it are under [What it does](#what-it-does).
 
 ## Options
 
-Settings → Devices & Services → GR e-PASS → **Configure**:
+Settings → Devices & Services → GR e-Pass → **Configure**:
 
 - **Transponders** — change the selection
 - **Update interval** — 10 to 1440 minutes (default 30)
@@ -266,7 +266,7 @@ along with the rest of the order and cannot be changed by the integration. That
 page needs a portal login, so it usually shows a sign-in form instead.
 
 The same receipt is available over the API, with the token the integration
-already holds. The e-PASS page shows a **View receipt** button once a payment has
+already holds. The GR e-Pass page shows a **View receipt** button once a payment has
 been handed to the bank, which opens it in a window of its own with print / PDF
 and back buttons. It is also a service, for automations:
 
@@ -282,7 +282,7 @@ band; asked too early, the answer is `found: false`.
 
 ## Dashboard examples
 
-You need none of these: the [e-PASS page](#the-e-pass-page) appears on its own
+You need none of these: the [GR e-Pass page](#the-gr-e-pass-page) appears on its own
 and shows the same things, in two columns and in your language. They are here for
 anyone who wants the data on **their own** dashboard.
 

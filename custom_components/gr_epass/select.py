@@ -1,4 +1,4 @@
-"""Stored-card picker for GR e-PASS.
+"""Stored-card picker for GR e-Pass.
 
 A top-up reuses a card that the bank has already tokenised. There is no way to
 add a card from here: SaveStoredCard only stores an alias, and the token itself

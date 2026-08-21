@@ -1,4 +1,4 @@
-"""Sidebar panel registration for GR e-PASS.
+"""Sidebar panel registration for GR e-Pass.
 
 Home Assistant lets an integration serve its own frontend module and register it
 as a panel, so the user gets a working screen straight after install without
@@ -26,7 +26,7 @@ _LOGGER = logging.getLogger(__name__)
 PANEL_FILE = "gr-epass-panel.js"
 PANEL_COMPONENT = "gr-epass-panel"
 PANEL_URL = f"/{DOMAIN}-panel/{PANEL_FILE}"
-PANEL_TITLE = "e-PASS"
+PANEL_TITLE = "GR e-Pass"
 PANEL_ICON = "mdi:boom-gate-arrow-up"
 
 _REGISTERED = f"{DOMAIN}_panel_registered"

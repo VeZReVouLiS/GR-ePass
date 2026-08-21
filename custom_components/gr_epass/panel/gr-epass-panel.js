@@ -1,5 +1,5 @@
 /*
- * Sidebar panel for the GR e-PASS integration.
+ * Sidebar panel for the GR e-Pass integration.
  *
  * Served by the integration itself, so there is no build step and no HACS
  * frontend plugin to install separately: plain custom element, no framework.

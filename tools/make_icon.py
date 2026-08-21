@@ -1,4 +1,4 @@
-"""Generate the brand icon for the GR e-PASS integration.
+"""Generate the brand icon for the GR e-Pass integration.
 
 A toll booth with a raised barrier, written straight into the integration.
 Since Home Assistant 2026.3 a custom integration serves its own brand images

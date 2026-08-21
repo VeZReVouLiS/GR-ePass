@@ -1,4 +1,4 @@
-"""Top-up flow for GR e-PASS.
+"""Top-up flow for GR e-Pass.
 
 Home Assistant cannot charge a card. The e-PASS backend only *signs* an order
 (``PrepAlphaPayment`` returns a ``Digest``); the money moves when those fields

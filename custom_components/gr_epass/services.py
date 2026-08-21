@@ -1,4 +1,4 @@
-"""Services for GR e-PASS.
+"""Services for GR e-Pass.
 
 ``get_receipt`` fetches the operator's receipt for one payment order. It exists
 because the bank sends the payer back to the portal's own receipt page, which

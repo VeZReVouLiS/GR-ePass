@@ -21,6 +21,39 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.5.2] — 2026-08-21
+
+### 🇬🇷 Ελληνικά
+
+**Άλλαξαν**
+
+- Το εμφανιζόμενο όνομα γράφεται πλέον **GR e-Pass**.
+- Η σελίδα στο μενού λέγεται **GR e-Pass** αντί «e-PASS». Το πρόθεμα ξεχωρίζει
+  τους ελληνικούς παρόχους, ώστε να υπάρχει χώρος αν προστεθούν κάποτε πάροχοι
+  εκτός Ελλάδας.
+
+Το `e-PASS` μένει ως έχει όπου αναφέρεται στο **προϊόν των παρόχων** («my
+e-PASS», «συνδρομή e-PASS») — έτσι το γράφουν οι ίδιοι.
+
+Τα entity ids **δεν αλλάζουν**: παράγονται από το όνομα της συσκευής, που
+παραμένει `e-PASS <κωδικός>`. Ούτε η διεύθυνση της σελίδας αλλάζει, παραμένει
+`/gr_epass` — αλλάζει μόνο η ετικέτα στο μενού.
+
+### 🇬🇧 English
+
+**Changed**
+
+- The display name is now spelled **GR e-Pass**.
+- The sidebar page is called **GR e-Pass** rather than "e-PASS". The prefix marks
+  these as the Greek operators, leaving room for operators outside Greece later.
+
+`e-PASS` is left alone wherever it refers to the **operators' own product** ("my
+e-PASS", "e-PASS subscription") — that is how they spell it.
+
+Entity ids **do not change**: they come from the device name, which stays
+`e-PASS <account id>`. The page url is unchanged too, still `/gr_epass`; only the
+sidebar label moves.
+
 ## [0.5.1] — 2026-08-21
 
 Έκδοση μόνο τεκμηρίωσης. Ο κώδικας είναι πανομοιότυπος με το 0.5.0.
@@ -413,7 +446,8 @@ integration already holds, so Home Assistant can fetch it itself.
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.2...HEAD
+[0.5.2]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.3.0...v0.4.0

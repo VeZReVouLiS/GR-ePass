@@ -1,4 +1,4 @@
-"""Adjustable numbers for GR e-PASS.
+"""Adjustable numbers for GR e-Pass.
 
 Two controls, both defaulting to figures the operator publishes for the vehicle
 category of the monitored transponders, so a fresh install is already sensible

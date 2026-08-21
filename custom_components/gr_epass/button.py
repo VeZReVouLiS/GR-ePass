@@ -1,4 +1,4 @@
-"""Prepare a top-up for GR e-PASS.
+"""Prepare a top-up for GR e-Pass.
 
 Pressing this does not charge anything. It asks the e-PASS backend to sign an
 order for the selected card and amount, then publishes a one-shot confirmation
