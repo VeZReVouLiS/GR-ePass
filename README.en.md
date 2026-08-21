@@ -27,14 +27,24 @@ prepaid electronic toll subscription used on them.
 
 During setup:
 
-1. You enter your my e-PASS **username and password**.
-2. If your login holds **several subscriptions**, you pick which one to add
+1. You pick the **operator** — Nea Attiki Odos or Nea Egnatia Odos.
+2. You enter the **username and password** for **that** operator's portal. The
+   same username exists independently on each one, so Attiki Odos credentials
+   will not work on Egnatia and the other way round.
+3. If your login holds **several subscriptions**, you pick which one to add
    (repeat the flow for the others).
-3. You choose **which transponders** to track: "All" (including any added later)
+4. You choose **which transponders** to track: "All" (including any added later)
    or specific ones.
+
+![The add step, with the operator picker](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/onboarding.png)
+
+![The operator list](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/onboarding-operators.png)
 
 After that, every 30 minutes (configurable 10–1440) the integration fetches the
 subscription details and recent activity, and computes the statistics locally.
+
+Want a second operator, or a second subscription? Add the integration again —
+each entry is independent, with its own entities and its own card on the page.
 
 ## The "e-PASS" page
 
@@ -66,14 +76,7 @@ bank's own page. Details under
 Copy `custom_components/gr_epass` into your Home Assistant
 `config/custom_components/` and restart.
 
-### Adding it
-
-![The add step, with the operator picker](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/onboarding.png)
-![The operator list](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/onboarding-operators.png)
-
-Pick the operator, then sign in with the credentials you use on **its** portal —
-the same username exists independently on each one. If the account has several
-subscriptions a picker follows, and then the transponder selection.
+The steps you go through when adding it are under [What it does](#what-it-does).
 
 ## Options
 
