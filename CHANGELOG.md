@@ -34,11 +34,6 @@ Documentation only. The code is identical to 0.6.3.
   `link_result_at`, ότι το endpoint ακύρωσης δέχεται **μόνο POST** και γιατί, και
   ότι η σελίδα πιάνει όλο το πλάτος με γραμματοσειρά που κλιμακώνεται.
 
-**Γνωστό ξεμείνει**
-
-Τα screenshots `docs/images/panel*.png` είναι από πριν το 0.6.2: δείχνουν στενή
-κάρτα και τον σύνδεσμο πληρωμής ως link αντί για κουμπί.
-
 ### 🇬🇧 English
 
 - Both READMEs now cover **cancelling** (from either place, and that it drops the
@@ -46,11 +41,6 @@ Documentation only. The code is identical to 0.6.3.
   `link_result` and `link_result_at` attributes, that the cancel endpoint is
   **POST only** and why, and that the page takes the full width with type that
   scales.
-
-**Known gap**
-
-The `docs/images/panel*.png` screenshots predate 0.6.2: they show the narrow card
-and the payment link as a link rather than a button.
 
 ## [0.6.3] — 2026-08-21
 
