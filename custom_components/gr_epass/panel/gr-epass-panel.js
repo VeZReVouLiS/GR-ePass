@@ -94,6 +94,10 @@ const LABELS = {
     refresh: "Ανανέωση στοιχείων",
     linkReady: "Έτοιμο. Άνοιξε τον σύνδεσμο για να ολοκληρώσεις.",
     linkOpen: "Ολοκλήρωση πληρωμής",
+    linkCancel: "Ακύρωση",
+    linkCancelling: "Ακυρώνεται…",
+    linkExpires: "Λήγει σε",
+    linkExpired: "Ο σύνδεσμος έληξε.",
     noCard: "Δεν υπάρχει αποθηκευμένη κάρτα. Η πρώτη χρέωση γίνεται στο my e-PASS, με «αποθήκευση κάρτας».",
     externalNet: "σε άλλο δίκτυο",
     lane: "λωρίδα",
@@ -148,6 +152,10 @@ const LABELS = {
     refresh: "Refresh data",
     linkReady: "Ready. Open the link to finish.",
     linkOpen: "Complete payment",
+    linkCancel: "Cancel",
+    linkCancelling: "Cancelling…",
+    linkExpires: "Expires in",
+    linkExpired: "The link has expired.",
     noCard: "No stored card. The first charge happens on my e-PASS, with \"save card\" ticked.",
     externalNet: "on another network",
     lane: "lane",
@@ -163,13 +171,29 @@ const LABELS = {
 const STYLE = `
   :host { display: block; }
   .wrap { max-width: 640px; margin: 0 auto; padding: 16px; }
-  /* Two columns once there is room for them; one column on a phone. */
+  /* Two columns once there is room for them; one column on a phone.
+     The cap follows the window rather than stopping at a fixed pixel width, so
+     a wide desktop gets a wide card. It is still a cap: each row puts its label
+     left and its value right, and past roughly 600px of column the two drift so
+     far apart that the pair stops reading as one line. 1260px is what leaves
+     each of the two columns just under that. */
   @media (min-width: 900px) {
-    .wrap { max-width: 1040px; }
+    .wrap { max-width: min(94vw, 1260px); }
     .body { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px;
             align-items: start; }
     .col > h3:first-child { margin-top: 0; }
   }
+  .linkRow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+             margin-top: 8px; }
+  .linkRow a { font-weight: 600; }
+  .linkRow .cancelLink { background: none; border: none; padding: 0; margin: 0;
+                         width: auto; font: inherit; color: var(--error-color, #c22);
+                         cursor: pointer; text-decoration: underline; }
+  .countdown { font-size: 12px; color: var(--secondary-text-color);
+               margin-top: 6px; }
+  .countdown b { color: var(--primary-text-color);
+                 font-variant-numeric: tabular-nums; }
+  .countdown.low b { color: var(--error-color, #c22); }
   .card { background: var(--ha-card-background, var(--card-background-color, #fff));
           border-radius: var(--ha-card-border-radius, 12px);
           box-shadow: var(--ha-card-box-shadow, 0 2px 4px rgba(0,0,0,.14));
@@ -813,13 +837,94 @@ class GrEpassPanel extends HTMLElement {
     if (!available) {
       box.className = "warn";
       box.textContent = t.noCard;
+      box.dataset.link = "";
     } else if (link) {
       box.className = "ok";
-      box.innerHTML = `${t.linkReady}<a class="finish" href="${link}" target="_blank" rel="noopener">${t.linkOpen}</a>`;
+      // Rebuilt only when the link itself changes, so the running countdown and
+      // a half-pressed cancel survive the state updates that arrive meanwhile.
+      if (box.dataset.link !== link) {
+        box.dataset.link = link;
+        box.innerHTML =
+          `<div>${t.linkReady}</div>` +
+          `<div class="linkRow">` +
+          `<a class="finish" href="${link}" target="_blank" rel="noopener">${t.linkOpen}</a>` +
+          `<button class="cancelLink" type="button">${t.linkCancel}</button>` +
+          `</div>` +
+          `<div class="countdown" data-expires="${button.attributes.link_expires || ""}"></div>`;
+        box.querySelector(".cancelLink").addEventListener("click", (event) => {
+          this._cancelLink(event.currentTarget, link);
+        });
+      }
+      this._paintCountdown(box.querySelector(".countdown"));
     } else {
       box.className = "";
       box.textContent = "";
+      box.dataset.link = "";
     }
+  }
+
+  /*
+   * Drops the order server side.
+   *
+   * Posted to the path rather than to the attribute's absolute url: that url is
+   * built from the external address so the browser could be talking to a
+   * different origin, and this view answers no preflight. POST because the
+   * cancel route refuses GET on purpose -- see payment.py.
+   */
+  async _cancelLink(trigger, link) {
+    const t = this._t;
+    trigger.disabled = true;
+    trigger.textContent = t.linkCancelling;
+    try {
+      let path = link;
+      try {
+        path = new URL(link).pathname;
+      } catch (err) {
+        /* Already relative. */
+      }
+      await fetch(`${path}/cancel`, { method: "POST" });
+    } catch (err) {
+      trigger.disabled = false;
+      trigger.textContent = t.linkCancel;
+      return;
+    }
+    // The button entity forgets the link through the manager's watcher, which
+    // pushes a state update; that clears this box on the next paint.
+  }
+
+  /* Ticks towards the same absolute instant the confirmation page counts to. */
+  _paintCountdown(node) {
+    if (!node) return;
+    const t = this._t;
+    const iso = node.dataset.expires;
+    if (!iso) {
+      node.textContent = "";
+      return;
+    }
+    const left = Math.floor((new Date(iso).getTime() - Date.now()) / 1000);
+    if (left <= 0) {
+      node.className = "countdown low";
+      node.innerHTML = t.linkExpired;
+      return;
+    }
+    const mm = Math.floor(left / 60);
+    const ss = left % 60;
+    node.className = left <= 60 ? "countdown low" : "countdown";
+    node.innerHTML = `${t.linkExpires} <b>${mm}:${ss < 10 ? "0" : ""}${ss}</b>`;
+  }
+
+  connectedCallback() {
+    // The state only changes when the link appears or goes, so the countdown
+    // needs its own heartbeat to move between those moments.
+    this._ticker = setInterval(() => {
+      const nodes = this.shadowRoot?.querySelectorAll(".countdown") || [];
+      for (const node of nodes) this._paintCountdown(node);
+    }, 1000);
+  }
+
+  disconnectedCallback() {
+    clearInterval(this._ticker);
+    this._ticker = null;
   }
 }
 

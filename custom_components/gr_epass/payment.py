@@ -113,8 +113,24 @@ class PreparedOrder:
     created: datetime = field(default_factory=dt_util.utcnow)
 
     @property
+    def expires_at(self) -> datetime:
+        return self.created + ORDER_TTL
+
+    @property
     def expired(self) -> bool:
         return dt_util.utcnow() - self.created > ORDER_TTL
+
+    @property
+    def remaining(self) -> int:
+        """Whole seconds left, never negative.
+
+        Computed on the server and handed to the confirmation page, rather than
+        letting the page count towards an absolute timestamp: a phone with a
+        skewed clock would otherwise show a different number than Home
+        Assistant does for the very same order.
+        """
+        left = (self.expires_at - dt_util.utcnow()).total_seconds()
+        return max(0, int(left))
 
 
 class EpassPaymentManager:
@@ -248,6 +264,18 @@ class EpassPaymentManager:
             self._close(nonce)
         return order
 
+    def cancel(self, nonce: str) -> bool:
+        """Drop an order without using it. Returns whether one was there.
+
+        Goes through the same close path as a consumed order, so the button
+        entity forgets its link and the panel stops offering it.
+        """
+        order = self._orders.pop(nonce, None)
+        self._close(nonce)
+        if order is not None:
+            _LOGGER.info("Top-up order %s cancelled", order.fields.get("orderid"))
+        return order is not None
+
     def peek(self, nonce: str) -> PreparedOrder | None:
         self._purge()
         return self._orders.get(nonce)
@@ -299,6 +327,29 @@ class EpassPaymentView(HomeAssistantView):
         return web.Response(text=_page_handoff(order), content_type="text/html")
 
 
+class EpassPaymentCancelView(HomeAssistantView):
+    """Throws away an order that the payer decided against.
+
+    POST only, deliberately. Chat apps fetch a link to build its preview, and a
+    cancel that answered GET would be triggered by that preview alone -- the
+    order would be gone before anyone tapped anything.
+    """
+
+    url = PAY_URL + "/{nonce}/cancel"
+    name = f"api:{DOMAIN}:pay:cancel"
+    requires_auth = False
+
+    def __init__(self, manager: EpassPaymentManager) -> None:
+        self._manager = manager
+
+    async def post(self, request, nonce: str):
+        self._manager.cancel(nonce)
+        # Answers the same either way: a second press, or a link that had
+        # already expired, should still read as "cancelled" rather than as an
+        # error the payer has to make sense of.
+        return web.Response(text=_page_cancelled(), content_type="text/html")
+
+
 _STYLE = """
   body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
          background:#f4f4f4; color:#14140f; }
@@ -313,7 +364,14 @@ _STYLE = """
   button { width:100%; margin-top:20px; padding:14px; border:none;
            border-radius:8px; background:#024e7e; color:#fff; font-size:16px;
            font-weight:600; cursor:pointer; }
+  button.cancel { background:transparent; color:#024e7e;
+                  border:1px solid rgba(2,78,126,.35); margin-top:10px; }
+  button:disabled { opacity:.45; cursor:default; }
   .note { font-size:12px; color:#666; margin-top:14px; line-height:1.45; }
+  .timer { margin-top:14px; font-size:13px; color:#666; text-align:center; }
+  .timer b { color:#14140f; font-variant-numeric:tabular-nums; }
+  .timer.low b { color:#c22; }
+  a.back { display:block; margin-top:18px; text-align:center; color:#024e7e; }
 """
 
 
@@ -340,6 +398,35 @@ def _page_expired() -> str:
     )
 
 
+_COUNTDOWN_JS = """
+(function () {
+  var left = %(remaining)d;
+  var box = document.getElementById('t');
+  var num = document.getElementById('tn');
+  var go = document.getElementById('go');
+  var stop = document.getElementById('stop');
+  function paint() {
+    if (left <= 0) {
+      box.textContent = 'Ο σύνδεσμος έληξε. Ξεκίνα νέα ανανέωση από το Home Assistant.';
+      box.className = 'timer low';
+      if (go) go.disabled = true;
+      if (stop) stop.disabled = true;
+      return true;
+    }
+    var m = Math.floor(left / 60), s = left %% 60;
+    num.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+    box.className = left <= 60 ? 'timer low' : 'timer';
+    return false;
+  }
+  if (paint()) return;
+  var tick = setInterval(function () {
+    left -= 1;
+    if (paint()) clearInterval(tick);
+  }, 1000);
+})();
+"""
+
+
 def _page_confirm(order: PreparedOrder) -> str:
     """Step 1: show what will be charged. Nothing has happened yet."""
     return (
@@ -352,10 +439,32 @@ def _page_confirm(order: PreparedOrder) -> str:
         f"<div class='amount'>{_money(order.amount)}</div>"
         f"<div class='muted'>{escape(order.card_label)}</div>"
         "<form method='post'>"
-        "<button type='submit'>Συνέχεια στην τράπεζα</button></form>"
+        "<button id='go' type='submit'>Συνέχεια στην τράπεζα</button></form>"
+        "<form method='post' action='cancel'>"
+        "<button id='stop' class='cancel' type='submit'>Ακύρωση συναλλαγής"
+        "</button></form>"
+        "<div class='timer' id='t'>Ο σύνδεσμος λήγει σε <b id='tn'>--:--</b>"
+        "</div>"
         "<p class='note'>Πατώντας «Συνέχεια» θα μεταφερθείς στη σελίδα της "
         "Alpha Bank, όπου ολοκληρώνεται η χρέωση. Μέχρι τότε δεν έχει γίνει "
         "καμία κίνηση. Ο σύνδεσμος ισχύει για μία χρήση.</p>"
+        "</div></div></div>"
+        f"<script>{_COUNTDOWN_JS % {'remaining': order.remaining}}</script>"
+    )
+
+
+def _page_cancelled() -> str:
+    """Shown after the payer backs out, and for a repeated cancel."""
+    return (
+        "<!doctype html><meta charset='utf-8'>"
+        "<meta name='viewport' content='width=device-width,initial-scale=1'>"
+        f"<title>Ακυρώθηκε</title><style>{_STYLE}</style>"
+        "<div class='wrap'><div class='card'>"
+        "<div class='head'>Η συναλλαγή ακυρώθηκε</div><div class='body'>"
+        "<p>Δεν έγινε καμία χρέωση.</p>"
+        "<p class='muted'>Ο σύνδεσμος δεν ισχύει πλέον. Αν θέλεις να "
+        "συνεχίσεις, ξεκίνα νέα ανανέωση από το Home Assistant.</p>"
+        f"<a class='back' href='/{DOMAIN}'>Επιστροφή στο Home Assistant</a>"
         "</div></div></div>"
     )
 

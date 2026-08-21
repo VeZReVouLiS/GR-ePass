@@ -14,7 +14,11 @@ from .const import CONF_OPERATOR, DOMAIN
 from .operators import get_operator
 from .coordinator import EpassCoordinator
 from .panel import async_register_panel, async_unregister_panel
-from .payment import EpassPaymentManager, EpassPaymentView
+from .payment import (
+    EpassPaymentCancelView,
+    EpassPaymentManager,
+    EpassPaymentView,
+)
 from .services import async_register_services, async_unregister_services
 
 _LOGGER = logging.getLogger(__name__)
@@ -51,6 +55,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: EpassConfigEntry) -> boo
     if "payment" not in store:
         store["payment"] = EpassPaymentManager(hass)
         hass.http.register_view(EpassPaymentView(store["payment"]))
+        hass.http.register_view(EpassPaymentCancelView(store["payment"]))
     coordinator.payment = store["payment"]
 
     await async_register_panel(hass)

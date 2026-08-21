@@ -21,6 +21,72 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.6.0] — 2026-08-21
+
+### 🇬🇷 Ελληνικά
+
+**Προστέθηκαν**
+
+- **Ακύρωση συναλλαγής**, σε δύο σημεία: στη σελίδα GR e-Pass δίπλα στον
+  σύνδεσμο, και μέσα στην ίδια τη σελίδα επιβεβαίωσης. Η ακύρωση **σβήνει την
+  εντολή από τον server** — ο σύνδεσμος παύει να ισχύει την ίδια στιγμή, δεν
+  κρύβεται απλώς το κουμπί. Δεύτερο πάτημα ή ήδη ληγμένος σύνδεσμος δείχνουν το
+  ίδιο μήνυμα, όχι σφάλμα.
+- **Αντίστροφη μέτρηση** στα ίδια δύο σημεία. Κάτω από ένα λεπτό γίνεται κόκκινη·
+  στο μηδέν το κουμπί χρέωσης απενεργοποιείται.
+
+**Άλλαξαν**
+
+- Η κάρτα ακολουθεί το πλάτος του παραθύρου αντί να σταματά στα 1040px:
+  `min(94vw, 1260px)`. Το όριο υπάρχει επειδή κάθε γραμμή βάζει την ετικέτα
+  αριστερά και την τιμή δεξιά — πάνω από ~600px στήλης οι δύο απομακρύνονται
+  τόσο που παύουν να διαβάζονται ως ζευγάρι. Στο κινητό δεν αλλάζει τίποτα.
+
+**Γιατί οι δύο μετρητές συμφωνούν**
+
+Η σελίδα επιβεβαίωσης παίρνει τα **δευτερόλεπτα που απομένουν υπολογισμένα από
+τον server** τη στιγμή που φορτώνει, αντί να μετράει προς μια απόλυτη ώρα: ένα
+κινητό με στραβό ρολόι θα έδειχνε αλλιώς από το Home Assistant για την ίδια
+εντολή. Άρα αν η σελίδα GR e-Pass λέει 5 λεπτά, το ίδιο θα πει και ο σύνδεσμος.
+
+**Σημείωση ασφάλειας**
+
+Το endpoint ακύρωσης δέχεται **μόνο POST**. Οι εφαρμογές συνομιλίας κατεβάζουν
+τους συνδέσμους για να φτιάξουν preview· ένα cancel που απαντούσε σε GET θα
+ακύρωνε την εντολή μόνο του, πριν πατήσει κανείς τίποτα.
+
+### 🇬🇧 English
+
+**Added**
+
+- **Cancel the transaction**, in two places: on the GR e-Pass page next to the
+  link, and inside the confirmation page itself. Cancelling **drops the order
+  server side** — the link stops working at that moment rather than the button
+  merely being hidden. A second press, or an already expired link, reads as
+  cancelled rather than as an error.
+- **A countdown** in those same two places. It turns red under a minute, and at
+  zero the charge button is disabled.
+
+**Changed**
+
+- The card follows the window width instead of stopping at 1040px:
+  `min(94vw, 1260px)`. The cap stays because each row puts its label left and its
+  value right, and past roughly 600px of column the two drift so far apart that
+  the pair stops reading as one line. Nothing changes on a phone.
+
+**Why the two counters agree**
+
+The confirmation page is handed the **remaining seconds as the server computed
+them** when it loaded, rather than counting towards an absolute time: a phone
+with a skewed clock would otherwise disagree with Home Assistant about the very
+same order. So if the GR e-Pass page says five minutes, the link says five too.
+
+**A note on safety**
+
+The cancel endpoint accepts **POST only**. Chat apps fetch links to build their
+previews, and a cancel that answered GET would throw the order away by itself,
+before anyone tapped anything.
+
 ## [0.5.3] — 2026-08-21
 
 Περιέχει τα 0.5.1 και 0.5.2, που δεν έφτασαν ποτέ σε release.
@@ -477,7 +543,8 @@ integration already holds, so Home Assistant can fetch it itself.
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.3...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.3...v0.6.0
 [0.5.3]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.2...v0.5.3
 [0.5.2]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.0...v0.5.1
