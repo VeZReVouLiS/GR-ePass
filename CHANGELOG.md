@@ -21,6 +21,44 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.6.3] — 2026-08-21
+
+### 🇬🇷 Ελληνικά
+
+**Προστέθηκαν**
+
+- Μετά την ακύρωση, η σελίδα GR e-Pass **το λέει**: «Η συναλλαγή ακυρώθηκε. Δεν
+  έγινε καμία χρέωση.» για δώδεκα δευτερόλεπτα. Πριν, ο σύνδεσμος απλώς
+  εξαφανιζόταν — που έμοιαζε ακριβώς σαν να μην είχες πατήσει τίποτα. Λειτουργεί
+  και για τους δύο δρόμους ακύρωσης, από τη σελίδα και από το κουμπί.
+- Το `button.*_prepare_top_up` δημοσιεύει `link_result` («used», «cancelled» ή
+  «expired») και `link_result_at`, ώστε να μπορεί να χτιστεί αυτοματισμός πάνω
+  στο τι απέγινε μια εντολή.
+
+**Γιατί χρειάστηκε**
+
+Ο μηχανισμός που ειδοποιεί για μια εντολή που έκλεισε δεν έλεγε **γιατί** έκλεισε:
+χρήση, ακύρωση και λήξη κατέληγαν στην ίδια σιωπηλή διαγραφή του συνδέσμου. Πλέον
+ο λόγος περνά μέχρι την οντότητα.
+
+### 🇬🇧 English
+
+**Added**
+
+- After a cancel the GR e-Pass page **says so**: "The transaction was cancelled.
+  Nothing was charged." for twelve seconds. Before, the link just vanished, which
+  looked exactly like never having pressed anything. Works for both cancel paths,
+  from the page and from the button.
+- `button.*_prepare_top_up` publishes `link_result` ("used", "cancelled" or
+  "expired") and `link_result_at`, so an automation can react to how an order
+  ended.
+
+**Why it was needed**
+
+The mechanism that reports a closed order did not say **why** it closed: used,
+cancelled and expired all ended in the same silent removal of the link. The
+reason now travels all the way to the entity.
+
 ## [0.6.2] — 2026-08-21
 
 ### 🇬🇷 Ελληνικά
@@ -631,7 +669,8 @@ integration already holds, so Home Assistant can fetch it itself.
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.2...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.3...HEAD
+[0.6.3]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.2...v0.6.3
 [0.6.2]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.3...v0.6.0

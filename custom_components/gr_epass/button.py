@@ -56,6 +56,11 @@ class EpassPrepareTopUp(CoordinatorEntity[EpassCoordinator], ButtonEntity):
         self._attr_device_info = account_device_info(account_id, coordinator.operator)
         self._link: str | None = None
         self._link_expires: str | None = None
+        # How the last order ended, and when. The page needs both: it says
+        # "cancelled" only for a little while, since there is no state change
+        # later to take the message away again.
+        self._link_result: str | None = None
+        self._link_result_at: str | None = None
         self._nonce: str | None = None
         self._unsub_expiry: Callable[[], None] | None = None
 
@@ -71,6 +76,8 @@ class EpassPrepareTopUp(CoordinatorEntity[EpassCoordinator], ButtonEntity):
         return {
             "link": self._link,
             "link_expires": self._link_expires,
+            "link_result": self._link_result,
+            "link_result_at": self._link_result_at,
             # Exposed so the page can offer the receipt for the payment that was
             # just made. The bank sends the payer to the operator's own receipt
             # page, which needs a portal login, so this is the only handle we
@@ -109,6 +116,8 @@ class EpassPrepareTopUp(CoordinatorEntity[EpassCoordinator], ButtonEntity):
         # A previous order is replaced, so stop listening for the old one.
         self._release()
         self._nonce = order.nonce
+        self._link_result = None
+        self._link_result_at = None
         self._link = f"{base}{PAY_URL}/{order.nonce}"
         self._link_expires = dt_util.as_local(order.created + ORDER_TTL).isoformat()
         # The link has to disappear once it cannot be used again, or the page
@@ -144,17 +153,19 @@ class EpassPrepareTopUp(CoordinatorEntity[EpassCoordinator], ButtonEntity):
         if manager is not None and self._nonce is not None:
             manager.unwatch(self._nonce)
 
-    def _drop_link(self) -> None:
-        """Forget the link. Called when the order is used or purged."""
+    def _drop_link(self, reason: str = "expired") -> None:
+        """Forget the link, remembering how the order ended."""
         self._release()
         self._nonce = None
         self._link = None
         self._link_expires = None
+        self._link_result = reason
+        self._link_result_at = dt_util.utcnow().isoformat()
         self.async_write_ha_state()
 
     def _on_expired(self, _now) -> None:
         self._unsub_expiry = None
-        self._drop_link()
+        self._drop_link("expired")
 
     async def async_will_remove_from_hass(self) -> None:
         self._release()

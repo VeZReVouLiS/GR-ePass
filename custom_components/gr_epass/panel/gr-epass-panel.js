@@ -57,6 +57,9 @@ const NETWORKS = {
   egnatia: { el: "Εγνατία Οδός", en: "Egnatia Odos" },
 };
 
+// How long a "cancelled" note stays on the page.
+const NOTE_MS = 12000;
+
 const LABELS = {
   el: {
     balance: "Υπόλοιπο",
@@ -106,6 +109,7 @@ const LABELS = {
     linkCancelling: "Ακυρώνεται…",
     linkExpires: "Λήγει σε",
     linkExpired: "Ο σύνδεσμος έληξε.",
+    linkCancelled: "Η συναλλαγή ακυρώθηκε. Δεν έγινε καμία χρέωση.",
     noCard: "Δεν υπάρχει αποθηκευμένη κάρτα. Η πρώτη χρέωση γίνεται στο my e-PASS, με «αποθήκευση κάρτας».",
     externalNet: "σε άλλο δίκτυο",
     lane: "λωρίδα",
@@ -164,6 +168,7 @@ const LABELS = {
     linkCancelling: "Cancelling…",
     linkExpires: "Expires in",
     linkExpired: "The link has expired.",
+    linkCancelled: "The transaction was cancelled. Nothing was charged.",
     noCard: "No stored card. The first charge happens on my e-PASS, with \"save card\" ticked.",
     externalNet: "on another network",
     lane: "lane",
@@ -874,9 +879,23 @@ class GrEpassPanel extends HTMLElement {
       }
       this._paintCountdown(box.querySelector(".countdown"));
     } else {
-      box.className = "";
-      box.textContent = "";
       box.dataset.link = "";
+      // A cancel leaves nothing on screen otherwise: the link simply vanishes,
+      // which looks the same as never having pressed anything. Shown briefly,
+      // then cleared by the ticker -- no further state change is coming.
+      const at = button?.attributes?.link_result_at || "";
+      const cancelled = button?.attributes?.link_result === "cancelled";
+      if (cancelled && at && Date.now() - new Date(at).getTime() < NOTE_MS) {
+        if (box.dataset.note !== at) {
+          box.dataset.note = at;
+          box.className = "ok";
+          box.textContent = t.linkCancelled;
+        }
+      } else if (box.dataset.note || box.textContent) {
+        box.dataset.note = "";
+        box.className = "";
+        box.textContent = "";
+      }
     }
   }
 
@@ -936,6 +955,14 @@ class GrEpassPanel extends HTMLElement {
     this._ticker = setInterval(() => {
       const nodes = this.shadowRoot?.querySelectorAll(".countdown") || [];
       for (const node of nodes) this._paintCountdown(node);
+      for (const box of this.shadowRoot?.querySelectorAll("[data-note]") || []) {
+        const at = box.dataset.note;
+        if (at && Date.now() - new Date(at).getTime() >= NOTE_MS) {
+          box.dataset.note = "";
+          box.className = "";
+          box.textContent = "";
+        }
+      }
     }, 1000);
   }
 

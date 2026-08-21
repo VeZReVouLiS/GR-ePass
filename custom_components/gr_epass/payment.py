@@ -139,8 +139,9 @@ class EpassPaymentManager:
     def __init__(self, hass: HomeAssistant) -> None:
         self._hass = hass
         self._orders: dict[str, PreparedOrder] = {}
-        # nonce -> callback, fired once when that order stops being usable.
-        self._watchers: dict[str, Callable[[], None]] = {}
+        # nonce -> callback, fired once when that order stops being usable,
+        # told which of the three ways it ended so the entity can say so.
+        self._watchers: dict[str, Callable[[str], None]] = {}
         # The last order actually handed to the bank. The receipt is keyed by
         # order id and there is nowhere else to read it from afterwards: the
         # bank returns the payer to the operator's own page, not to us.
@@ -151,17 +152,20 @@ class EpassPaymentManager:
         """Order id of the most recent handoff, if any."""
         return self._last_handoff
 
-    def watch(self, nonce: str, on_closed: Callable[[], None]) -> None:
-        """Ask to be told when this order is consumed or purged."""
+    def watch(self, nonce: str, on_closed: Callable[[str], None]) -> None:
+        """Ask to be told when this order stops being usable.
+
+        The callback receives the reason: "used", "cancelled" or "expired".
+        """
         self._watchers[nonce] = on_closed
 
     def unwatch(self, nonce: str) -> None:
         self._watchers.pop(nonce, None)
 
-    def _close(self, nonce: str) -> None:
+    def _close(self, nonce: str, reason: str) -> None:
         watcher = self._watchers.pop(nonce, None)
         if watcher is not None:
-            watcher()
+            watcher(reason)
 
     async def async_prepare(
         self,
@@ -261,7 +265,7 @@ class EpassPaymentManager:
             # run, because one of them writes entity state and would otherwise
             # publish the previous order id.
             self._last_handoff = order.fields.get("orderid") or None
-            self._close(nonce)
+            self._close(nonce, "used")
         return order
 
     def cancel(self, nonce: str) -> bool:
@@ -271,7 +275,7 @@ class EpassPaymentManager:
         entity forgets its link and the panel stops offering it.
         """
         order = self._orders.pop(nonce, None)
-        self._close(nonce)
+        self._close(nonce, "cancelled")
         if order is not None:
             _LOGGER.info("Top-up order %s cancelled", order.fields.get("orderid"))
         return order is not None
@@ -283,7 +287,7 @@ class EpassPaymentManager:
     def _purge(self) -> None:
         for nonce in [n for n, o in self._orders.items() if o.expired]:
             del self._orders[nonce]
-            self._close(nonce)
+            self._close(nonce, "expired")
 
 
 class EpassPaymentView(HomeAssistantView):
