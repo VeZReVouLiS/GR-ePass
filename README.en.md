@@ -55,7 +55,9 @@ Assistant language — Greek or English.
 It shows the balance in the portal's own colours, the subscription details, this
 month's activity, the last pass, the top-up controls, and a section per
 transponder with its vehicle category and its own passes. On a desktop window it
-splits into two columns; on a phone it stacks into one.
+splits into two columns; on a phone it stacks into one. It takes the full width
+available and the type scales with the window, so a large screen does not show a
+phone-sized card.
 
 The **Prepare payment** button charges nothing: it creates a single-use link,
 valid for 10 minutes, that shows the amount and card before handing you to the
@@ -201,15 +203,29 @@ What does work:
 1. Pick a card (`select`) and an amount (`number`).
 2. Press `button.*_prepare_top_up`. An order is signed — **no charge**.
 3. A **single-use** link is published, valid for 10 minutes, in the button's
-   `link` attribute and in the `gr_epass_payment_ready` event.
+   `link` and `link_expires` attributes and in the `gr_epass_payment_ready` event.
 4. Opening it shows the amount and card. One click hands off to the bank and
    completes the charge.
+5. Or **cancel** — from the GR e-Pass page or from the confirmation page itself.
+   Cancelling **drops the order server side**, so the link stops working at that
+   moment rather than the button merely being hidden.
+
+Both places run a **countdown**. The confirmation page is handed the remaining
+seconds as the server computed them when it loaded, so it says the same thing as
+Home Assistant even if the phone's clock is off.
+
+How the last order ended is published as `link_result` — `used`, `cancelled` or
+`expired` — with a `link_result_at` timestamp.
 
 The link is deliberately unauthenticated so it opens with one tap from a chat
 message on a phone. It is protected by a 128-bit nonce, single use, a 10-minute
 expiry, and by the amount and card being locked into the signature — the link
 cannot be edited into a different charge. The worst a leaked link can do is top
 up the owner's own toll balance.
+
+The cancel endpoint accepts **POST only**. Chat apps fetch links to build their
+previews, and a cancel that answered GET would throw the order away by itself —
+before anyone tapped anything.
 
 **The first charge has to happen on the portal**, with "save card" ticked.
 `SaveStoredCard` only stores an alias; the token is minted by the bank during a
