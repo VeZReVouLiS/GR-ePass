@@ -1,0 +1,54 @@
+# Φτιάχνει το GitHub Release μόλις πουσαριστεί tag «v*».
+#
+# Γιατί υπάρχει: το HACS διαβάζει **releases**, όχι tags και όχι το main. Ένα tag
+# χωρίς release είναι αόρατο — δεν εμφανίζεται αναβάθμιση, και η καρτέλα στο
+# store συνεχίζει να δείχνει το README της προηγούμενης έκδοσης. Όσο το release
+# το έφτιαχνε άνθρωπος, αυτό ξεχνιόταν.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+# Χρειάζεται εγγραφή για να δημιουργηθεί το release. Το GITHUB_TOKEN της ίδιας
+# της εκτέλεσης αρκεί, δεν θέλει δικό μας secret.
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # Το HACS παίρνει την έκδοση από το manifest, όχι από το tag. Αν
+      # αποκλίνουν, ο κόσμος βλέπει άλλο νούμερο στο store και άλλο στο
+      # integration -- καλύτερα να σκάσει εδώ.
+      - name: Το manifest να ταιριάζει με το tag
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          manifest="$(python3 -c "import json; print(json.load(open('custom_components/gr_epass/manifest.json'))['version'])")"
+          echo "tag=${tag}  manifest=${manifest}"
+          if [ "${tag}" != "${manifest}" ]; then
+            echo "::error::Το tag ${GITHUB_REF_NAME} δεν ταιριάζει με το manifest ${manifest}"
+            exit 1
+          fi
+
+      - name: Σημειώσεις από το CHANGELOG
+        run: python3 .github/release_notes.py "${GITHUB_REF_NAME}" > notes.md
+
+      # Το gh είναι προεγκατεστημένο στους runners του GitHub. Το edit καλύπτει
+      # την επανάληψη: αν το tag ξαναπουσαριστεί, το release ενημερώνεται αντί
+      # να αποτύχει.
+      - name: Δημιουργία ή ενημέρωση του release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="GR e-Pass ${GITHUB_REF_NAME#v}"
+          if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
+            gh release edit "${GITHUB_REF_NAME}" --title "${title}" --notes-file notes.md
+          else
+            gh release create "${GITHUB_REF_NAME}" --title "${title}" --notes-file notes.md
+          fi

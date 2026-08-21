@@ -21,6 +21,37 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.5.3] — 2026-08-21
+
+Περιέχει τα 0.5.1 και 0.5.2, που δεν έφτασαν ποτέ σε release.
+Includes 0.5.1 and 0.5.2, which never reached a release.
+
+### 🇬🇷 Ελληνικά
+
+**Διορθώθηκαν**
+
+- Οι 0.5.1 και 0.5.2 είχαν tag αλλά **κανένα GitHub Release**. Το HACS διαβάζει
+  releases, όχι tags: δεν εμφανιζόταν αναβάθμιση και η καρτέλα στο store
+  συνέχιζε να δείχνει το README του 0.5.0, με τις εικόνες σπασμένες. Το release
+  φτιάχνεται πλέον **αυτόματα** με το push του tag, με σώμα την αντίστοιχη
+  ενότητα αυτού του αρχείου.
+- Ένας έλεγχος σταματά το release αν το `version` του manifest δεν ταιριάζει με
+  το tag — ήταν ο εύκολος τρόπος να δείχνει το store άλλη έκδοση από το
+  integration.
+
+### 🇬🇧 English
+
+**Fixed**
+
+- 0.5.1 and 0.5.2 were tagged but had **no GitHub Release**. HACS reads releases
+  rather than tags, so no update ever appeared and the store card kept showing
+  the 0.5.0 README with its images broken. The release is now created
+  **automatically** when the tag is pushed, with this file's matching section as
+  its body.
+- A guard fails the release when the manifest `version` disagrees with the tag —
+  the easy way to end up with the store showing one version and the integration
+  another.
+
 ## [0.5.2] — 2026-08-21
 
 ### 🇬🇷 Ελληνικά
@@ -446,7 +477,8 @@ integration already holds, so Home Assistant can fetch it itself.
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.2...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.3...HEAD
+[0.5.3]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.2...v0.5.3
 [0.5.2]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.4.0...v0.5.0
