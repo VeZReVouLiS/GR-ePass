@@ -21,6 +21,26 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.6.5] — 2026-08-21
+
+### 🇬🇷 Ελληνικά
+
+**Διορθώθηκαν**
+
+- Το μήνυμα όταν ο browser εμποδίζει το παράθυρο της απόδειξης έγραφε
+  «**μπώναρε**», που δεν είναι λέξη. Πλέον «μπλόκαρε».
+- Η γραμμή δικτύου για πάροχο που δεν αναγνωρίζεται έγραφε «**Δικό δίκτυο**»,
+  χωρίς άρθρο και χωρίς νόημα. Πλέον «Δίκτυο παρόχου».
+
+### 🇬🇧 English
+
+**Fixed**
+
+- Two Greek strings that were not idiomatic Greek: the message shown when the
+  browser blocks the receipt window used a non-existent word, and the network row
+  for an unrecognised operator read as a fragment. Both rewritten. The English
+  side is unchanged.
+
 ## [0.6.4] — 2026-08-21
 
 Τεκμηρίωση μόνο. Ο κώδικας είναι πανομοιότυπος με το 0.6.3.
@@ -690,7 +710,8 @@ integration already holds, so Home Assistant can fetch it itself.
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.4...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.5...HEAD
+[0.6.5]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.4...v0.6.5
 [0.6.4]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.3...v0.6.4
 [0.6.3]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.2...v0.6.3
 [0.6.2]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.1...v0.6.2
