@@ -101,7 +101,8 @@ const LABELS = {
     receiptDeclined: "Δεν εγκρίθηκε",
     receiptPrint: "Εκτύπωση / Αποθήκευση PDF",
     receiptBack: "Επιστροφή στο Home Assistant",
-    receiptNote: "Εκδόθηκε από το Home Assistant με στοιχεία του παρόχου. Δεν αντικαθιστά φορολογικό παραστατικό.",
+    receiptNote: "Εκδόθηκε από το Home Assistant με στοιχεία του παρόχου.",
+    receiptNoteTax: "Δεν αντικαθιστά φορολογικό παραστατικό.",
     refresh: "Ανανέωση στοιχείων",
     linkReady: "Έτοιμο. Άνοιξε τον σύνδεσμο για να ολοκληρώσεις.",
     linkOpen: "Ολοκλήρωση πληρωμής",
@@ -160,7 +161,8 @@ const LABELS = {
     receiptDeclined: "Not approved",
     receiptPrint: "Print / Save as PDF",
     receiptBack: "Back to Home Assistant",
-    receiptNote: "Produced by Home Assistant from the operator's data. It is not a tax document.",
+    receiptNote: "Produced by Home Assistant from the operator's data.",
+    receiptNoteTax: "It is not a tax document.",
     refresh: "Refresh data",
     linkReady: "Ready. Open the link to finish.",
     linkOpen: "Complete payment",
@@ -747,7 +749,7 @@ class GrEpassPanel extends HTMLElement {
       [t.receiptStatus, approved ? t.receiptApproved : t.receiptDeclined],
       [t.receiptApproval, receipt.BankApprovalCode || "\u2014"],
       [t.receiptTxn, receipt.BankTransactionId || "\u2014"],
-      [t.receiptOrder, receipt.ResponseOrderID || "\u2014"],
+      [t.receiptOrder, receipt.ResponseOrderID || "\u2014", "id"],
     ];
 
     const esc = (value) =>
@@ -760,7 +762,7 @@ class GrEpassPanel extends HTMLElement {
       "<title>" + esc(t.receiptTitle) + "</title><style>" +
       'body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;' +
       "background:#f4f4f4;color:#14140f}" +
-      ".wrap{max-width:420px;margin:0 auto;padding:24px 18px}" +
+      ".wrap{max-width:580px;margin:0 auto;padding:24px 18px}" +
       ".card{background:#fff;border-radius:12px;overflow:hidden;" +
       "box-shadow:0 1px 4px rgba(0,0,0,.15)}" +
       ".head{background:" + BRAND.navy + ";color:#fff;padding:14px 18px;" +
@@ -769,8 +771,11 @@ class GrEpassPanel extends HTMLElement {
       "table{width:100%;border-collapse:collapse;font-size:14px}" +
       "th,td{text-align:left;padding:7px 0;vertical-align:top;" +
       "border-bottom:1px solid #eee}" +
-      "th{color:#666;font-weight:400;width:45%}" +
+      "th{color:#666;font-weight:400;width:38%}" +
       "td{text-align:right;word-break:break-all}" +
+      // The order id is a single token and reads as nonsense when split,
+      // so it opts out of breaking and takes a smaller size to fit whole.
+      "td.id{white-space:nowrap;word-break:normal;font-size:12px}" +
       ".note{font-size:12px;color:#666;margin-top:14px;line-height:1.45}" +
       ".actions{display:flex;gap:10px;margin-top:18px}" +
       "button{flex:1;padding:12px;border:none;border-radius:8px;background:" +
@@ -784,9 +789,19 @@ class GrEpassPanel extends HTMLElement {
       '<div class="head">' + esc(t.receiptTitle) + "</div>" +
       '<div class="body"><div class="big">' + esc(amount) + "</div><table>" +
       rows
-        .map((pair) => "<tr><th>" + esc(pair[0]) + "</th><td>" + esc(pair[1]) + "</td></tr>")
+        .map(
+          (pair) =>
+            "<tr><th>" +
+            esc(pair[0]) +
+            "</th><td" +
+            (pair[2] ? ' class="' + pair[2] + '"' : "") +
+            ">" +
+            esc(pair[1]) +
+            "</td></tr>"
+        )
         .join("") +
-      '</table><div class="note">' + esc(t.receiptNote) + "</div>" +
+      '</table><div class="note">' + esc(t.receiptNote) +
+      "<br>" + esc(t.receiptNoteTax) + "</div>" +
       '<div class="actions">' +
       '<button onclick="window.print()">' + esc(t.receiptPrint) + "</button>" +
       '<button class="secondary" onclick="window.close()">' +
@@ -799,7 +814,7 @@ class GrEpassPanel extends HTMLElement {
   /** Show the receipt in a window of its own, so it prints without the app. */
   _openReceipt(receipt) {
     const html = this._receiptHtml(receipt);
-    const win = window.open("", "_blank", "width=520,height=780");
+    const win = window.open("", "_blank", "width=660,height=820");
     if (!win) {
       // A blocked popup is not a missing receipt, and saying so would send the
       // reader looking in the wrong place.

@@ -17,6 +17,7 @@ same value we sent in the prepare request.
 
 from __future__ import annotations
 
+import json
 import logging
 import re
 import secrets
@@ -110,6 +111,9 @@ class PreparedOrder:
     fields: dict[str, str]
     amount: float
     card_label: str
+    # Home Assistant's language when the order was signed. Used only as the
+    # fallback for the confirmation page, behind the reader's Accept-Language.
+    language: str = "el"
     created: datetime = field(default_factory=dt_util.utcnow)
 
     @property
@@ -248,6 +252,7 @@ class EpassPaymentManager:
             fields=fields,
             amount=amount,
             card_label=card_label,
+            language=lang,
         )
         self._orders[order.nonce] = order
         _LOGGER.debug(
@@ -312,23 +317,33 @@ class EpassPaymentView(HomeAssistantView):
         order = self._manager.peek(nonce)
         if order is None:
             return web.Response(
-                text=_page_expired(), content_type="text/html", status=404
+                text=_page_expired(pick_language(request)),
+                content_type="text/html",
+                status=404,
             )
-        return web.Response(text=_page_confirm(order), content_type="text/html")
+        lang = pick_language(request, order)
+        return web.Response(
+            text=_page_confirm(order, lang), content_type="text/html"
+        )
 
     async def post(self, request, nonce: str):
         """Consume the order; the returned page submits to the bank."""
         order = self._manager.take(nonce)
         if order is None:
             return web.Response(
-                text=_page_expired(), content_type="text/html", status=404
+                text=_page_expired(pick_language(request)),
+                content_type="text/html",
+                status=404,
             )
+        lang = pick_language(request, order)
         _LOGGER.info(
             "Handed order %s to the bank; its receipt can be fetched with the "
             "get_receipt service",
             order.fields.get("orderid"),
         )
-        return web.Response(text=_page_handoff(order), content_type="text/html")
+        return web.Response(
+            text=_page_handoff(order, lang), content_type="text/html"
+        )
 
 
 class EpassPaymentCancelView(HomeAssistantView):
@@ -347,11 +362,14 @@ class EpassPaymentCancelView(HomeAssistantView):
         self._manager = manager
 
     async def post(self, request, nonce: str):
+        lang = pick_language(request)
         self._manager.cancel(nonce)
         # Answers the same either way: a second press, or a link that had
         # already expired, should still read as "cancelled" rather than as an
         # error the payer has to make sense of.
-        return web.Response(text=_page_cancelled(), content_type="text/html")
+        return web.Response(
+            text=_page_cancelled(lang), content_type="text/html"
+        )
 
 
 _STYLE = """
@@ -387,6 +405,107 @@ _STYLE = """
 # close, so the message has to survive that: no redirect either, because a link
 # opened from Telegram on a phone has no Home Assistant session and would land
 # on a login form.
+# The confirmation link is opened without a Home Assistant session, so the page
+# cannot ask the frontend which language the reader wants. Two sources stand in:
+# the browser's Accept-Language on the request that fetches the page, and failing
+# that the language Home Assistant was running in when the order was signed. The
+# header is the better guess -- the link is regularly opened on a phone that is
+# not the machine that prepared it.
+TEXT = {
+    "el": {
+        "confirm_title": "Επιβεβαίωση ανανέωσης",
+        "amount_label": "Ποσό χρέωσης",
+        "go": "Συνέχεια στην τράπεζα",
+        "cancel": "Ακύρωση συναλλαγής",
+        "expires_in": "Ο σύνδεσμος λήγει σε",
+        "expired_inline": (
+            "Ο σύνδεσμος έληξε. Ξεκίνα νέα ανανέωση από το Home Assistant."
+        ),
+        "confirm_note": (
+            "Πατώντας «Συνέχεια» θα μεταφερθείς στη σελίδα της Alpha Bank, όπου "
+            "ολοκληρώνεται η χρέωση. Μέχρι τότε δεν έχει γίνει καμία κίνηση. Ο "
+            "σύνδεσμος ισχύει για μία χρήση."
+        ),
+        "expired_title": "e-PASS",
+        "expired_body": "Ο σύνδεσμος δεν ισχύει πλέον.",
+        "expired_note": (
+            "Κάθε σύνδεσμος πληρωμής χρησιμοποιείται μία φορά και λήγει μετά από "
+            "10 λεπτά. Ξεκίνα νέα ανανέωση από το Home Assistant."
+        ),
+        "cancelled_title": "Η συναλλαγή ακυρώθηκε",
+        "cancelled_body": "Δεν έγινε καμία χρέωση.",
+        "cancelled_note": (
+            "Ο σύνδεσμος δεν ισχύει πλέον. Αν θέλεις να συνεχίσεις, ξεκίνα νέα "
+            "ανανέωση από το Home Assistant."
+        ),
+        "back": "Επιστροφή στο Home Assistant",
+        "close": "Κλείσιμο",
+        "closing_in": "Κλείνει αυτόματα σε",
+        "close_manually": "Μπορείς να κλείσεις αυτή την καρτέλα.",
+        "handoff_title": "Μεταφορά στην τράπεζα…",
+        "handoff_body": "Αν δεν μεταφερθείς αυτόματα, πάτα το κουμπί.",
+        "handoff_go": "Συνέχεια",
+        "decimal": ",",
+    },
+    "en": {
+        "confirm_title": "Confirm top-up",
+        "amount_label": "Amount to charge",
+        "go": "Continue to the bank",
+        "cancel": "Cancel transaction",
+        "expires_in": "The link expires in",
+        "expired_inline": (
+            "The link has expired. Start a new top-up from Home Assistant."
+        ),
+        "confirm_note": (
+            "Pressing Continue takes you to Alpha Bank's page, where the charge "
+            "is completed. Nothing is charged until then. The link works once."
+        ),
+        "expired_title": "e-PASS",
+        "expired_body": "This link is no longer valid.",
+        "expired_note": (
+            "Every payment link works once and expires after 10 minutes. Start a "
+            "new top-up from Home Assistant."
+        ),
+        "cancelled_title": "Transaction cancelled",
+        "cancelled_body": "Nothing was charged.",
+        "cancelled_note": (
+            "The link is no longer valid. To continue, start a new top-up from "
+            "Home Assistant."
+        ),
+        "back": "Back to Home Assistant",
+        "close": "Close",
+        "closing_in": "Closing automatically in",
+        "close_manually": "You can close this tab.",
+        "handoff_title": "Handing over to the bank…",
+        "handoff_body": "If you are not redirected, press the button.",
+        "handoff_go": "Continue",
+        "decimal": ".",
+    },
+}
+
+
+def pick_language(request, order: PreparedOrder | None = None) -> str:
+    """Greek unless the reader asks for English."""
+    try:
+        header = (request.headers.get("Accept-Language") or "").lower()
+    except AttributeError:
+        header = ""
+    for tag in header.replace(" ", "").split(","):
+        code = tag.split(";")[0]
+        if code.startswith("el"):
+            return "el"
+        if code.startswith("en"):
+            return "en"
+    if order is not None and str(order.language).lower().startswith("en"):
+        return "en"
+    return "el"
+
+
+def _js_str(value: str) -> str:
+    """A JavaScript string literal that is safe inside a <script> block."""
+    return json.dumps(value).replace("<", "\\u003c").replace("/", "\\/")
+
+
 _AUTOCLOSE_JS = """
 (function () {
   var left = %(seconds)d;
@@ -394,52 +513,18 @@ _AUTOCLOSE_JS = """
   var btn = document.getElementById('clb');
   function bye() {
     window.close();
-    note.textContent = 'Μπορείς να κλείσεις αυτή την καρτέλα.';
+    note.textContent = %(manual)s;
   }
   if (btn) btn.addEventListener('click', bye);
   function tick() {
     if (left <= 0) { bye(); return; }
-    note.textContent = 'Κλείνει αυτόματα σε ' + left + '…';
+    note.textContent = %(closing)s + ' ' + left + '\\u2026';
     left -= 1;
     setTimeout(tick, 1000);
   }
   tick();
 })();
 """
-
-
-def _closing_block(seconds: int = 15) -> str:
-    return (
-        "<button id='clb' class='cancel' type='button'>Κλείσιμο</button>"
-        f"<div class='timer' id='cl'></div>"
-        f"<script>{_AUTOCLOSE_JS % {'seconds': seconds}}</script>"
-    )
-
-
-def _money(amount: float) -> str:
-    """Greek decimal comma, e.g. 5,00 €.
-
-    Done here rather than with locale formatting: the confirmation page is
-    served by the integration and always reads in Greek, and relying on the
-    host's locale would make the output depend on the container's environment.
-    """
-    return f"{amount:.2f}".replace(".", ",") + " €"
-
-
-def _page_expired() -> str:
-    return (
-        "<!doctype html><meta charset='utf-8'>"
-        "<meta name='viewport' content='width=device-width,initial-scale=1'>"
-        f"<style>{_STYLE}</style><div class='wrap'><div class='card'>"
-        "<div class='head'>e-PASS</div><div class='body'>"
-        "<p>Ο σύνδεσμος δεν ισχύει πλέον.</p>"
-        "<p class='muted'>Κάθε σύνδεσμος πληρωμής χρησιμοποιείται μία φορά και "
-        "λήγει μετά από 10 λεπτά. Ξεκίνα νέα ανανέωση από το Home Assistant."
-        "</p>"
-        f"{_closing_block()}"
-        "</div></div></div>"
-    )
-
 
 _COUNTDOWN_JS = """
 (function () {
@@ -450,7 +535,7 @@ _COUNTDOWN_JS = """
   var stop = document.getElementById('stop');
   function paint() {
     if (left <= 0) {
-      box.textContent = 'Ο σύνδεσμος έληξε. Ξεκίνα νέα ανανέωση από το Home Assistant.';
+      box.textContent = %(expired)s;
       box.className = 'timer low';
       if (go) go.disabled = true;
       if (stop) stop.disabled = true;
@@ -470,70 +555,113 @@ _COUNTDOWN_JS = """
 """
 
 
-def _page_confirm(order: PreparedOrder) -> str:
-    """Step 1: show what will be charged. Nothing has happened yet."""
+def _closing_block(lang: str, seconds: int = 15) -> str:
+    """Close button plus the countdown that closes the tab on its own.
+
+    No redirect anywhere: a link opened from a chat app on a phone has no Home
+    Assistant session, and sending it to the panel would land on a login form.
+    """
+    t = TEXT[lang]
+    script = _AUTOCLOSE_JS % {
+        "seconds": seconds,
+        "manual": _js_str(t["close_manually"]),
+        "closing": _js_str(t["closing_in"]),
+    }
     return (
-        "<!doctype html><meta charset='utf-8'>"
+        f"<button id='clb' class='cancel' type='button'>{escape(t['close'])}"
+        "</button>"
+        "<div class='timer' id='cl'></div>"
+        f"<script>{script}</script>"
+    )
+
+
+def _money(amount: float, lang: str = "el") -> str:
+    """Formatted here rather than by locale.
+
+    The page is served by the integration, so relying on the container's locale
+    would make the output depend on the host rather than on the reader.
+    """
+    return f"{amount:.2f}".replace(".", TEXT[lang]["decimal"]) + " €"
+
+
+def _shell(lang: str, title: str, body: str) -> str:
+    """The frame every one of these pages shares."""
+    return (
+        f"<!doctype html><html lang='{lang}'><head><meta charset='utf-8'>"
         "<meta name='viewport' content='width=device-width,initial-scale=1'>"
-        f"<title>Ανανέωση e-Pass</title><style>{_STYLE}</style>"
+        f"<title>{escape(title)}</title><style>{_STYLE}</style></head><body>"
         "<div class='wrap'><div class='card'>"
-        "<div class='head'>Επιβεβαίωση ανανέωσης</div><div class='body'>"
-        "<div class='muted'>Ποσό χρέωσης</div>"
-        f"<div class='amount'>{_money(order.amount)}</div>"
+        f"<div class='head'>{escape(title)}</div>"
+        f"<div class='body'>{body}</div>"
+        "</div></div></body></html>"
+    )
+
+
+def _page_expired(lang: str) -> str:
+    t = TEXT[lang]
+    return _shell(
+        lang,
+        t["expired_title"],
+        f"<p>{escape(t['expired_body'])}</p>"
+        f"<p class='muted'>{escape(t['expired_note'])}</p>"
+        f"{_closing_block(lang)}",
+    )
+
+
+def _page_cancelled(lang: str) -> str:
+    """Shown after the payer backs out, and for a repeated cancel."""
+    t = TEXT[lang]
+    return _shell(
+        lang,
+        t["cancelled_title"],
+        f"<p>{escape(t['cancelled_body'])}</p>"
+        f"<p class='muted'>{escape(t['cancelled_note'])}</p>"
+        f"<a class='back' href='/{DOMAIN}'>{escape(t['back'])}</a>"
+        f"{_closing_block(lang)}",
+    )
+
+
+def _page_confirm(order: PreparedOrder, lang: str) -> str:
+    """Step 1: show what will be charged. Nothing has happened yet."""
+    t = TEXT[lang]
+    script = _COUNTDOWN_JS % {
+        "remaining": order.remaining,
+        "expired": _js_str(t["expired_inline"]),
+    }
+    # The cancel action is an absolute path on purpose. A relative "cancel"
+    # resolves against the current url by replacing its last segment, so it
+    # posted to <pay>/cancel with the nonce dropped: the order stayed alive and
+    # the payer was told the link had expired.
+    body = (
+        f"<div class='muted'>{escape(t['amount_label'])}</div>"
+        f"<div class='amount'>{_money(order.amount, lang)}</div>"
         f"<div class='muted'>{escape(order.card_label)}</div>"
         "<form method='post'>"
-        "<button id='go' type='submit'>Συνέχεια στην τράπεζα</button></form>"
-        # Absolute path on purpose. A relative "cancel" resolves against the
-        # current url by replacing its last segment, so it would post to
-        # <pay>/cancel with the nonce dropped -- the order stayed alive and the
-        # payer was told the link had expired.
-        f"<form method='post' action='{PAY_URL}/{escape(order.nonce, quote=True)}"
-        "/cancel'>"
-        "<button id='stop' class='cancel' type='submit'>Ακύρωση συναλλαγής"
+        f"<button id='go' type='submit'>{escape(t['go'])}</button></form>"
+        f"<form method='post' action='{PAY_URL}/"
+        f"{escape(order.nonce, quote=True)}/cancel'>"
+        f"<button id='stop' class='cancel' type='submit'>{escape(t['cancel'])}"
         "</button></form>"
-        "<div class='timer' id='t'>Ο σύνδεσμος λήγει σε <b id='tn'>--:--</b>"
-        "</div>"
-        "<p class='note'>Πατώντας «Συνέχεια» θα μεταφερθείς στη σελίδα της "
-        "Alpha Bank, όπου ολοκληρώνεται η χρέωση. Μέχρι τότε δεν έχει γίνει "
-        "καμία κίνηση. Ο σύνδεσμος ισχύει για μία χρήση.</p>"
-        "</div></div></div>"
-        f"<script>{_COUNTDOWN_JS % {'remaining': order.remaining}}</script>"
+        f"<div class='timer' id='t'>{escape(t['expires_in'])} "
+        "<b id='tn'>--:--</b></div>"
+        f"<p class='note'>{escape(t['confirm_note'])}</p>"
+        f"<script>{script}</script>"
     )
+    return _shell(lang, t["confirm_title"], body)
 
 
-def _page_cancelled() -> str:
-    """Shown after the payer backs out, and for a repeated cancel."""
-    return (
-        "<!doctype html><meta charset='utf-8'>"
-        "<meta name='viewport' content='width=device-width,initial-scale=1'>"
-        f"<title>Ακυρώθηκε</title><style>{_STYLE}</style>"
-        "<div class='wrap'><div class='card'>"
-        "<div class='head'>Η συναλλαγή ακυρώθηκε</div><div class='body'>"
-        "<p>Δεν έγινε καμία χρέωση.</p>"
-        "<p class='muted'>Ο σύνδεσμος δεν ισχύει πλέον. Αν θέλεις να "
-        "συνεχίσεις, ξεκίνα νέα ανανέωση από το Home Assistant.</p>"
-        f"<a class='back' href='/{DOMAIN}'>Επιστροφή στο Home Assistant</a>"
-        f"{_closing_block()}"
-        "</div></div></div>"
-    )
-
-
-def _page_handoff(order: PreparedOrder) -> str:
+def _page_handoff(order: PreparedOrder, lang: str) -> str:
     """Step 2: the actual hand-off. Auto-submits, since the user just agreed."""
+    t = TEXT[lang]
     inputs = "".join(
         f"<input type='hidden' name='{escape(name)}' "
-        f"value=\"{escape(str(value), quote=True)}\">"
+        f'value="{escape(str(value), quote=True)}">'
         for name, value in order.fields.items()
     )
-    return (
-        "<!doctype html><meta charset='utf-8'>"
-        "<meta name='viewport' content='width=device-width,initial-scale=1'>"
-        f"<style>{_STYLE}</style><div class='wrap'><div class='card'>"
-        "<div class='head'>Μεταφορά στην τράπεζα…</div>"
-        "<div class='body'><p class='muted'>Αν δεν μεταφερθείς αυτόματα, πάτα "
-        "το κουμπί.</p>"
+    body = (
+        f"<p class='muted'>{escape(t['handoff_body'])}</p>"
         f"<form id='f' method='POST' action='{escape(order.action, quote=True)}'>"
-        f"{inputs}<button type='submit'>Συνέχεια</button></form>"
-        "</div></div></div>"
+        f"{inputs}<button type='submit'>{escape(t['handoff_go'])}</button></form>"
         "<script>document.getElementById('f').submit();</script>"
     )
+    return _shell(lang, t["handoff_title"], body)

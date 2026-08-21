@@ -21,6 +21,53 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.7.0] — 2026-08-21
+
+### 🇬🇷 Ελληνικά
+
+**Προστέθηκαν**
+
+- Οι σελίδες του συνδέσμου πληρωμής — επιβεβαίωση, ακύρωση, λήξη, μεταφορά στην
+  τράπεζα — υπάρχουν πλέον **και στα αγγλικά**. Ήταν όλες μόνο στα ελληνικά, οπότε
+  όποιος δούλευε το Home Assistant στα αγγλικά έβλεπε ελληνικά τη στιγμή που
+  επιβεβαίωνε μια χρέωση.
+
+**Άλλαξαν**
+
+- Ο **κωδικός παραγγελίας** στην απόδειξη χωράει σε μία σειρά. Έσπαγε στη μέση,
+  και ένας κωδικός κομμένος σε δύο γραμμές δεν διαβάζεται ούτε αντιγράφεται.
+- Η σημείωση της απόδειξης χωρίστηκε: το «Δεν αντικαθιστά φορολογικό
+  παραστατικό.» ξεκινά τη δική του γραμμή.
+
+**Πώς επιλέγεται η γλώσσα**
+
+Από το `Accept-Language` του browser που ανοίγει τη σελίδα, όχι από τη γλώσσα του
+Home Assistant — ο σύνδεσμος στέλνεται με Telegram και ανοίγει σε άλλη συσκευή.
+Αν ο browser δεν ζητά ούτε ελληνικά ούτε αγγλικά, χρησιμοποιείται η γλώσσα που
+έτρεχε το Home Assistant όταν υπογράφηκε η εντολή.
+
+### 🇬🇧 English
+
+**Added**
+
+- The payment link's pages — confirm, cancelled, expired, hand-off — now exist
+  **in English** as well. All four were Greek only, so anyone running Home
+  Assistant in English met Greek at the moment of confirming a charge.
+
+**Changed**
+
+- The **order id** on the receipt fits on one line. It used to break mid-string,
+  and an identifier split across two lines can be neither read nor copied.
+- The receipt's note is split in two: "It is not a tax document." starts its own
+  line.
+
+**How the language is chosen**
+
+From the `Accept-Language` of the browser opening the page rather than the Home
+Assistant language, because the link is sent over Telegram and opened on another
+device. If the browser asks for neither Greek nor English, the language Home
+Assistant was running in when the order was signed is used.
+
 ## [0.6.5] — 2026-08-21
 
 ### 🇬🇷 Ελληνικά
@@ -710,7 +757,8 @@ integration already holds, so Home Assistant can fetch it itself.
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.5...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.5...v0.7.0
 [0.6.5]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.4...v0.6.5
 [0.6.4]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.3...v0.6.4
 [0.6.3]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.2...v0.6.3

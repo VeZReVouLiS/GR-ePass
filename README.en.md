@@ -210,6 +210,12 @@ What does work:
    Cancelling **drops the order server side**, so the link stops working at that
    moment rather than the button merely being hidden.
 
+The link's pages are served in **Greek or English**, following the
+`Accept-Language` of whichever browser opens them rather than the Home Assistant
+language: the link is usually opened on a different device. If the browser asks
+for neither, the language Home Assistant was running in when the order was signed
+is used.
+
 Both places run a **countdown**. The confirmation page is handed the remaining
 seconds as the server computed them when it loaded, so it says the same thing as
 Home Assistant even if the phone's clock is off.
