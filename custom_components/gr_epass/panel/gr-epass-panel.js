@@ -49,6 +49,14 @@ const PORTALS = {
   egnatia: "https://myegnatiapass.gr/PaymentA",
 };
 
+// The row for the subscriber's own network is named after the operator they
+// signed up with; every other motorway reached through interoperability falls
+// under "other". Keyed on the operator attribute the account status carries.
+const NETWORKS = {
+  attiki: { el: "Αττική Οδός", en: "Attiki Odos" },
+  egnatia: { el: "Εγνατία Οδός", en: "Egnatia Odos" },
+};
+
 const LABELS = {
   el: {
     balance: "Υπόλοιπο",
@@ -63,7 +71,7 @@ const LABELS = {
     activity: "Κινήσεις",
     passesMonth: "Διελεύσεις μήνα",
     costMonth: "Κόστος διελεύσεων μήνα",
-    attiki: "Αττική Οδός",
+    ownNetwork: "Δικό δίκτυο",
     other: "Άλλα δίκτυα",
     paymentsMonth: "Πληρωμές μήνα",
     lastPass: "Τελευταία διέλευση",
@@ -121,7 +129,7 @@ const LABELS = {
     activity: "Activity",
     passesMonth: "Passes this month",
     costMonth: "Toll cost this month",
-    attiki: "Attiki Odos",
+    ownNetwork: "Own network",
     other: "Other networks",
     paymentsMonth: "Payments this month",
     lastPass: "Last pass",
@@ -169,26 +177,20 @@ const LABELS = {
 };
 
 const STYLE = `
-  :host { display: block; }
-  .wrap { max-width: 640px; margin: 0 auto; padding: 16px; }
-  /* Two columns once there is room for them; one column on a phone.
-     The cap follows the window rather than stopping at a fixed pixel width, so
-     a wide desktop gets a wide card. It is still a cap: each row puts its label
-     left and its value right, and past roughly 600px of column the two drift so
-     far apart that the pair stops reading as one line. 1260px is what leaves
-     each of the two columns just under that. */
+  /* One base size for the whole panel; every length below is in em, so the
+     card grows with the window instead of staying phone-sized on a monitor.
+     The clamp lands on 14px at phone widths -- what the panel used to hardcode
+     -- and tops out at 20px so a very wide screen does not turn comical. */
+  :host { display: block; font-size: clamp(14px, 0.35vw + 12.2px, 20px); }
+  /* Full width on purpose. Rows put the label left and the value right, so on a
+     wide monitor the two do sit far apart; the larger type is what keeps the
+     pair readable. */
+  .wrap { max-width: 100%; margin: 0; padding: clamp(12px, 1.1vw, 28px); }
+  /* Two columns once there is room for them; one column on a phone. */
   @media (min-width: 900px) {
-    .wrap { max-width: min(94vw, 1260px); }
-    .body { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px;
+    .body { display: grid; grid-template-columns: 1fr 1fr; gap: 0 2em;
             align-items: start; }
     .col > h3:first-child { margin-top: 0; }
-  }
-  /* A desktop monitor has room to spare, so go further there. This does push
-     each column past the ~600px where a label and its value start to feel far
-     apart; three columns would be the better answer, but that means splitting
-     the sections differently and is a change worth making on its own. */
-  @media (min-width: 1500px) {
-    .wrap { max-width: min(94vw, 1480px); }
   }
   .linkHead { text-align: center; }
   /* An anchor rather than a button, so the confirmation page still opens in its
@@ -197,7 +199,7 @@ const STYLE = `
              text-decoration: none; font: inherit; font-weight: 600;
              border-radius: 8px; padding: 11px 16px; margin-top: 12px;
              background: ${BRAND.navy}; color: #fff; }
-  .countdown { font-size: 12px; color: var(--secondary-text-color);
+  .countdown { font-size: 0.86em; color: var(--secondary-text-color);
                margin-top: 10px; text-align: center; }
   .countdown b { color: var(--primary-text-color);
                  font-variant-numeric: tabular-nums; }
@@ -210,7 +212,7 @@ const STYLE = `
           border-bottom: 3px solid ${BRAND.yellow}; }
   .head { display: flex; align-items: center; gap: 12px; }
   .head .headText { flex: 1; min-width: 0; }
-  .head h2 { margin: 0; font-size: 18px; font-weight: 600; }
+  .head h2 { margin: 0; font-size: 1.29em; font-weight: 600; }
   /* The shared button rule sets width:100% and a top margin for the full-width
      action buttons, both of which have to be undone here or this one eats the
      header and pushes the title into a single-word column. */
@@ -222,26 +224,26 @@ const STYLE = `
   /* Spins while the request is in flight, so a slow poll still looks alive. */
   .head .refresh[disabled] { cursor: default; animation: spin 1s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .head .sub { color: ${BRAND.yellow}; font-size: 13px; margin-top: 2px; }
+  .head .sub { color: ${BRAND.yellow}; font-size: 0.93em; margin-top: 2px; }
   .body { padding: 18px; }
   .donutWrap { display: flex; justify-content: center; padding: 6px 0 14px; }
-  .donut { width: 158px; height: 158px; border-radius: 50%;
+  .donut { width: 11.3em; height: 11.3em; border-radius: 50%;
            display: flex; align-items: center; justify-content: center; }
-  .hole { width: 104px; height: 104px; border-radius: 50%; display: flex;
+  .hole { width: 7.4em; height: 7.4em; border-radius: 50%; display: flex;
           flex-direction: column; align-items: center; justify-content: center;
           gap: 2px; background: var(--ha-card-background, var(--card-background-color, #fff)); }
-  .amt { font-size: 19px; font-weight: 700; white-space: nowrap;
+  .amt { font-size: 1.36em; font-weight: 700; white-space: nowrap;
          color: var(--primary-text-color); }
-  .st { font-size: 12px; }
-  .caption { text-align: center; font-size: 13px;
+  .st { font-size: 0.86em; }
+  .caption { text-align: center; font-size: 0.93em;
              color: var(--secondary-text-color); }
-  .rows { display: grid; grid-template-columns: 24px 1fr auto; gap: 10px 12px;
-          align-items: center; font-size: 14px; }
+  .rows { display: grid; grid-template-columns: 1.75em 1fr auto; gap: 0.7em 0.85em;
+          align-items: center; font-size: 1em; }
   .rows ha-icon { color: var(--state-icon-color, var(--paper-item-icon-color));
-                  --mdc-icon-size: 20px; }
+                  --mdc-icon-size: 1.43em; }
   .rows .k { color: var(--primary-text-color); }
   .rows .v { color: var(--secondary-text-color); text-align: right; }
-  h3 { font-size: 15px; margin: 22px 0 10px; color: var(--primary-text-color); }
+  h3 { font-size: 1.07em; margin: 1.55em 0 0.7em; color: var(--primary-text-color); }
   .sep { height: 1px; background: var(--divider-color); margin: 14px 0; grid-column: 1 / -1; }
   .rows .full { grid-column: 2 / -1; }
   select, input { font: inherit; color: var(--primary-text-color);
@@ -254,19 +256,19 @@ const STYLE = `
   button.secondary { background: transparent; color: var(--primary-color);
                      border: 1px solid var(--divider-color); }
   button:disabled { opacity: .5; cursor: default; }
-  .note { font-size: 12px; color: var(--secondary-text-color);
+  .note { font-size: 0.86em; color: var(--secondary-text-color);
           line-height: 1.45; margin-top: 12px; }
   .warn { background: rgba(255,185,0,.12); border-left: 3px solid ${BRAND.amber};
-          padding: 10px 12px; border-radius: 4px; font-size: 13px;
+          padding: 10px 12px; border-radius: 4px; font-size: 0.93em;
           margin-top: 12px; }
   .ok { background: rgba(13,208,88,.12); border-left: 3px solid ${BRAND.green};
-        padding: 10px 12px; border-radius: 4px; font-size: 13px; margin-top: 12px; }
+        padding: 10px 12px; border-radius: 4px; font-size: 0.93em; margin-top: 12px; }
   .empty { text-align: center; color: var(--secondary-text-color); padding: 40px 16px; }
   a.finish { display: block; text-align: center; margin-top: 10px;
              color: var(--primary-color); font-weight: 600; }
   .veh { border: 1px solid var(--divider-color); border-radius: 8px;
          padding: 12px 14px; margin-bottom: 10px; }
-  .vehName { font-weight: 600; font-size: 14px; margin-bottom: 8px;
+  .vehName { font-weight: 600; font-size: 1em; margin-bottom: 8px;
              color: var(--primary-text-color); }
 `;
 
@@ -420,7 +422,7 @@ class GrEpassPanel extends HTMLElement {
           <div class="rows">
             <ha-icon icon="mdi:boom-gate-arrow-up"></ha-icon><span class="k">${t.passesMonth}</span><span class="v" data-k="passes_month"></span>
             <ha-icon icon="mdi:cash"></ha-icon><span class="k">${t.costMonth}</span><span class="v" data-k="cost_month"></span>
-            <ha-icon icon="mdi:road-variant"></ha-icon><span class="k">— ${t.attiki}</span><span class="v" data-k="cost_month_attiki"></span>
+            <ha-icon icon="mdi:road-variant"></ha-icon><span class="k">— <span data-net></span></span><span class="v" data-k="cost_month_attiki"></span>
             <ha-icon icon="mdi:swap-horizontal"></ha-icon><span class="k">— ${t.other}</span><span class="v" data-k="cost_month_other"></span>
             <ha-icon icon="mdi:cash-plus"></ha-icon><span class="k">${t.paymentsMonth}</span><span class="v" data-k="payments_month"></span>
           </div>
@@ -585,6 +587,15 @@ class GrEpassPanel extends HTMLElement {
         } else {
           cell.textContent = this._fmt(ent[key]);
         }
+      }
+
+      const net = section.querySelector("[data-net]");
+      if (net) {
+        const key = statusObj?.attributes?.operator;
+        const lang = this._hass?.language?.toLowerCase().startsWith("el")
+          ? "el"
+          : "en";
+        net.textContent = NETWORKS[key]?.[lang] || this._t.ownNetwork;
       }
 
       this._paintLastPass(section.querySelector(".lastPass"), ent);

@@ -21,6 +21,42 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.6.2] — 2026-08-21
+
+### 🇬🇷 Ελληνικά
+
+**Διορθώθηκαν**
+
+- Στις **Κινήσεις** η γραμμή του δικτύου έλεγε πάντα «Αττική Οδός», ακόμη και σε
+  συνδρομή Εγνατίας. Πλέον ονομάζεται με τον πάροχο που διάλεξες: το **δικό σου**
+  δίκτυο είναι η επώνυμη γραμμή, και ό,τι άλλο μέσω διαλειτουργικότητας μπαίνει
+  στα «Άλλα δίκτυα». Σε άγνωστο πάροχο γράφει «Δικό δίκτυο» αντί να μαντεύει.
+
+**Άλλαξαν**
+
+- Η κάρτα πιάνει **όλο το διαθέσιμο πλάτος** αντί να σταματά σε σταθερό όριο, και
+  η **γραμματοσειρά μεγαλώνει μαζί με το παράθυρο**: μία βάση `clamp(14px, …,
+  20px)` και όλα τα μεγέθη μέσα σε `em`, ώστε ο κύκλος του υπολοίπου, τα εικονίδια
+  και τα κείμενα να κλιμακώνονται μαζί. Στο κινητό η βάση πέφτει στα 14px, δηλαδή
+  ακριβώς όπως ήταν.
+
+### 🇬🇧 English
+
+**Fixed**
+
+- The network row under **Activity** always read "Attiki Odos", even on an
+  Egnatia subscription. It is now named after the operator you picked: **your
+  own** network is the named row, and anything reached through interoperability
+  goes under "Other networks". An operator this build does not know reads "Own
+  network" rather than guessing.
+
+**Changed**
+
+- The card takes **all the width available** instead of stopping at a fixed cap,
+  and the **type scales with the window**: one base of `clamp(14px, …, 20px)` with
+  every size inside expressed in `em`, so the balance ring, the icons and the text
+  grow together. On a phone the base lands at 14px, exactly what it was.
+
 ## [0.6.1] — 2026-08-21
 
 ### 🇬🇷 Ελληνικά
@@ -595,7 +631,8 @@ integration already holds, so Home Assistant can fetch it itself.
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.1...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.2...HEAD
+[0.6.2]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.3...v0.6.0
 [0.5.3]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.5.2...v0.5.3
