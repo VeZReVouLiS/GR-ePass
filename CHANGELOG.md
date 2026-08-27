@@ -21,6 +21,59 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.10.2] — 2026-08-28
+
+### 🇬🇷 Ελληνικά
+
+**Διορθώθηκαν**
+
+- **Το κουμπί «Προετοιμασία πληρωμής» δεν δούλευε καθόλου.** Έβγαζε
+  `'NoneType' object is not callable` και δεν προχωρούσε ποτέ στο portal. Αν
+  είχες 0.10.0 ή 0.10.1, η ανανέωση υπολοίπου από το Home Assistant ήταν
+  σπασμένη — καμία χρέωση δεν γινόταν, οπότε δεν χάθηκαν χρήματα, απλώς δεν
+  γινόταν τίποτα.
+- **Η αποστολή συνδέσμου με δύο συνδρομές.** Η σελίδα δεν έλεγε σε ποια
+  συνδρομή αναφέρεται, οπότε με Αττική **και** Εγνατία μαζί η υπηρεσία αρνιόταν
+  να μαντέψει.
+- **Το μήνυμα σφάλματος όταν δεν στέλνεται ο σύνδεσμος** δείχνει πια την
+  πραγματική αιτία — «δεν έχει οριστεί πού να σταλεί», με τη διαδρομή προς τη
+  ρύθμιση — αντί για ένα γενικό «δεν στάλθηκε».
+
+**Τι πήγε στραβά**
+
+Το `self._amount` κρατούσε το ποσό της παραγγελίας για το μήνυμα, ενώ υπήρχε
+ήδη μέθοδος `_amount()` που διάβαζε το ποσό από τη ρύθμιση. Στην Python το
+attribute κερδίζει, οπότε το `self._amount()` σήμαινε στην ουσία `None()`.
+Περνούσε από import, από linter, από κάθε έλεγχο που είχαμε.
+
+Γι' αυτό μπήκε το `tools/shadowcheck.py`: διαβάζει το AST κάθε αρχείου και
+αρνείται να περάσει όταν ένα attribute και μια μέθοδος μοιράζονται όνομα.
+
+### 🇬🇧 English
+
+**Fixed**
+
+- **The "Prepare payment" button did nothing at all.** It raised
+  `'NoneType' object is not callable` and never reached the portal. On 0.10.0
+  and 0.10.1 topping up from Home Assistant was broken — nothing was ever
+  charged, so no money was lost; it simply did not work.
+- **Sending the link with two subscriptions.** The page did not say which
+  subscription it meant, so with Attiki **and** Egnatia set up the service
+  refused to guess.
+- **The failure message when the link cannot be sent** now shows the real
+  reason — "no destination is set", naming the screen to set one on — instead
+  of a generic "not sent".
+
+**What went wrong**
+
+`self._amount` held the prepared order's amount for the message, while a
+`_amount()` method already read the amount from the number entity. In Python
+the attribute wins, so `self._amount()` was effectively `None()`. It passed
+imports, linters, and every check the project had.
+
+Hence `tools/shadowcheck.py`, which walks each file's AST and fails when an
+attribute and a method share a name.
+
 ## [0.10.1] — 2026-08-28
 
 ### 🇬🇷 Ελληνικά
@@ -966,7 +1019,8 @@ integration already holds, so Home Assistant can fetch it itself.
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.1...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.2...HEAD
+[0.10.2]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.1...v0.10.2
 [0.10.1]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.8.2...v0.9.0

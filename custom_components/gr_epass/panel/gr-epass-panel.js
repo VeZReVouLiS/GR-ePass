@@ -332,6 +332,9 @@ class GrEpassPanel extends HTMLElement {
       const group = {
         deviceId,
         name: device?.name_by_user || device?.name || "e-PASS",
+        // Services that act on one subscription need its config entry, and with
+        // two set up they refuse to guess. Only the device registry has it.
+        entryId: device?.primary_config_entry || device?.config_entries?.[0] || null,
         entities: {},
       };
       for (const entry of entries) {
@@ -612,7 +615,7 @@ class GrEpassPanel extends HTMLElement {
       }
 
       this._paintLastPass(section.querySelector(".lastPass"), ent);
-      this._paintTopUp(section.querySelector(".topUp"), ent);
+      this._paintTopUp(section.querySelector(".topUp"), ent, account);
       this._paintVehicles(section.querySelector(".vehicles"), account);
     }
   }
@@ -832,7 +835,7 @@ class GrEpassPanel extends HTMLElement {
     return true;
   }
 
-  _paintTopUp(host, ent) {
+  _paintTopUp(host, ent, account) {
     const t = this._t;
     const select = host.querySelector(".cardSel");
     if (select) {
@@ -899,7 +902,7 @@ class GrEpassPanel extends HTMLElement {
           this._cancelLink(event.currentTarget, link);
         });
         box.querySelector(".sendLink").addEventListener("click", (event) => {
-          this._sendLink(event.currentTarget);
+          this._sendLink(event.currentTarget, account?.entryId);
         });
       }
       this._paintCountdown(box.querySelector(".countdown"));
@@ -924,6 +927,28 @@ class GrEpassPanel extends HTMLElement {
     }
   }
 
+  /* Hands the link to whatever notify entity the user picked. */
+  async _sendLink(trigger, entryId) {
+    const t = this._t;
+    const label = trigger.textContent;
+    trigger.disabled = true;
+    try {
+      await this._hass.callService(
+        "gr_epass",
+        "send_link",
+        entryId ? { entry_id: entryId } : {}
+      );
+      trigger.textContent = t.sendLinkDone;
+    } catch (err) {
+      trigger.textContent = label;
+      // The service already explains itself -- "no destination is set" names the
+      // screen to set one on -- so show that rather than a generic failure.
+      alert(err?.message || err?.error?.message || t.sendLinkFailed);
+    } finally {
+      trigger.disabled = false;
+    }
+  }
+
   /*
    * Drops the order server side.
    *
@@ -932,23 +957,6 @@ class GrEpassPanel extends HTMLElement {
    * different origin, and this view answers no preflight. POST because the
    * cancel route refuses GET on purpose -- see payment.py.
    */
-  async _sendLink(trigger) {
-    const t = this._t;
-    const label = trigger.textContent;
-    trigger.disabled = true;
-    try {
-      await this._hass.callService("gr_epass", "send_link", {});
-      trigger.textContent = t.sendLinkDone;
-    } catch (err) {
-      trigger.textContent = label;
-      // The usual cause is no destination set, and the message says where to
-      // set one, so it is worth putting in front of the user.
-      alert(t.sendLinkFailed);
-    } finally {
-      trigger.disabled = false;
-    }
-  }
-
   async _cancelLink(trigger, link) {
     const t = this._t;
     trigger.disabled = true;

@@ -98,7 +98,7 @@ class EpassPrepareTopUp(CoordinatorEntity[EpassCoordinator], ButtonEntity):
             raise HomeAssistantError("Payment support is not set up")
 
         card, card_label = self._selected_card()
-        amount = self._amount()
+        amount = self._selected_amount()
         self._check_gateway_bounds(amount)
 
         order = await manager.async_prepare(
@@ -260,7 +260,13 @@ class EpassPrepareTopUp(CoordinatorEntity[EpassCoordinator], ButtonEntity):
             card = cards[0]
         return card, make_label(card)
 
-    def _amount(self) -> float:
+    def _selected_amount(self) -> float:
+        """Amount chosen on the number entity.
+
+        Not named `_amount`: that is the attribute holding the amount of the
+        order already prepared, and an attribute silently wins over a method
+        of the same name.
+        """
         entity = self.coordinator.amount_entity
         value = entity.native_value if entity is not None else None
         if value is None:
