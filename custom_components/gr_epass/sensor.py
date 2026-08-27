@@ -100,6 +100,8 @@ class EpassSensorDescription(SensorEntityDescription):
     value_fn: Callable[[EpassData, str], StateType | datetime]
     attrs_fn: Callable[[EpassData, str], dict[str, Any] | None] | None = None
     period: str | None = None
+    # Name carries the operator's own network, filled in per subscription.
+    names_network: bool = False
 
 
 def _stat(period: str, attribute: str) -> Callable[[EpassData, str], StateType]:
@@ -257,12 +259,14 @@ ACCOUNT_SENSORS: tuple[EpassSensorDescription, ...] = (
         attrs_fn=_last_pass_attrs,
     ),
     EpassSensorDescription(
+        # key drives unique_id, so it keeps the name it was born with.
         key="cost_month_attiki",
-        translation_key="cost_month_attiki",
+        translation_key="cost_month_own",
+        names_network=True,
         native_unit_of_measurement=EURO,
         device_class=SensorDeviceClass.MONETARY,
         state_class=SensorStateClass.TOTAL,
-        value_fn=_stat(PERIOD_MONTH, "cost_attiki"),
+        value_fn=_stat(PERIOD_MONTH, "cost_own"),
         period=PERIOD_MONTH,
     ),
     EpassSensorDescription(
@@ -479,6 +483,12 @@ class EpassSensor(CoordinatorEntity[EpassCoordinator], SensorEntity):
         super().__init__(coordinator)
         self.entity_description = description
         self._data_key = data_key
+        if description.names_network:
+            self._attr_translation_placeholders = {
+                "network": coordinator.operator.network_name(
+                    coordinator.hass.config.language
+                )
+            }
 
         if data_key == ACCOUNT_KEY:
             self._attr_unique_id = f"{account_id}_{description.key}"

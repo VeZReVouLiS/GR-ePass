@@ -55,6 +55,11 @@ class Operator:
     # page looks like the portal it is talking to.
     navy: str
     accent: str
+    # Short name of the operator's own toll network, for entity names.
+    # Kept in both languages because it is a proper noun that reads badly
+    # transliterated, and matching the NETWORKS map the page already uses.
+    network_el: str
+    network_en: str
     toll_limits: Mapping[int, Mapping[str, float]] | None = None
     limits_source: str | None = None
 
@@ -65,6 +70,10 @@ class Operator:
     @property
     def payment_url(self) -> str:
         return f"{self.base_url}{self.payment_path}"
+
+    def network_name(self, language: str | None) -> str:
+        """Own-network name, in Greek for a Greek instance."""
+        return self.network_el if (language or "").startswith("el") else self.network_en
 
     def limits_for(self, category: int) -> Mapping[str, float] | None:
         """Published limits for a vehicle category, if this operator has any."""
@@ -80,6 +89,8 @@ ATTIKI = Operator(
     payment_path="/PaymentA",
     navy="#024e7e",
     accent="#fcbd02",
+    network_el="Αττική Οδός",
+    network_en="Attiki Odos",
     toll_limits=_ATTIKI_LIMITS,
     limits_source="Τιμοκατάλογος Prepaid e-PASS, naodos.gr, 01/01/2026",
 )
@@ -92,6 +103,8 @@ EGNATIA = Operator(
     # From its clientConfig.json: --darkPrimary-color and --primary-color.
     navy="#2b447e",
     accent="#a8de20",
+    network_el="Εγνατία Οδός",
+    network_en="Egnatia Odos",
     # Its price list has not been read, so no limits are claimed here.
 )
 

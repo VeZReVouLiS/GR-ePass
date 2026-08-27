@@ -429,7 +429,7 @@ class GrEpassPanel extends HTMLElement {
           <div class="rows">
             <ha-icon icon="mdi:boom-gate-arrow-up"></ha-icon><span class="k">${t.passesMonth}</span><span class="v" data-k="passes_month"></span>
             <ha-icon icon="mdi:cash"></ha-icon><span class="k">${t.costMonth}</span><span class="v" data-k="cost_month"></span>
-            <ha-icon icon="mdi:road-variant"></ha-icon><span class="k">— <span data-net></span></span><span class="v" data-k="cost_month_attiki"></span>
+            <ha-icon icon="mdi:road-variant"></ha-icon><span class="k">— <span data-net></span></span><span class="v" data-k="cost_month_own"></span>
             <ha-icon icon="mdi:swap-horizontal"></ha-icon><span class="k">— ${t.other}</span><span class="v" data-k="cost_month_other"></span>
             <ha-icon icon="mdi:cash-plus"></ha-icon><span class="k">${t.paymentsMonth}</span><span class="v" data-k="payments_month"></span>
           </div>

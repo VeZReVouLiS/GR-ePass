@@ -110,9 +110,6 @@
       "cost_month": {
         "name": "Cost this month"
       },
-      "cost_month_attiki": {
-        "name": "Cost this month (Attiki Odos)"
-      },
       "cost_month_other": {
         "name": "Cost this month (other motorways)"
       },
@@ -164,6 +161,9 @@
           "active": "Active",
           "restricted": "Restricted"
         }
+      },
+      "cost_month_own": {
+        "name": "Cost this month ({network})"
       }
     }
   },

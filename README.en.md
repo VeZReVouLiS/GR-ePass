@@ -108,7 +108,7 @@ re-authenticate automatically.
 | `sensor.*_last_pass` | Timestamp of the last pass, with plaza, lane and amount as attributes |
 | `sensor.*_passes_today` / `sensor.*_cost_today` | Passes and cost today |
 | `sensor.*_passes_this_month` / `sensor.*_cost_this_month` | Since the 1st of the month |
-| `sensor.*_cost_this_month_attiki_odos` | Passes on the operator's own network only |
+| `sensor.*_cost_this_month_<network>` | Passes on the operator's own network only. The name says which network — installations from before 0.8.0 keep the entity id `..._attiki_odos` |
 | `sensor.*_cost_this_month_other_motorways` | Other networks, via interoperability |
 | `sensor.*_passes_last_30_days` / `sensor.*_cost_last_30_days` | Rolling 30-day window |
 | `sensor.*_passes_previous_month` / `sensor.*_cost_previous_month` | Full previous month |

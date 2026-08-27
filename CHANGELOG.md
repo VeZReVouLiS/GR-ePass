@@ -21,6 +21,45 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.8.0] — 2026-08-27
+
+### 🇬🇷 Ελληνικά
+
+**Άλλαξαν**
+
+- Ο αισθητήρας κόστους στο δικό σου δίκτυο λέει πλέον **ποιο** δίκτυο είναι:
+  «Κόστος διελεύσεων μήνα (Αττική Οδός)» ή «(Εγνατία Οδός)», ανάλογα με τον
+  πάροχο της συνδρομής. Πριν έλεγε πάντα «Αττική Οδός», ακόμη και σε συνδρομή
+  Εγνατίας — και με δύο συνδρομές δύο αισθητήρες θα έλεγαν το ίδιο πράγμα.
+- **Όλα τα ελληνικά κείμενα σε ενικό.** Το integration μιλά πλέον στον ενικό
+  αντί στον πληθυντικό ευγενείας, σε README, μηνύματα ρύθμισης και σφάλματα.
+
+**Τι σημαίνει για υπάρχουσες εγκαταστάσεις**
+
+Το entity id **δεν αλλάζει** — αλλάζει μόνο το εμφανιζόμενο όνομα, οπότε
+αυτοματισμοί και κάρτες συνεχίζουν. Σε νέα εγκατάσταση Εγνατίας το id θα βγει
+`..._cost_this_month_egnatia_odos` αντί `..._attiki_odos`. Το εσωτερικό
+`unique_id` έμεινε σκόπιμα ίδιο, ώστε να μη χαθεί κανένα entity.
+
+### 🇬🇧 English
+
+**Changed**
+
+- The own-network cost sensor now says **which** network it counts: "Cost this
+  month (Attiki Odos)" or "(Egnatia Odos)", following the subscription's
+  operator. It used to say Attiki Odos on every subscription, including Egnatia
+  ones — and with two subscriptions two sensors would have claimed the same
+  network while measuring different ones.
+- **All Greek text moved to the singular**, the informal form, across the README,
+  the setup prompts and the error messages.
+
+**What it means for existing installations**
+
+The entity id does **not** change — only the displayed name does, so automations
+and cards keep working. A new Egnatia installation gets
+`..._cost_this_month_egnatia_odos` instead of `..._attiki_odos`. The internal
+`unique_id` was deliberately left alone so no entity is orphaned.
+
 ## [0.7.1] — 2026-08-21
 
 ### 🇬🇷 Ελληνικά
@@ -782,7 +821,8 @@ integration already holds, so Home Assistant can fetch it itself.
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.7.1...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.5...v0.7.0
 [0.6.5]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.4...v0.6.5

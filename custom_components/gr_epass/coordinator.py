@@ -96,7 +96,7 @@ class PeriodStats:
 
     passes: int = 0
     cost: float = 0.0
-    cost_attiki: float = 0.0
+    cost_own: float = 0.0
     cost_other: float = 0.0
     payments: float = 0.0
     start: datetime | None = None
@@ -107,7 +107,7 @@ class PeriodStats:
         if external:
             self.cost_other += amount
         else:
-            self.cost_attiki += amount
+            self.cost_own += amount
 
 
 @dataclass
