@@ -6,7 +6,7 @@ Custom integration that brings **prepaid Greek toll accounts** into Home
 Assistant. It supports **Nea Attiki Odos**
 ([epass.naodos.gr](https://epass.naodos.gr/)) and **Nea Egnatia Odos**
 ([myegnatiapass.gr](https://myegnatiapass.gr/)) — you pick the operator when
-adding it. It brings balance,
+adding it — and **Moreas**, whose drivers carry the Attiki Odos e-PASS. It brings balance,
 passes, cost and statistics — account-wide and per transponder — plus a
 low-balance warning and one-tap top-up.
 
@@ -63,6 +63,37 @@ The **Prepare payment** button charges nothing: it creates a single-use link,
 valid for 10 minutes, that shows the amount and card before handing you to the
 bank's own page. Details under
 [Topping up](#topping-up-from-home-assistant).
+
+## Which operators work
+
+| Operator | Works? |
+|---|---|
+| **Nea Attiki Odos** (e-PASS) | ✅ |
+| **Nea Egnatia Odos** (EgnatiaPass) | ✅ |
+| **Moreas** | ✅ — has no subscription of its own; its drivers carry the Attiki Odos e-PASS |
+| Nea Odos / Kentriki Odos (fastpass) | ❌ |
+| Olympia Odos (OLYMPIA PASS) | ❌ |
+| Aegean Motorway (eway) | ❌ |
+| Rio–Antirrio Bridge | ❌ |
+
+**Your passes on every network show up anyway** — they land in the "other
+networks" line, through interoperability. What is not reachable is the other
+operators' **accounts**: each runs its own, entirely different system.
+
+The reasoning, with evidence per operator: [docs/OPERATORS.md](https://github.com/VeZReVouLiS/GR-ePass/blob/main/docs/OPERATORS.md).
+
+## Security
+
+Your password is stored **in plain text** in Home Assistant's `.storage`, as it is
+for every integration that needs one — Home Assistant has no encrypted store.
+It is not exposed in diagnostics or logs, and it never leaves your Home
+Assistant: the integration talks only to your operator's portal.
+
+The measure that helps most is **encrypted backups**, since a backup is the
+easiest way for a copy of `.storage` to leave the machine.
+
+The details, and why keeping only a token does not work here:
+[docs/SECURITY.md](https://github.com/VeZReVouLiS/GR-ePass/blob/main/docs/SECURITY.md).
 
 ## Installation
 

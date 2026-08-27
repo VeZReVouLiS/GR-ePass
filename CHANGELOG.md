@@ -21,6 +21,30 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.10.1] — 2026-08-28
+
+### 🇬🇷 Ελληνικά
+
+**Προστέθηκαν**
+
+- Πίνακας στο README με το ποιοι πάροχοι δουλεύουν. Και **ο Μορέας δουλεύει**:
+  δεν έχει δική του συνδρομή, οι οδηγοί του χρησιμοποιούν το e-PASS της Αττικής
+  Οδού, οπότε καλύπτεται ήδη.
+- Ενότητα ασφάλειας: πού αποθηκεύεται ο κωδικός και τι τον προστατεύει.
+- Τα αναλυτικά σε ξεχωριστά αρχεία, `docs/OPERATORS.md` και `docs/SECURITY.md`,
+  για να μη φουσκώσει το README.
+
+### 🇬🇧 English
+
+**Added**
+
+- A table in the README of which operators work. **Moreas does**: it issues no
+  subscription of its own — its drivers carry the Attiki Odos e-PASS — so it is
+  already covered.
+- A security section: where the password is stored and what actually protects it.
+- The detail lives in `docs/OPERATORS.md` and `docs/SECURITY.md`, so the README
+  stays readable.
+
 ## [0.10.0] — 2026-08-28
 
 ### 🇬🇷 Ελληνικά
@@ -942,7 +966,8 @@ integration already holds, so Home Assistant can fetch it itself.
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.1...HEAD
+[0.10.1]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.8.2...v0.9.0
 [0.8.2]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.8.1...v0.8.2
