@@ -21,6 +21,51 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.10.0] — 2026-08-28
+
+### 🇬🇷 Ελληνικά
+
+**Προστέθηκαν**
+
+- **Αποστολή του συνδέσμου πληρωμής.** Στις ρυθμίσεις διαλέγεις πού να σταλεί
+  (οποιοδήποτε `notify` entity) και αν θα στέλνεται αυτόματα κάθε φορά. Κενό από
+  προεπιλογή — δεν στέλνεται πουθενά χωρίς να το ζητήσεις.
+- Κουμπί **«Στείλε τον σύνδεσμο»** στη σελίδα, δίπλα στον σύνδεσμο, για τη φορά
+  που το θέλεις χωρίς να αλλάξεις ρύθμιση.
+- Υπηρεσία `gr_epass.send_link`, για αυτοματισμούς.
+
+**Γιατί έτσι**
+
+«Μόνο τώρα» είναι το κουμπί, «πάντα» είναι η ρύθμιση. Δεν υπάρχει τρίτη
+κατάσταση που να ξεχάσεις αναμμένη. Η αποστολή γίνεται με `notify.send_message`,
+οπότε δεν υπάρχει κώδικας για κάποιον συγκεκριμένο messenger — δουλεύει με
+Telegram, την εφαρμογή του Home Assistant, email, ό,τι εκθέτει `notify` entity.
+
+Στέλνονται ποσό, κάρτα, τα λεπτά που μένουν και ο σύνδεσμος. Ο σύνδεσμος είναι
+μιας χρήσης με λήξη δέκα λεπτών και ποσό και κάρτα κλειδωμένα στην υπογραφή.
+
+### 🇬🇧 English
+
+**Added**
+
+- **Sending the payment link.** The options let you pick where it goes (any
+  `notify` entity) and whether it should go automatically every time. Empty by
+  default — nothing is sent unless you ask for it.
+- A **"Send the link"** button on the page, next to the link, for the times you
+  want it without changing a setting.
+- A `gr_epass.send_link` service for automations.
+
+**Why it is built this way**
+
+"Just now" is the button, "always" is the setting. There is no third mode left
+switched on to forget about. Sending goes through `notify.send_message`, so there
+is no code for any particular messenger — it works with Telegram, the Home
+Assistant app, email, anything exposing a `notify` entity.
+
+The message carries the amount, the card, the minutes left and the link. The link
+is single-use, expires in ten minutes, and has the amount and card fixed in its
+signature.
+
 ## [0.9.0] — 2026-08-28
 
 ### 🇬🇷 Ελληνικά
@@ -897,7 +942,8 @@ integration already holds, so Home Assistant can fetch it itself.
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.8.2...v0.9.0
 [0.8.2]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.8.1...v0.8.2
 [0.8.1]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.8.0...v0.8.1

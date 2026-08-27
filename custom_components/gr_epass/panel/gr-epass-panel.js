@@ -106,6 +106,9 @@ const LABELS = {
     refresh: "Ανανέωση στοιχείων",
     linkReady: "Έτοιμο. Άνοιξε τον σύνδεσμο για να ολοκληρώσεις.",
     linkOpen: "Ολοκλήρωση πληρωμής",
+    sendLink: "Στείλε τον σύνδεσμο",
+    sendLinkDone: "Στάλθηκε",
+    sendLinkFailed: "Δεν στάλθηκε. Δες πού να σταλεί στις ρυθμίσεις του integration.",
     linkCancel: "Ακύρωση",
     linkCancelling: "Ακυρώνεται…",
     linkExpires: "Λήγει σε",
@@ -166,6 +169,9 @@ const LABELS = {
     refresh: "Refresh data",
     linkReady: "Ready. Open the link to finish.",
     linkOpen: "Complete payment",
+    sendLink: "Send the link",
+    sendLinkDone: "Sent",
+    sendLinkFailed: "Not sent. Check the destination in the integration options.",
     linkCancel: "Cancel",
     linkCancelling: "Cancelling…",
     linkExpires: "Expires in",
@@ -886,10 +892,14 @@ class GrEpassPanel extends HTMLElement {
         box.innerHTML =
           `<div class="linkHead">${t.linkReady}</div>` +
           `<a class="btnLink" href="${link}" target="_blank" rel="noopener">${t.linkOpen}</a>` +
+          `<button class="secondary sendLink" type="button">${t.sendLink}</button>` +
           `<button class="secondary cancelLink" type="button">${t.linkCancel}</button>` +
           `<div class="countdown" data-expires="${button.attributes.link_expires || ""}"></div>`;
         box.querySelector(".cancelLink").addEventListener("click", (event) => {
           this._cancelLink(event.currentTarget, link);
+        });
+        box.querySelector(".sendLink").addEventListener("click", (event) => {
+          this._sendLink(event.currentTarget);
         });
       }
       this._paintCountdown(box.querySelector(".countdown"));
@@ -922,6 +932,23 @@ class GrEpassPanel extends HTMLElement {
    * different origin, and this view answers no preflight. POST because the
    * cancel route refuses GET on purpose -- see payment.py.
    */
+  async _sendLink(trigger) {
+    const t = this._t;
+    const label = trigger.textContent;
+    trigger.disabled = true;
+    try {
+      await this._hass.callService("gr_epass", "send_link", {});
+      trigger.textContent = t.sendLinkDone;
+    } catch (err) {
+      trigger.textContent = label;
+      // The usual cause is no destination set, and the message says where to
+      // set one, so it is worth putting in front of the user.
+      alert(t.sendLinkFailed);
+    } finally {
+      trigger.disabled = false;
+    }
+  }
+
   async _cancelLink(trigger, link) {
     const t = this._t;
     trigger.disabled = true;

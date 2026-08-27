@@ -185,6 +185,7 @@ class EpassCoordinator(DataUpdateCoordinator[EpassData]):
         self.payment: Any = None
         self.card_select: Any = None
         self.amount_entity: Any = None
+        self.topup_button: Any = None
 
     @property
     def selected_transponders(self) -> list[str]:

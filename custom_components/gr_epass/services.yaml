@@ -14,3 +14,16 @@ get_receipt:
       selector:
         config_entry:
           integration: gr_epass
+
+send_link:
+  fields:
+    target:
+      required: false
+      selector:
+        entity:
+          domain: notify
+    entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: gr_epass

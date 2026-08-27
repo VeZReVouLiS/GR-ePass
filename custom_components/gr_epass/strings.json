@@ -52,7 +52,9 @@
         "title": "e-PASS options",
         "data": {
           "transponders": "Transponders",
-          "scan_interval_minutes": "Update interval (minutes)"
+          "scan_interval_minutes": "Update interval (minutes)",
+          "notify_target": "Send the payment link to",
+          "notify_auto": "Send it automatically every time"
         },
         "data_description": {
           "scan_interval_minutes": "How often to poll my e-PASS. The portal is not fast, so keep this at 15 minutes or more."
@@ -186,6 +188,20 @@
         "entry_id": {
           "name": "Subscription",
           "description": "Which subscription to ask. Only needed with more than one set up."
+        }
+      }
+    },
+    "send_link": {
+      "name": "Send payment link",
+      "description": "Sends the current payment link to a notification target.",
+      "fields": {
+        "target": {
+          "name": "Send to",
+          "description": "A notify entity. Defaults to the one set in the integration options."
+        },
+        "entry_id": {
+          "name": "Subscription",
+          "description": "Which subscription to use. Only needed with more than one set up."
         }
       }
     }

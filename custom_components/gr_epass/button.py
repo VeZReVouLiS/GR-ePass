@@ -22,9 +22,10 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt as dt_util
 
 from . import EpassConfigEntry
-from .const import EVENT_PAYMENT_READY
+from .const import CONF_NOTIFY_AUTO, EVENT_PAYMENT_READY
 from .coordinator import EpassCoordinator
 from .entity import account_device_info
+from .notifier import async_send_link
 from .payment import ORDER_TTL, PAY_URL
 
 _LOGGER = logging.getLogger(__name__)
@@ -54,6 +55,8 @@ class EpassPrepareTopUp(CoordinatorEntity[EpassCoordinator], ButtonEntity):
         self._account_id = account_id
         self._attr_unique_id = f"{account_id}_prepare_topup"
         self._attr_device_info = account_device_info(account_id, coordinator.operator)
+        # The sender and the page reach the current link through here.
+        coordinator.topup_button = self
         self._link: str | None = None
         self._link_expires: str | None = None
         # How the last order ended, and when. The page needs both: it says
@@ -62,6 +65,8 @@ class EpassPrepareTopUp(CoordinatorEntity[EpassCoordinator], ButtonEntity):
         self._link_result: str | None = None
         self._link_result_at: str | None = None
         self._nonce: str | None = None
+        self._amount: float | None = None
+        self._card_label: str | None = None
         self._unsub_expiry: Callable[[], None] | None = None
 
     @property
@@ -118,6 +123,8 @@ class EpassPrepareTopUp(CoordinatorEntity[EpassCoordinator], ButtonEntity):
         self._nonce = order.nonce
         self._link_result = None
         self._link_result_at = None
+        self._amount = amount
+        self._card_label = card_label
         self._link = f"{base}{PAY_URL}/{order.nonce}"
         self._link_expires = dt_util.as_local(order.created + ORDER_TTL).isoformat()
         # The link has to disappear once it cannot be used again, or the page
@@ -143,6 +150,52 @@ class EpassPrepareTopUp(CoordinatorEntity[EpassCoordinator], ButtonEntity):
             },
         )
         _LOGGER.debug("Top-up link published for %.2f EUR", amount)
+        await self._async_maybe_notify()
+
+    @property
+    def link(self) -> str | None:
+        """The confirmation link, while one is live."""
+        return self._link
+
+    @property
+    def amount_text(self) -> str:
+        """The amount as the reader writes it: comma in Greek, point in English."""
+        if self._amount is None:
+            return "—"
+        text = f"{self._amount:.2f}"
+        if (self.hass.config.language or "").startswith("el"):
+            text = text.replace(".", ",")
+        return f"{text} €"
+
+    @property
+    def card_text(self) -> str:
+        return self._card_label or "—"
+
+    @property
+    def minutes_left(self) -> int:
+        """Whole minutes before the link expires, never negative."""
+        if not self._link_expires:
+            return 0
+        remaining = dt_util.parse_datetime(self._link_expires)
+        if remaining is None:
+            return 0
+        seconds = (remaining - dt_util.now()).total_seconds()
+        return max(0, int(seconds // 60))
+
+    async def _async_maybe_notify(self) -> None:
+        """Send the link straight away when the user asked for that.
+
+        Failures are logged rather than raised: the link is prepared and shown on
+        the page either way, and a broken notifier must not look like a failed
+        top-up.
+        """
+        entry = self.coordinator.config_entry
+        if not entry.options.get(CONF_NOTIFY_AUTO):
+            return
+        try:
+            await async_send_link(self.hass, entry, self.coordinator)
+        except Exception as err:  # noqa: BLE001 - reported, not fatal
+            _LOGGER.warning("Could not send the payment link: %s", err)
 
     def _release(self) -> None:
         """Stop watching the current order without touching the shown link."""

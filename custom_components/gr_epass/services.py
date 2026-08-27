@@ -27,10 +27,12 @@ from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 
 from .const import DOMAIN
+from .notifier import async_send_link
 
 _LOGGER = logging.getLogger(__name__)
 
 SERVICE_GET_RECEIPT = "get_receipt"
+SERVICE_SEND_LINK = "send_link"
 
 ATTR_ORDER_ID = "order_id"
 ATTR_ENTRY_ID = "entry_id"
@@ -43,6 +45,15 @@ _RETRY_DELAY = 1.0
 _MAX_WAIT = 30
 
 _NOT_FOUND = "API_WARN_TRANSACTION_NOT_FOUND"
+
+ATTR_TARGET = "target"
+
+SEND_LINK_SCHEMA = vol.Schema(
+    {
+        vol.Optional(ATTR_TARGET): cv.entity_id,
+        vol.Optional(ATTR_ENTRY_ID): cv.string,
+    }
+)
 
 GET_RECEIPT_SCHEMA = vol.Schema(
     {
@@ -120,6 +131,21 @@ def async_register_services(hass: HomeAssistant) -> None:
         )
         return {"order_id": order_id, "found": False, "receipt": None}
 
+    async def async_send_link_service(call: ServiceCall) -> None:
+        entry_id = call.data.get(ATTR_ENTRY_ID)
+        coordinator = _coordinator(hass, entry_id)
+        entry = coordinator.config_entry
+        await async_send_link(
+            hass, entry, coordinator, call.data.get(ATTR_TARGET)
+        )
+
+    hass.services.async_register(
+        DOMAIN,
+        SERVICE_SEND_LINK,
+        async_send_link_service,
+        schema=SEND_LINK_SCHEMA,
+    )
+
     hass.services.async_register(
         DOMAIN,
         SERVICE_GET_RECEIPT,
@@ -133,3 +159,4 @@ def async_register_services(hass: HomeAssistant) -> None:
 def async_unregister_services(hass: HomeAssistant) -> None:
     """Drop the services when the last entry goes."""
     hass.services.async_remove(DOMAIN, SERVICE_GET_RECEIPT)
+    hass.services.async_remove(DOMAIN, SERVICE_SEND_LINK)

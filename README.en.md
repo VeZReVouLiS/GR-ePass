@@ -316,6 +316,36 @@ automation:
             Top up: https://epass.naodos.gr/PaymentA
 ```
 
+### Sending the link
+
+The link shows on the page. To get it on your phone there are two ways and one
+setting, under **Settings → Devices & Services → GR e-Pass → Configure**:
+
+- **Send the payment link to** — pick a `notify` entity. Empty means it is never
+  sent anywhere, which is the default.
+- **Send it automatically every time** — turn this on and it leaves as soon as
+  the link is ready.
+
+With that off, the page has a **"Send the link"** button next to the link for the
+times you want it. So "just now" is the button and "always" is the setting, and
+there is no mode left switched on to forget about.
+
+There is a service for automations:
+
+```yaml
+action: gr_epass.send_link
+data:
+  target: notify.my_phone    # optional; falls back to the configured one
+```
+
+It goes through `notify.send_message`, so it works with Telegram, the Home
+Assistant app, email, anything exposing a `notify` entity — nothing is tied to
+one messenger.
+
+**What is sent:** the amount, the card, how many minutes are left, and the link.
+The link is single-use, expires in ten minutes, and has the amount and card fixed
+in its signature — the worst a leak can do is top up your own toll balance.
+
 ## Payment receipt
 
 After payment the bank does **not** return to Home Assistant. It sends the payer

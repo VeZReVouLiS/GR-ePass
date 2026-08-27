@@ -18,6 +18,9 @@ from homeassistant.helpers.selector import (
     NumberSelector,
     NumberSelectorConfig,
     NumberSelectorMode,
+    BooleanSelector,
+    EntitySelector,
+    EntitySelectorConfig,
     SelectOptionDict,
     SelectSelector,
     SelectSelectorConfig,
@@ -31,6 +34,8 @@ from .api import EpassAuthError, EpassClient, EpassConnectionError, EpassError
 from .const import (
     ALL_TRANSPONDERS,
     CONF_ACCOUNT_ID,
+    CONF_NOTIFY_AUTO,
+    CONF_NOTIFY_TARGET,
     CONF_OPERATOR,
     CONF_SCAN_INTERVAL_MINUTES,
     CONF_TRANSPONDERS,
@@ -342,6 +347,10 @@ class EpassOptionsFlow(OptionsFlow):
                     CONF_SCAN_INTERVAL_MINUTES: int(
                         user_input[CONF_SCAN_INTERVAL_MINUTES]
                     ),
+                    # Empty means the link is never sent anywhere, which is the
+                    # default and the safe answer.
+                    CONF_NOTIFY_TARGET: user_input.get(CONF_NOTIFY_TARGET) or "",
+                    CONF_NOTIFY_AUTO: bool(user_input.get(CONF_NOTIFY_AUTO)),
                 }
             )
 
@@ -398,6 +407,18 @@ class EpassOptionsFlow(OptionsFlow):
                         unit_of_measurement="min",
                     )
                 ),
+                # Where and whether-automatically are one decision, so they sit
+                # together rather than in two places.
+                vol.Optional(
+                    CONF_NOTIFY_TARGET,
+                    description={
+                        "suggested_value": entry.options.get(CONF_NOTIFY_TARGET, "")
+                    },
+                ): EntitySelector(EntitySelectorConfig(domain="notify")),
+                vol.Optional(
+                    CONF_NOTIFY_AUTO,
+                    default=entry.options.get(CONF_NOTIFY_AUTO, False),
+                ): BooleanSelector(),
             }
         )
         return self.async_show_form(step_id="init", data_schema=schema)
