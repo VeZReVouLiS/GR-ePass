@@ -21,6 +21,31 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.7.1] — 2026-08-21
+
+### 🇬🇷 Ελληνικά
+
+**Διορθώθηκαν**
+
+- Η τεκμηρίωση έλεγε ότι ο σύνδεσμος πληρωμής «στέλνεται με Telegram». Δεν
+  στέλνεται πουθενά: εμφανίζεται στη σελίδα GR e-Pass και τον ανοίγετε ή τον
+  προωθείτε εσείς. Η αγγλική τεκμηρίωση είχε ήδη διορθωθεί, η ελληνική όχι.
+- Ο σχεδιασμός δεν αλλάζει, και ο λόγος του παραμένει ο ίδιος: ο σύνδεσμος είναι
+  χωρίς authentication ώστε να ανοίγει **μακριά** από το Home Assistant, οπότε η
+  γλώσσα του διαβάζεται από τον browser του αναγνώστη και η ακύρωση δέχεται μόνο
+  POST.
+
+### 🇬🇧 English
+
+**Fixed**
+
+- The documentation said the payment link "is sent over Telegram". It is not sent
+  anywhere: it appears on the GR e-Pass page and you open or forward it yourself.
+  The English text had already been corrected; the Greek had not.
+- Nothing about the design changes, and its reasoning stands: the link is
+  unauthenticated so it can be opened **away** from Home Assistant, which is why
+  its language comes from the reader's browser and why cancelling is POST only.
+
 ## [0.7.0] — 2026-08-21
 
 ### 🇬🇷 Ελληνικά
@@ -757,7 +782,8 @@ integration already holds, so Home Assistant can fetch it itself.
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.7.1...HEAD
+[0.7.1]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.5...v0.7.0
 [0.6.5]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.4...v0.6.5
 [0.6.4]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.3...v0.6.4

@@ -298,8 +298,8 @@ class EpassPaymentManager:
 class EpassPaymentView(HomeAssistantView):
     """Serves the confirmation page that hands the order to the bank.
 
-    Unauthenticated on purpose: the link is meant to be tapped from a Telegram
-    message on a phone, where there may be no Home Assistant session. What
+    Unauthenticated on purpose: the link is meant to be opened away from Home
+    Assistant, on a device with no session of its own. What
     protects it is that the URL carries a 128-bit single-use nonce that expires
     in ten minutes, and that the amount and card were fixed when the order was
     signed -- the link cannot be edited into a different charge. The worst a
@@ -403,8 +403,8 @@ _STYLE = """
 # Tries to close the tab once the payer has nothing left to do here, and says so
 # while it waits. A tab a browser did not open by script usually refuses to
 # close, so the message has to survive that: no redirect either, because a link
-# opened from Telegram on a phone has no Home Assistant session and would land
-# on a login form.
+# opened on a phone has no Home Assistant session and would land on a login
+# form.
 # The confirmation link is opened without a Home Assistant session, so the page
 # cannot ask the frontend which language the reader wants. Two sources stand in:
 # the browser's Accept-Language on the request that fetches the page, and failing
