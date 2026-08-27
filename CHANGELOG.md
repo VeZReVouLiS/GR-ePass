@@ -21,6 +21,34 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.8.1] — 2026-08-27
+
+### 🇬🇷 Ελληνικά
+
+**Διορθώθηκαν**
+
+- Το ελληνικό README είχε ακόμη δεκαέξι σημεία σε πληθυντικό. Ο πρώτος έλεγχος
+  έψαχνε λέξεις, όχι καταλήξεις ρημάτων, οπότε τα προσπέρασε.
+- Η λέξη «κατώφλι» έφυγε. Ήταν κυριολεκτική απόδοση του *threshold*· στα
+  ελληνικά είναι **όριο**, όπως γράφει το ίδιο κείμενο δύο παραγράφους πιο πάνω.
+- Το παράδειγμα automation έλεγε να φτιάξεις `input_number` helper, ενώ η ενότητα
+  πιο πάνω λέει ότι δεν χρειάζεται helper και ο πίνακας δείχνει
+  `number.*_low_balance_threshold`. Πλέον το παράδειγμα χρησιμοποιεί το entity του
+  integration, όπως έκανε ήδη το αγγλικό README.
+
+### 🇬🇧 English
+
+**Fixed**
+
+- The Greek README still had sixteen passages in the formal plural. The first
+  pass matched a word list rather than verb endings, so it walked past them.
+- Dropped the word "κατώφλι", a literal rendering of *threshold*, in favour of
+  the Greek "όριο" that the same text already used elsewhere.
+- The example automation told the reader to build an `input_number` helper while
+  the section above it says no helper is needed and the entity table lists
+  `number.*_low_balance_threshold`. The example now uses the integration's own
+  entity, as the English README already did.
+
 ## [0.8.0] — 2026-08-27
 
 ### 🇬🇷 Ελληνικά
@@ -821,7 +849,8 @@ integration already holds, so Home Assistant can fetch it itself.
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.8.1...HEAD
+[0.8.1]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.6.5...v0.7.0
