@@ -164,6 +164,9 @@
       },
       "cost_month_own": {
         "name": "Cost this month ({network})"
+      },
+      "passes_recorded": {
+        "name": "Passes recorded"
       }
     }
   },

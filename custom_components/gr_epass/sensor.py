@@ -320,6 +320,17 @@ ACCOUNT_SENSORS: tuple[EpassSensorDescription, ...] = (
         },
     ),
     EpassSensorDescription(
+        # Built locally from day records, because the API aggregates nothing and
+        # answers thirty days at a time. State is the count; the histograms ride
+        # along as attributes rather than as a sensor each, which would fill the
+        # recorder with a series nobody reads.
+        key="passes_recorded",
+        translation_key="passes_recorded",
+        icon="mdi:chart-timeline-variant",
+        value_fn=lambda data, _key: data.passes_recorded,
+        attrs_fn=lambda data, _key: data.statistics or None,
+    ),
+    EpassSensorDescription(
         key="transponder_count",
         translation_key="transponder_count",
         state_class=SensorStateClass.MEASUREMENT,

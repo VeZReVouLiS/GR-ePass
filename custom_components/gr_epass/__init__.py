@@ -20,6 +20,7 @@ from .payment import (
     EpassPaymentView,
 )
 from .services import async_register_services, async_unregister_services
+from .statistics import EpassStatistics
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -75,6 +76,15 @@ async def async_unload_entry(hass: HomeAssistant, entry: EpassConfigEntry) -> bo
         async_unregister_panel(hass)
         async_unregister_services(hass)
     return unloaded
+
+
+async def async_remove_entry(hass: HomeAssistant, entry: EpassConfigEntry) -> None:
+    """Delete the statistics history when the subscription is removed.
+
+    The day records live in their own store, so removing the entry would
+    otherwise leave a file behind in .storage for an account that is gone.
+    """
+    await EpassStatistics(hass, entry.entry_id).async_remove()
 
 
 async def async_reload_entry(hass: HomeAssistant, entry: EpassConfigEntry) -> None:

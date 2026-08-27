@@ -21,6 +21,52 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.9.0] — 2026-08-28
+
+### 🇬🇷 Ελληνικά
+
+**Προστέθηκαν**
+
+- **Στατιστικά μακράς διάρκειας.** Νέος αισθητήρας «Καταγεγραμμένες διελεύσεις»
+  με ιστογράμματα ανά **ώρα**, **ημέρα εβδομάδας** και **μήνα**, κόστος ανά ώρα,
+  και ποια ώρα και μέρα οδηγείς περισσότερο.
+- Την πρώτη φορά χτίζεται ιστορικό με αναδρομή προς τα πίσω, στο παρασκήνιο, έναν
+  μήνα τη φορά — μέχρι δύο χρόνια ή μέχρι δύο άδειους μήνες. Δεν καθυστερεί την
+  προσθήκη του integration.
+- `tools/stats_check.py`: ελέγχει τη λογική χωρίς Home Assistant.
+
+**Γιατί έτσι**
+
+Το API δεν κρατά τίποτα συγκεντρωτικό και απαντά τριάντα ημέρες τη φορά. Κρατάμε
+**μία εγγραφή ανά ημέρα** και όχι μετρητές, επειδή το integration ξανατραβάει τις
+τελευταίες 30 ημέρες σε κάθε ανανέωση: μετρητές θα διπλομετρούσαν. Έτσι επίσης,
+αν ο πάροχος διορθώσει ή αφαιρέσει διέλευση, το ιστορικό το ακολουθεί.
+
+Τα ιστογράμματα μπαίνουν ως attributes **ενός** αισθητήρα, ώστε να μη γεμίσει ο
+recorder με ημερήσιες σειρές.
+
+### 🇬🇧 English
+
+**Added**
+
+- **Long-run statistics.** A "Passes recorded" sensor carrying histograms by
+  **hour of day**, **day of week** and **month**, cost per hour, and which hour
+  and weekday you drive most.
+- On first run the history is built by walking backwards in the background, a
+  month at a time — up to two years, or until two empty months. It does not hold
+  up adding the integration.
+- `tools/stats_check.py` checks the logic without Home Assistant.
+
+**Why it is built this way**
+
+The API keeps nothing aggregated and answers thirty days at a time. It stores
+**one record per day** rather than counters, because the integration re-fetches
+the last thirty days on every refresh and counters would double-count. It also
+means a pass the operator later corrects or removes is followed rather than kept.
+
+The histograms are attributes of **one** sensor, so the recorder does not fill
+with daily series.
+
 ## [0.8.2] — 2026-08-27
 
 ### 🇬🇷 Ελληνικά
@@ -883,7 +929,8 @@ integration already holds, so Home Assistant can fetch it itself.
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.8.2...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.8.2...v0.9.0
 [0.8.2]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.8.1...v0.8.2
 [0.8.1]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.7.1...v0.8.0

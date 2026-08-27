@@ -177,6 +177,34 @@ statistics. The rolling 30-day cost has **no** state class: it is not a meter,
 it falls as old days leave the window, and Home Assistant rejects `measurement`
 together with `device_class: monetary`.
 
+## Statistics
+
+The API keeps nothing aggregated and answers **thirty days at a time**, so the
+history is built up locally. `sensor.*_passes_recorded` shows how many passes have
+been recorded, and its attributes carry the rest:
+
+| Attribute | What it is |
+|---|---|
+| `passes_by_hour` | 24 numbers — passes per hour of the day |
+| `cost_by_hour` | cost per hour |
+| `passes_by_weekday` | 7 numbers, Monday first |
+| `by_month` | passes and cost per month |
+| `busiest_hour` / `busiest_weekday` | where the peak falls |
+| `days_recorded`, `first_day`, `last_day` | what the history covers |
+
+It stores **one record per day** rather than running counters. The integration
+re-fetches the last thirty days on every refresh, so counters would double-count,
+while a day record is simply rewritten from the window that just arrived. That
+also means a pass the operator later corrects or removes is followed rather than
+kept for ever.
+
+On first run a walk backwards happens **in the background**, a month at a time,
+up to two years or until it finds two empty months. It does not hold up adding
+the integration; the numbers fill themselves in.
+
+The histograms are attributes of one sensor rather than dozens of separate
+sensors, so the recorder does not fill with series nobody reads.
+
 ## Events
 
 The integration fires bus events so you can write whatever automation you like

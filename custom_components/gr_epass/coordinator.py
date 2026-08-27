@@ -15,6 +15,7 @@ from homeassistant.util import dt as dt_util
 
 from .api import EpassAuthError, EpassClient, EpassConnectionError, EpassError
 from .operators import Operator, get_operator
+from .statistics import EpassStatistics
 from .const import (
     ALL_TRANSPONDERS,
     CARD_STATE_ACTIVE,
@@ -133,6 +134,9 @@ class EpassData:
     operator_name: str = ""
     brand_navy: str = ""
     brand_accent: str = ""
+    # Long-run histograms, built locally because the API keeps none.
+    statistics: dict[str, Any] = field(default_factory=dict)
+    passes_recorded: int = 0
 
     @property
     def payable_cards(self) -> list[dict[str, Any]]:
@@ -157,6 +161,8 @@ class EpassCoordinator(DataUpdateCoordinator[EpassData]):
         client: EpassClient,
     ) -> None:
         self.operator: Operator = get_operator(entry.data.get(CONF_OPERATOR))
+        self.statistics = EpassStatistics(hass, entry.entry_id)
+        self._backfill_started = False
         minutes = entry.options.get(CONF_SCAN_INTERVAL_MINUTES)
         interval = timedelta(minutes=minutes) if minutes else DEFAULT_SCAN_INTERVAL
         super().__init__(
@@ -191,6 +197,34 @@ class EpassCoordinator(DataUpdateCoordinator[EpassData]):
         if not selection or ALL_TRANSPONDERS in selection:
             return []
         return [str(item) for item in selection]
+
+    def _async_start_backfill(self, today) -> None:
+        """Build up older history once, off the refresh path.
+
+        Up to two dozen calls walk backwards a month at a time. Inline that
+        would be added to setup, so it runs as a task and the sensor picks the
+        result up on the next refresh.
+        """
+        if self._backfill_started:
+            return
+        self._backfill_started = True
+
+        async def _walk() -> None:
+            changed = await self.statistics.async_backfill(
+                lambda begin, end: self.client.async_get_activities(
+                    self.account_id, begin, end
+                ),
+                self._local_midnight,
+                parse_dt,
+                today,
+            )
+            if changed:
+                await self.statistics.async_save()
+                await self.async_request_refresh()
+
+        self.config_entry.async_create_background_task(
+            self.hass, _walk(), "gr_epass statistics backfill"
+        )
 
     @staticmethod
     def _categories_of(transponders: list[dict[str, Any]]) -> list[int]:
@@ -253,6 +287,17 @@ class EpassCoordinator(DataUpdateCoordinator[EpassData]):
             txns = await self.client.async_get_activities(self.account_id, begin, end)
 
             txns += await self._async_prev_month(today)
+
+            # The window just fetched is authoritative for the days in
+            # it, so folding it again on every refresh cannot double
+            # count.
+            if not self.statistics.loaded:
+                await self.statistics.async_load()
+            self.statistics.absorb(
+                txns, window_start, today, parse_dt
+            )
+            await self.statistics.async_save()
+            self._async_start_backfill(today)
         except EpassAuthError as err:
             raise ConfigEntryAuthFailed(str(err)) from err
         except (EpassConnectionError, EpassError) as err:
@@ -283,6 +328,8 @@ class EpassCoordinator(DataUpdateCoordinator[EpassData]):
         data.operator_name = self.operator.name
         data.brand_navy = self.operator.navy
         data.brand_accent = self.operator.accent
+        data.statistics = self.statistics.histograms()
+        data.passes_recorded = self.statistics.total_passes
         passes = self._build_stats(data, txns, today)
         self._fire_pass_events(passes)
         self._fire_balance_event(data)
