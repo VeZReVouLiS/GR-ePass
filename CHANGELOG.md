@@ -21,6 +21,40 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.8.2] — 2026-08-27
+
+### 🇬🇷 Ελληνικά
+
+**Άλλαξαν**
+
+- Νέα screenshots στα README: η σελίδα σε πλήρες πλάτος, η ανανέωση υπολοίπου με
+  έτοιμο σύνδεσμο και αντίστροφη μέτρηση, η σελίδα επιβεβαίωσης, η ακύρωση, το
+  κουμπί προβολής απόδειξης και η ίδια η απόδειξη — σε ελληνικά και αγγλικά. Τα
+  παλιά έδειχναν την προηγούμενη, στενή διάταξη.
+
+**Προστέθηκαν**
+
+- `tools/panel_preview.py`: αποδίδει τη σελίδα **τοπικά**, με δείγματα, χωρίς
+  Home Assistant. Τα screenshots δεν χρειάζονται πια πραγματικό λογαριασμό, ούτε
+  καθάρισμα εικόνας μετά. Παράγει και τις τρεις καταστάσεις (κανονική, με
+  σύνδεσμο, μετά την πληρωμή) σε δύο γλώσσες.
+
+### 🇬🇧 English
+
+**Changed**
+
+- New screenshots in both READMEs: the full-width page, the top-up section with a
+  link ready and its countdown, the confirmation page, the cancellation, the
+  view-receipt button and the receipt itself — in Greek and English. The old ones
+  showed the previous, narrow layout.
+
+**Added**
+
+- `tools/panel_preview.py` renders the page **locally** against sample data, with
+  no Home Assistant involved. Screenshots no longer need a real account, nor any
+  cleaning afterwards. It produces all three states (idle, link ready, after a
+  payment) in both languages.
+
 ## [0.8.1] — 2026-08-27
 
 ### 🇬🇷 Ελληνικά
@@ -849,7 +883,8 @@ integration already holds, so Home Assistant can fetch it itself.
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.8.1...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.8.2...HEAD
+[0.8.2]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.8.1...v0.8.2
 [0.8.1]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.7.0...v0.7.1

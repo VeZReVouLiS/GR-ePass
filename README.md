@@ -248,6 +248,14 @@ Home Assistant όταν υπογράφηκε η εντολή.
 από τον πάροχο (210 6682222) και δουλεύει τραπεζικά, χωρίς εξάρτηση από το
 Home Assistant.
 
+![Η ενότητα ανανέωσης με έτοιμο σύνδεσμο και αντίστροφη μέτρηση](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/payment-link.png)
+
+*Μόλις ετοιμαστεί ο σύνδεσμος, η σελίδα δείχνει πόσο έχει μείνει και δίνει ακύρωση.*
+
+![Η σελίδα μετά την ακύρωση](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/payment-cancelled.png)
+
+*Μετά την ακύρωση: η εντολή σβήνει από τον server, οπότε ο σύνδεσμος παύει να ισχύει την ίδια στιγμή.*
+
 ## Παράδειγμα automation: ειδοποίηση χαμηλού υπολοίπου
 
 Το όριο είναι entity που δίνει το integration, οπότε είναι ήδη προσαρμοσμένο
@@ -304,6 +312,18 @@ data:
 `wait: true` επαναλαμβάνει έως τριάντα δευτερόλεπτα, γιατί η τράπεζα επιβεβαιώνει
 την πληρωμή ξεχωριστά· αν ζητηθεί πολύ νωρίς, η απάντηση είναι
 `found: false`.
+
+![Η σελίδα επιβεβαίωσης πριν την τράπεζα](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/payment-confirm.png)
+
+*Η σελίδα του συνδέσμου: ποσό, κάρτα, μέτρηση, και ακύρωση. Καμία χρέωση δεν έχει γίνει ακόμη.*
+
+![Η απόδειξη μέσα από το Home Assistant](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/payment-receipt.png)
+
+![Το κουμπί προβολής απόδειξης στη σελίδα](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/payment-receipt-download.png)
+
+*Μετά την πληρωμή εμφανίζεται «Προβολή απόδειξης» στην ενότητα ανανέωσης.*
+
+*Η απόδειξη, με εκτύπωση ή αποθήκευση σε PDF και επιστροφή στο Home Assistant.*
 
 ## Παραδείγματα dashboard
 

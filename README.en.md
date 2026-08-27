@@ -246,6 +246,14 @@ triggers the standing order"*. The **portal does not expose it** — there is no
 route and no endpoint. If you want genuinely automatic top-up, the operator sets
 it up (+30 210 6682222) and it runs bank-side, independent of Home Assistant.
 
+![The top-up section with a link ready and a countdown](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/payment-link-en.png)
+
+*Once the link is ready the page shows how long is left and offers to cancel.*
+
+![The page after cancelling](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/payment-cancelled-en.png)
+
+*After cancelling: the order is dropped on the server, so the link stops working at that moment.*
+
 ## Example automation: low balance warning
 
 The threshold is an entity the integration provides, so it already matches your
@@ -301,6 +309,18 @@ data:
 With no `order_id` it uses the last order handed to the bank. `wait: true`
 retries for up to thirty seconds, because the bank confirms the payment out of
 band; asked too early, the answer is `found: false`.
+
+![The confirmation page before the bank](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/payment-confirm-en.png)
+
+*The link's page: amount, card, countdown and cancel. Nothing has been charged yet.*
+
+![The receipt from inside Home Assistant](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/payment-receipt-en.png)
+
+![The view-receipt button on the page](https://raw.githubusercontent.com/VeZReVouLiS/GR-ePass/main/docs/images/payment-receipt-download-en.png)
+
+*After a payment a "View receipt" button appears in the top-up section.*
+
+*The receipt, with print or save-as-PDF and a way back to Home Assistant.*
 
 ## Dashboard examples
 
