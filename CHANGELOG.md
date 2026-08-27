@@ -33,7 +33,6 @@ All notable changes are documented here, following
 - Την πρώτη φορά χτίζεται ιστορικό με αναδρομή προς τα πίσω, στο παρασκήνιο, έναν
   μήνα τη φορά — μέχρι δύο χρόνια ή μέχρι δύο άδειους μήνες. Δεν καθυστερεί την
   προσθήκη του integration.
-- `tools/stats_check.py`: ελέγχει τη λογική χωρίς Home Assistant.
 
 **Γιατί έτσι**
 
@@ -55,7 +54,6 @@ recorder με ημερήσιες σειρές.
 - On first run the history is built by walking backwards in the background, a
   month at a time — up to two years, or until two empty months. It does not hold
   up adding the integration.
-- `tools/stats_check.py` checks the logic without Home Assistant.
 
 **Why it is built this way**
 
@@ -73,33 +71,13 @@ with daily series.
 
 **Άλλαξαν**
 
-- Νέα screenshots στα README: η σελίδα σε πλήρες πλάτος, η ανανέωση υπολοίπου με
-  έτοιμο σύνδεσμο και αντίστροφη μέτρηση, η σελίδα επιβεβαίωσης, η ακύρωση, το
-  κουμπί προβολής απόδειξης και η ίδια η απόδειξη — σε ελληνικά και αγγλικά. Τα
-  παλιά έδειχναν την προηγούμενη, στενή διάταξη.
-
-**Προστέθηκαν**
-
-- `tools/panel_preview.py`: αποδίδει τη σελίδα **τοπικά**, με δείγματα, χωρίς
-  Home Assistant. Τα screenshots δεν χρειάζονται πια πραγματικό λογαριασμό, ούτε
-  καθάρισμα εικόνας μετά. Παράγει και τις τρεις καταστάσεις (κανονική, με
-  σύνδεσμο, μετά την πληρωμή) σε δύο γλώσσες.
+- Τα screenshots στα README δείχνουν πλέον την τρέχουσα εμφάνιση της σελίδας.
 
 ### 🇬🇧 English
 
 **Changed**
 
-- New screenshots in both READMEs: the full-width page, the top-up section with a
-  link ready and its countdown, the confirmation page, the cancellation, the
-  view-receipt button and the receipt itself — in Greek and English. The old ones
-  showed the previous, narrow layout.
-
-**Added**
-
-- `tools/panel_preview.py` renders the page **locally** against sample data, with
-  no Home Assistant involved. Screenshots no longer need a real account, nor any
-  cleaning afterwards. It produces all three states (idle, link ready, after a
-  payment) in both languages.
+- The screenshots in the READMEs now show the page as it currently looks.
 
 ## [0.8.1] — 2026-08-27
 
@@ -107,27 +85,17 @@ with daily series.
 
 **Διορθώθηκαν**
 
-- Το ελληνικό README είχε ακόμη δεκαέξι σημεία σε πληθυντικό. Ο πρώτος έλεγχος
-  έψαχνε λέξεις, όχι καταλήξεις ρημάτων, οπότε τα προσπέρασε.
-- Η λέξη «κατώφλι» έφυγε. Ήταν κυριολεκτική απόδοση του *threshold*· στα
-  ελληνικά είναι **όριο**, όπως γράφει το ίδιο κείμενο δύο παραγράφους πιο πάνω.
-- Το παράδειγμα automation έλεγε να φτιάξεις `input_number` helper, ενώ η ενότητα
-  πιο πάνω λέει ότι δεν χρειάζεται helper και ο πίνακας δείχνει
-  `number.*_low_balance_threshold`. Πλέον το παράδειγμα χρησιμοποιεί το entity του
-  integration, όπως έκανε ήδη το αγγλικό README.
+- Το παράδειγμα automation έλεγε να φτιάξεις `input_number` helper, ενώ το
+  integration δίνει έτοιμο `number.*_low_balance_threshold`. Πλέον το παράδειγμα
+  χρησιμοποιεί το δικό του entity.
 
 ### 🇬🇧 English
 
 **Fixed**
 
-- The Greek README still had sixteen passages in the formal plural. The first
-  pass matched a word list rather than verb endings, so it walked past them.
-- Dropped the word "κατώφλι", a literal rendering of *threshold*, in favour of
-  the Greek "όριο" that the same text already used elsewhere.
-- The example automation told the reader to build an `input_number` helper while
-  the section above it says no helper is needed and the entity table lists
-  `number.*_low_balance_threshold`. The example now uses the integration's own
-  entity, as the English README already did.
+- The example automation told you to build an `input_number` helper when the
+  integration already provides `number.*_low_balance_threshold`. The example now
+  uses its own entity.
 
 ## [0.8.0] — 2026-08-27
 
