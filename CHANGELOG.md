@@ -21,6 +21,32 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.10.5] — 2026-10-14
+
+### 🇬🇷 Ελληνικά
+
+**Διορθώθηκαν**
+
+- **Η αποστολή του συνδέσμου στο Telegram αποτύγχανε** με «Can't parse entities:
+  character '-' is reserved». Όταν το bot έχει προεπιλογή MarkdownV2, το Telegram
+  διάβαζε το μήνυμα ως μορφοποίηση, και τα «-», «.» και «(» του συνδέσμου και του
+  ποσού δεν περνούσαν. Στο Telegram ο σύνδεσμος φεύγει πλέον ως απλό κείμενο,
+  χωρίς προεπισκόπηση της σελίδας πληρωμής. Οι υπόλοιποι προορισμοί δεν αλλάζουν.
+
+Μετά την αναβάθμιση χρειάζεται επανεκκίνηση του Home Assistant.
+
+### 🇬🇧 English
+
+**Fixed**
+
+- **Sending the link to Telegram failed** with "Can't parse entities: character
+  '-' is reserved". With the bot defaulting to MarkdownV2, Telegram read the
+  message as markup and rejected the '-', '.' and '(' in the link and the amount.
+  Telegram now gets the link as plain text, with no preview of the payment page.
+  Other destinations are unchanged.
+
+Restart Home Assistant after upgrading.
+
 ## [0.10.4] — 2026-10-14
 
 ### 🇬🇷 Ελληνικά
@@ -1105,7 +1131,8 @@ integration already holds, so Home Assistant can fetch it itself.
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.4...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.5...HEAD
+[0.10.5]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.4...v0.10.5
 [0.10.4]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.3...v0.10.4
 [0.10.3]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.2...v0.10.3
 [0.10.2]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.1...v0.10.2

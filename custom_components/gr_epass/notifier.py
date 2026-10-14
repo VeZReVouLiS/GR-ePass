@@ -2,7 +2,8 @@
 
 Deliberately built on ``notify.send_message`` and a notify entity rather than on
 one messenger: the link is just text, and every install has a different way of
-receiving text. Nothing here knows about Telegram.
+receiving text. The one exception is Telegram, below, because it parses markup
+by default and the link does not survive that.
 
 The link is not secret in the way a password is, but it is worth being clear
 about what is being sent: a single-use URL that expires in ten minutes, with the
@@ -17,6 +18,7 @@ from typing import Any
 
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers import entity_registry as er
 
 from .const import CONF_NOTIFY_TARGET
 
@@ -58,6 +60,16 @@ def _text(hass: HomeAssistant) -> dict[str, str]:
     return TEXT["el"] if (hass.config.language or "").startswith("el") else TEXT["en"]
 
 
+def _is_telegram(hass: HomeAssistant, entity_id: str) -> bool:
+    """Whether the target is a Telegram bot notify entity we can address directly."""
+    entry = er.async_get(hass).async_get(entity_id)
+    return (
+        entry is not None
+        and entry.platform == "telegram_bot"
+        and hass.services.has_service("telegram_bot", "send_message")
+    )
+
+
 def configured_target(entry: Any) -> str | None:
     """The notify entity the user picked, if any."""
     target = entry.options.get(CONF_NOTIFY_TARGET)
@@ -85,20 +97,29 @@ async def async_send_link(
     if not link:
         raise HomeAssistantError(words["no_link"])
 
-    await hass.services.async_call(
-        "notify",
-        "send_message",
-        {
-            "entity_id": destination,
-            "title": words["title"],
-            "message": words["body"].format(
-                amount=button.amount_text,
-                card=button.card_text,
-                minutes=button.minutes_left,
-                link=link,
-            ),
-        },
-        blocking=True,
-    )
+    data = {
+        "entity_id": destination,
+        "title": words["title"],
+        "message": words["body"].format(
+            amount=button.amount_text,
+            card=button.card_text,
+            minutes=button.minutes_left,
+            link=link,
+        ),
+    }
+    if _is_telegram(hass, destination):
+        # The bot's default parse mode (MarkdownV2 in many setups) applies to
+        # notify.send_message as well, and MarkdownV2 rejects the '-', '.' and
+        # '(' that every link and amount contains. Telegram's own action takes a
+        # parse mode per message, so the link goes out as plain text -- and
+        # without a preview card for a single-use payment page.
+        await hass.services.async_call(
+            "telegram_bot",
+            "send_message",
+            {**data, "parse_mode": "plain_text", "disable_web_page_preview": True},
+            blocking=True,
+        )
+    else:
+        await hass.services.async_call("notify", "send_message", data, blocking=True)
     _LOGGER.debug("Payment link sent to %s", destination)
     return destination
