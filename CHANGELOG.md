@@ -21,6 +21,57 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.10.3] — 2026-10-14
+
+### 🇬🇷 Ελληνικά
+
+**Διορθώθηκαν**
+
+- **Το «Configure» άνοιγε τη σελίδα αντί για τις ρυθμίσεις.** Στο Settings →
+  Devices & Services → GR e-Pass, το γρανάζι οδηγούσε στη σελίδα GR e-Pass, οπότε
+  ο προορισμός για την αποστολή του συνδέσμου δεν οριζόταν από πουθενά — και το
+  «Στείλε τον σύνδεσμο» απαντούσε ότι δεν έχει οριστεί πού να σταλεί. Τώρα ανοίγει
+  ξανά το παράθυρο ρυθμίσεων.
+- **Η σελίδα φαινόταν μόνο στους διαχειριστές.** Οι υπόλοιποι χρήστες του Home
+  Assistant δεν την έβλεπαν στο μενού. Τώρα φαίνεται σε όλους.
+
+Μετά την αναβάθμιση χρειάζεται επανεκκίνηση του Home Assistant.
+
+**Τι πήγε στραβά**
+
+Η σελίδα δηλωνόταν ως σελίδα ρυθμίσεων του integration (`config_panel_domain`).
+Τότε το Home Assistant κάνει το γρανάζι σύνδεσμο προς αυτήν και δεν ανοίγει ποτέ
+το παράθυρο ρυθμίσεων. Η δήλωση αφαιρέθηκε.
+
+Η σελίδα ήταν κλειδωμένη στους διαχειριστές με την ιδέα ότι προστατεύει το
+υπόλοιπο. Δεν προστάτευε τίποτα: δείχνει μόνο ό,τι δείχνουν ήδη τα entities, και
+το Home Assistant δεν έχει δικαιώματα ανά entity για απλούς χρήστες. Η πληρωμή
+ολοκληρώνεται, όπως πάντα, μόνο στη σελίδα της τράπεζας και μόνο από άνθρωπο.
+
+### 🇬🇧 English
+
+**Fixed**
+
+- **"Configure" opened the page instead of the settings.** Under Settings →
+  Devices & Services → GR e-Pass the cog led to the GR e-Pass page, so there was
+  no way to choose where the payment link is sent — and "Send the link" answered
+  that no destination is set. It opens the options dialog again.
+- **The page was visible to administrators only.** Other Home Assistant users did
+  not see it in the sidebar. It now shows for everyone.
+
+Restart Home Assistant after upgrading.
+
+**What went wrong**
+
+The page was registered as the integration's configuration panel
+(`config_panel_domain`). Home Assistant then turns the cog into a link to it and
+never opens the options flow. That registration is gone.
+
+The page was locked to administrators on the idea that it protected the balance.
+It protected nothing: it shows only what the entities already expose, and Home
+Assistant has no per-entity permissions for non-admin users. Payment still
+completes only on the bank's own page, and only by a person.
+
 ## [0.10.2] — 2026-08-28
 
 ### 🇬🇷 Ελληνικά
@@ -1019,7 +1070,8 @@ integration already holds, so Home Assistant can fetch it itself.
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.2...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.3...HEAD
+[0.10.3]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.2...v0.10.3
 [0.10.2]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.1...v0.10.2
 [0.10.1]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.9.0...v0.10.0

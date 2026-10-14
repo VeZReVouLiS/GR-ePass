@@ -71,11 +71,15 @@ async def async_register_panel(hass: HomeAssistant) -> None:
         module_url=module_url,
         sidebar_title=PANEL_TITLE,
         sidebar_icon=PANEL_ICON,
-        # The panel exposes the balance and can prepare a top-up, so it sits
-        # behind admin like the rest of the billing surface.
-        require_admin=True,
+        # Every user sees the page. It only reads entity states and calls the
+        # services the entities already expose, and Home Assistant has no
+        # per-entity permissions for non-admin users, so hiding it behind admin
+        # protected nothing -- it only hid the screen from the household.
+        require_admin=False,
         config={},
-        config_panel_domain=DOMAIN,
+        # No config_panel_domain on purpose. With it, Home Assistant turns the
+        # cog under Devices & Services into a link to this page and never opens
+        # the options flow -- which is where the notify target is set.
     )
     hass.data[_REGISTERED] = True
     _LOGGER.debug("Registered the e-PASS panel at /%s from %s", DOMAIN, module_url)

@@ -52,6 +52,9 @@ As soon as the integration is added, the **GR e-Pass** page appears in the sideb
 There is no dashboard to build and no YAML to write, and it follows the Home
 Assistant language — Greek or English.
 
+Every Home Assistant user sees it, not only administrators, and it exposes
+nothing the entities do not already.
+
 It shows the balance in the portal's own colours, the subscription details, this
 month's activity, the last pass, the top-up controls, and a section per
 transponder with its vehicle category and its own passes. On a desktop window it
