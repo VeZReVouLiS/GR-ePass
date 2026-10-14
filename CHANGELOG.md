@@ -21,6 +21,41 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.10.4] — 2026-10-14
+
+### 🇬🇷 Ελληνικά
+
+**Διορθώθηκαν**
+
+- **Η αποθήκευση των ρυθμίσεων έριχνε το integration.** Μόλις άλλαζες κάτι στο
+  «Configure», η καταχώρηση ξαναφόρτωνε και έμενε σε «Αποτυχία ρύθμισης» μέχρι
+  την επόμενη επανεκκίνηση του Home Assistant. Τώρα ξαναφορτώνει κανονικά.
+
+Μετά την αναβάθμιση χρειάζεται επανεκκίνηση του Home Assistant.
+
+**Τι πήγε στραβά**
+
+Το αρχείο της σελίδας δηλωνόταν ξανά σε κάθε φόρτωμα της καταχώρησης. Το Home
+Assistant δεν μπορεί να ξεχάσει μια διαδρομή που έχει ήδη δηλωθεί, οπότε η
+δεύτερη δήλωση αποτύγχανε. Δεν φαινόταν πριν από την 0.10.3, γιατί το
+«Configure» δεν άνοιγε ποτέ τις ρυθμίσεις.
+
+### 🇬🇧 English
+
+**Fixed**
+
+- **Saving the settings took the integration down.** Changing anything under
+  "Configure" reloaded the entry, which then sat in "Failed to set up" until the
+  next Home Assistant restart. It reloads cleanly now.
+
+Restart Home Assistant after upgrading.
+
+**What went wrong**
+
+The page's file was registered again on every load of the entry. Home Assistant
+cannot forget a path once registered, so the second registration failed. It did
+not show before 0.10.3 because "Configure" never opened the settings.
+
 ## [0.10.3] — 2026-10-14
 
 ### 🇬🇷 Ελληνικά
@@ -1070,7 +1105,8 @@ integration already holds, so Home Assistant can fetch it itself.
 - The password is stored in the config entry because the API requires a
   password grant for every fresh login.
 
-[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.3...HEAD
+[Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.4...HEAD
+[0.10.4]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.3...v0.10.4
 [0.10.3]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.2...v0.10.3
 [0.10.2]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.1...v0.10.2
 [0.10.1]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.0...v0.10.1

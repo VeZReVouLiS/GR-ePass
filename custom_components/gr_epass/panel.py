@@ -30,6 +30,10 @@ PANEL_TITLE = "GR e-Pass"
 PANEL_ICON = "mdi:boom-gate-arrow-up"
 
 _REGISTERED = f"{DOMAIN}_panel_registered"
+# Separate from _REGISTERED and never cleared: aiohttp cannot remove a route,
+# so the static path is served once per Home Assistant run. Registering it
+# again on an entry reload -- saving the options does that -- raises.
+_STATIC_SERVED = f"{DOMAIN}_panel_static_served"
 
 
 async def async_register_panel(hass: HomeAssistant) -> None:
@@ -38,17 +42,19 @@ async def async_register_panel(hass: HomeAssistant) -> None:
         return
 
     source = Path(__file__).parent / "panel" / PANEL_FILE
-    await hass.http.async_register_static_paths(
-        [
-            StaticPathConfig(
-                PANEL_URL,
-                str(source),
-                # The file ships with the integration, so it changes on upgrade
-                # and must not be cached across versions.
-                cache_headers=False,
-            )
-        ]
-    )
+    if not hass.data.get(_STATIC_SERVED):
+        await hass.http.async_register_static_paths(
+            [
+                StaticPathConfig(
+                    PANEL_URL,
+                    str(source),
+                    # The file ships with the integration, so it changes on
+                    # upgrade and must not be cached across versions.
+                    cache_headers=False,
+                )
+            ]
+        )
+        hass.data[_STATIC_SERVED] = True
 
     # The module url carries a cache-busting token. Without it a caching proxy
     # in front of Home Assistant -- Cloudflare Tunnel, nginx, anything that adds
