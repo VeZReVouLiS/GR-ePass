@@ -562,6 +562,19 @@ class GrEpassPanel extends HTMLElement {
     });
   }
 
+  /*
+   * Is the user in the middle of using this field?
+   *
+   * `document.activeElement` stops at the shadow boundary and reports the host
+   * element, so inside a shadow root it never equals the field itself. The
+   * shadow root has to be asked instead. This matters more than it looks:
+   * the panel repaints on every state change anywhere in Home Assistant, so a
+   * guard that never fires overwrites the amount between two keystrokes.
+   */
+  _busyWith(field) {
+    return this.shadowRoot?.activeElement === field;
+  }
+
   _paint(accounts) {
     if (!this._refs?.length) return;
     const t = this._t;
@@ -851,14 +864,16 @@ class GrEpassPanel extends HTMLElement {
           .map((option) => `<option>${option}</option>`)
           .join("");
       }
-      if (current && select.value !== current) select.value = current;
+      if (current && select.value !== current && !this._busyWith(select)) {
+        select.value = current;
+      }
       select.disabled = !options.length;
     }
 
     const input = host.querySelector(".amtIn");
     if (input) {
       const stateObj = this._state(ent.topup_amount);
-      if (document.activeElement !== input && stateObj) {
+      if (!this._busyWith(input) && stateObj) {
         // A number input cannot hold a decimal comma, so the value stays in the
         // machine format -- but two decimals read as money rather than "5.0".
         const amount = Number(stateObj.state);

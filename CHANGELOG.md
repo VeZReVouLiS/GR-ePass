@@ -21,6 +21,36 @@ All notable changes are documented here, following
 
 ## [Unreleased]
 
+## [0.10.6] — 2026-11-17
+
+### 🇬🇷 Ελληνικά
+
+**Διορθώθηκαν**
+
+- **Το ποσό ανανέωσης γύριζε πίσω καθώς το πληκτρολογούσατε.**
+  Η σελίδα ξανασχεδιάζεται σε κάθε αλλαγή κατάστασης του Home Assistant, και ο
+  έλεγχος που υποτίθεται ότι προστάτευε το πεδίο όσο γράφατε δεν λειτούργησε
+  ποτέ. Η τιμή επανερχόταν στη μέση της πληκτρολόγησης, και περνούσε μόνο αν
+  προλαβαίνατε ανάμεσα σε δύο ενημερώσεις — εξού και το «μετά από δύο
+  προσπάθειες δουλεύει». Το ίδιο ίσχυε και για τον επιλογέα κάρτας, που μπορούσε
+  να αλλάξει μόνος του ενώ ήταν ανοιχτός.
+
+Μετά την αναβάθμιση χρειάζεται επανεκκίνηση του Home Assistant.
+
+### 🇬🇧 English
+
+**Fixed**
+
+- **The top-up amount reverted while you were typing it.** The page repaints on
+  every state change in Home Assistant, and the guard meant to protect the field
+  while you type never worked: inside a shadow root `document.activeElement`
+  reports the panel itself rather than the field, so it never matched. The value
+  snapped back mid-entry and only took if you happened to finish between two
+  updates. The card picker had the same flaw and could change under an open
+  dropdown.
+
+A Home Assistant restart is required after upgrading.
+
 ## [0.10.5] — 2026-10-14
 
 ### 🇬🇷 Ελληνικά
@@ -1132,6 +1162,7 @@ integration already holds, so Home Assistant can fetch it itself.
   password grant for every fresh login.
 
 [Unreleased]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.5...HEAD
+[0.10.6]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.5...v0.10.6
 [0.10.5]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.4...v0.10.5
 [0.10.4]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.3...v0.10.4
 [0.10.3]: https://github.com/VeZReVouLiS/GR-ePass/compare/v0.10.2...v0.10.3
