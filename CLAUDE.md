@@ -167,6 +167,18 @@ entry's operator. A subscriber to one operator must never see the other's name.
 integration is unofficial; borrowing one reads as endorsement. Operator *colours*
 are used instead, which is not trademark use.
 
+**The `via_device` deprecation is not worth acting on yet.** Home Assistant
+2026.11 warns that `DeviceInfo(via_device=...)` — the transponder's link to the
+subscription, in `sensor.py` — stops working in **2027.8**. Resist fixing it on
+sight. The replacement takes the subscription's device *registry id* rather than
+its identifiers, so the device has to be registered explicitly before the
+transponder entities are built, and `via_device_id` only exists from **2026.10**
+onwards. `hacs.json` declares **2024.12** as the minimum, so migrating today
+drops nearly two years of Home Assistant releases to silence a warning that does
+not bite for months. Do it when the minimum rises for some other reason, or when
+2027.6 is close — and check the deadline and the minimum version again then
+rather than trusting these ones.
+
 ---
 
 ## Screenshots
